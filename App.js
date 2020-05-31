@@ -1,19 +1,19 @@
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+
+import LoginScreen from "./Screens/LoginScreen";
+import BottomTabs from "./Components/BottomTabs";
+import SignupScreen from "./Screens/SignupScreen";
+import {NavigationContainer} from "@react-navigation/native";
+import {createStackNavigator} from "@react-navigation/stack";
+
+const Stack = createStackNavigator();
 
 export default function App() {
-  return (
-    <View style={styles.container}>
-      <Text>Open up App.js to start working on your app!</Text>
-    </View>
-  );
+  return <NavigationContainer>
+    <Stack.Navigator initialRouteName = "LoginScreen" headerMode = {false} >
+      <Stack.Screen name = 'LoginScreen' component = {LoginScreen}/>
+      <Stack.Screen name = 'BottomTabs' component = {BottomTabs}/>
+      <Stack.Screen name = 'SignupScreen' component = {SignupScreen}/>
+    </Stack.Navigator>
+  </NavigationContainer>
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});
