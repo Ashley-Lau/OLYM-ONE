@@ -3,6 +3,8 @@ import {Text,TouchableOpacity, StyleSheet, Modal, View, ScrollView} from 'react-
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
+import Background from "../views/Background";
+
 
 const GameItem = props => {
 
@@ -29,7 +31,10 @@ const GameItem = props => {
         <View>
             {players}
             <Modal visible = {gameDetails} animationType="slide">
+                <Background style={{top: 0,right:0, position:"absolute"}}/>
+
                 <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+
                     <View style={styles.scrollBox}>
                         <ScrollView style={{flex:1, }}>
                             <Text style={{fontSize:45}}>Host : {props.title[1]}</Text>
@@ -88,11 +93,11 @@ const styles = StyleSheet.create({
         backgroundColor:"rgba(255,255,255,0.4)",
     },
     scrollBox:{
-        flex:2,
+        flex:1,
         borderWidth: 1,
         margin:10,
         borderRadius:10,
-        backgroundColor: "gray"
+        backgroundColor: "rgba(200,200,200,0.2)"
     }
 })
 
