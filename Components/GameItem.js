@@ -1,7 +1,6 @@
 import React,{useState} from 'react';
-import {Text,TouchableOpacity, Alert, StyleSheet, Modal, View, ScrollView} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {FlatList} from "react-native-web";
+import {Text,TouchableOpacity, StyleSheet, Modal, View, ScrollView} from 'react-native';
+
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
 
@@ -20,7 +19,7 @@ const GameItem = props => {
         </ScrollView>
         <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                         onPress={() => openPlayerDetails(false)}
-                        colors={["#10f1f1", "rgba(25,224,32,0.6)"]}>
+                        colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
             <Text>Go Back</Text>
         </GradientButton>
     </Modal>
@@ -40,7 +39,7 @@ const GameItem = props => {
                             <Text style={{fontSize:45}}>Availability: {props.title[4]}</Text>
                             <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                             onPress={() => openPlayerDetails(true)}
-                                            colors={["#10f1f1", "rgba(25,224,32,0.6)"]}>
+                                            colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
                                 <Text>View Players</Text>
                             </GradientButton>
                         </ScrollView>
@@ -49,7 +48,7 @@ const GameItem = props => {
                     <View style={{...Styles.horizontalbuttonContainer}}>
                         <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                         onPress={() => openGameDetails(false)}
-                                        colors={["#10f1f1", "rgba(25,224,32,0.6)"]}>
+                                        colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                             <Text>Join</Text>
                         </GradientButton>
 
