@@ -1,5 +1,6 @@
 import React,{useState} from 'react';
 import {Text,TouchableOpacity, StyleSheet, Modal, View, ScrollView} from 'react-native';
+import {LinearGradient} from "expo-linear-gradient"
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
@@ -73,24 +74,24 @@ const GameItem = props => {
                     </View>
                 </View>
             </Modal>
-            <TouchableOpacity  style={styles.games2}>
-                <Text style={{fontSize:30}}>{props.title[0].toUpperCase()}</Text>
-            </TouchableOpacity>
-
-            {/*Option 2*/}
-            {/*<TouchableOpacity  style={styles.games}*/}
-            {/*                   onPress={() => {openGameDetails(true);}}>*/}
-            {/*    <LinearGradient colors={["rgba(104,0,45,0.6)","rgba(238,134,23,0.84)"]}*/}
-            {/*                    style={{*/}
-            {/*                        position: 'absolute',*/}
-            {/*                        left: 0,*/}
-            {/*                           right: 0,*/}
-            {/*                        top: 0,*/}
-            {/*                        height: 53,*/}
-            {/*                        borderRadius:5*/}
-            {/*                    }}/>*/}
+            {/*<TouchableOpacity  style={styles.games2}>*/}
             {/*    <Text style={{fontSize:30}}>{props.title[0].toUpperCase()}</Text>*/}
             {/*</TouchableOpacity>*/}
+
+            {/*Option 2*/}
+            <TouchableOpacity  style={styles.games}
+                               onPress={() => {openGameDetails(true);}}>
+                <LinearGradient colors={["rgba(104,0,45,0.6)","rgba(238,134,23,0.84)"]}
+                                style={{
+                                    position: 'absolute',
+                                    left: 0,
+                                    right: 0,
+                                    top: 0,
+                                    height: 53,
+                                    borderRadius:5
+                                }}/>
+                <Text style={{fontSize:30}}>{props.title[0].toUpperCase()}</Text>
+            </TouchableOpacity>
         </View>
 
 
