@@ -3,11 +3,13 @@ import {View, TextInput, StyleSheet, FlatList,} from 'react-native';
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
-import Styles from "../styling/Styles";
+
 
 const GameScreen = props => {
 
-    const playerNames =["Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan"]
+    const playerNames =["Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan",
+        "Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan",
+        "Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan"]
 
     // to be replaced with the Firebase db
     const [gamesList, setGameList] = useState([
@@ -73,14 +75,14 @@ const GameScreen = props => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        justifyContent: 'flex-start',
         flexDirection:"column"
     },
     searchBar:{
-        // marginTop: 20,
+        marginTop: 36,
         flexDirection: "row",
         justifyContent:"space-between",
-        alignItems:"center"
+        alignItems:"center",
     },
     searchInput:{
         width:"85%",
