@@ -20,6 +20,7 @@ const HostGameItem = props => {
                 <Text style={{fontSize:30, }}>LOCATION:</Text>
                 <View style={styles.dropDown}>
                     <Picker
+                        mode="dropdown"
                         selectedValue={location}
                         style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
                         onValueChange={(itemValue, itemIndex) => setLocation(itemValue)}
@@ -36,6 +37,7 @@ const HostGameItem = props => {
                 <Text style={{fontSize:30, }}>SPORT      :</Text>
                 <View style={styles.dropDown}>
                     <Picker
+                        mode="dropdown"
                         selectedValue={sport}
                         style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
                         onValueChange={(itemValue, itemIndex) => setSport(itemValue)}
@@ -51,6 +53,26 @@ const HostGameItem = props => {
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
                 <Text style={{fontSize:30, }}>PRICE       :$</Text>
                 <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+            </View>
+
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, }}>PLAYERS  :</Text>
+                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+            </View>
+
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, }}>DATE         :</Text>
+                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+            </View>
+
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, }}>TIME         :</Text>
+                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+            </View>
+
+            <View style={{flexDirection:"row", alignItems:"flex-start", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, marginTop:20}}>NOTES      :</Text>
+                <TextInput keyboardType={"number-pad"} style={{...styles.dropDownNotes, fontSize:16}}/>
             </View>
 
 
@@ -81,6 +103,17 @@ const styles = StyleSheet.create({
         alignItems:"center",
         backgroundColor: 'ghostwhite',
         height: 40,
+        borderWidth: 1,
+        borderRadius:4,
+        width: "60%",
+    },
+    dropDownNotes: {
+        flexDirection:"row",
+        marginTop: 18,
+        justifyContent: 'center',
+        alignItems:"center",
+        backgroundColor: 'ghostwhite',
+        height: 200,
         borderWidth: 1,
         borderRadius:4,
         width: "60%",
