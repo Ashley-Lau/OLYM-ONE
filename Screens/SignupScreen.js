@@ -83,12 +83,12 @@ const SignupScreen = props => {
                     <View style={Styles.buttonContainer}>
                         <GradientButton onPress={registeredPress}
                                         style={style.button}
-                                        colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
+                                        colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
                             Register
                         </GradientButton>
                         <GradientButton onPress={registeredPress}
                                         style={style.button}
-                                        colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
+                                        colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
                             Cancel
                         </GradientButton>
                     </View>
