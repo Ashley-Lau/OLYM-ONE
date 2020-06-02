@@ -13,6 +13,8 @@ const HostGameItem = props => {
     const[sport, setSport] = useState("");
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
 
+    const[date, setDate] = useState(new Date())
+
     return(
         <Modal visible={props.visible}>
             <Background style={{position:"absolute", right:0, top:0}}/>

@@ -1,9 +1,9 @@
 import React, {useState} from 'react';
 import {View, TextInput, StyleSheet, FlatList,} from 'react-native';
+
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
-import Styles from "../styling/Styles";
 
 const GameScreen = props => {
 
