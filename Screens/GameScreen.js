@@ -50,22 +50,27 @@ const GameScreen = props => {
     }
 
     return (<Background style = {styles.container}>
+            <View style={styles.searchSpace}>
                 <View style={styles.searchBar}>
                     <TextInput style={styles.searchInput}
                                placeholder="Keywords, Location, HostName"
+                               placeholderTextColor="#B9B9B9"
                                onChangeText={searchHandler}
                                value={searching}
                     />
                     <SearchButtons style={{flex: 1, elevation: 5}} searchMe={filterList}/>
                 </View>
-                <View style={{justifyContent: "space-around"}}>
-                    <FlatList
-                        contentContainerStyle={{justifyContent: "space-between"}}
-                        keyExtractor={(item) => item.key.toString()}
-                        data={filteredList}
-                        renderItem={({item}) => <GameItem title={item.value}/>}
-                    />
-                </View>
+
+            </View>
+
+            <View style={{justifyContent: "space-around", marginTop:10}}>
+                <FlatList
+                    contentContainerStyle={{justifyContent: "space-between"}}
+                    keyExtractor={(item) => item.key.toString()}
+                    data={filteredList}
+                    renderItem={({item}) => <GameItem title={item.value}/>}
+                />
+            </View>
         </Background>
     )
 }
@@ -73,20 +78,32 @@ const GameScreen = props => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'center',
+        // marginTop:36,
+        justifyContent: 'flex-start',
         flexDirection:"column"
     },
     searchBar:{
         // marginTop: 20,
         flexDirection: "row",
         justifyContent:"space-between",
-        alignItems:"center"
+        alignItems:"center",
+        borderWidth:0.5,
+        borderRadius:4,
+        width:"98%",
+        marginTop:36,
+        marginBottom:10
     },
     searchInput:{
         width:"85%",
         height:45,
         fontSize:20,
-        borderBottomWidth: 1,
+
+    },
+    searchSpace:{
+        justifyContent:"center",
+        alignItems:"center",
+        borderBottomWidth:1,
+        borderBottomColor:"rgba(177,177,177,0.78)"
     }
 
 })

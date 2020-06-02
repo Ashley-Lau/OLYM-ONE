@@ -8,7 +8,7 @@ const SearchButtons = props => {
     return (
         <View style={{elevation:5}}>
             <TouchableOpacity style={{elevation:5}} onPress={props.searchMe}>
-                <MaterialCommunityIcons name="magnify" size={45}/>
+                <MaterialCommunityIcons name="magnify" size={35}/>
             </TouchableOpacity>
         </View>
     )
