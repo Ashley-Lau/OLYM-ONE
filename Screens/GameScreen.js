@@ -53,7 +53,7 @@ const GameScreen = props => {
             <View style={styles.searchSpace}>
                 <View style={styles.searchBar}>
                     <TextInput style={styles.searchInput}
-                               placeholder="Keywords, Location, HostName"
+                               placeholder=" Keywords, Location, HostName"
                                placeholderTextColor="#B9B9B9"
                                onChangeText={searchHandler}
                                value={searching}
@@ -87,7 +87,7 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent:"space-between",
         alignItems:"center",
-        borderWidth:0.5,
+        borderWidth:1,
         borderRadius:4,
         width:"98%",
         marginTop:36,
