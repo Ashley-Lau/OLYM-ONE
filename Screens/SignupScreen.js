@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {
+    Button,
     StyleSheet,
     Text,
     View,
@@ -14,9 +15,11 @@ import {
 
 import { useNavigation} from '@react-navigation/native';
 import * as Animatable from 'react-native-animatable';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
+import CustButton from "../Components/CustButton";
 
 const SignUpComponent = props => {
     return <View style = {{marginTop: 10, width: 300}}>
@@ -30,12 +33,14 @@ const SignupScreen = props => {
     const navigation = useNavigation()
     const [gender, setGender] = useState('')
     const [date, setDate] = useState(new Date())
+    const [showTime, setShowTime] = useState(false)
 
-    let data = [{
-        value: 'Male',
-    }, {
-        value: 'Female',
-    }];
+    const onChangeTime = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowTime(Platform.OS === 'andriod');
+        setDate(currentDate);
+    };
+
     const registeredAlert = () => {
         Alert.alert(
             "Account Registered!",
@@ -52,7 +57,6 @@ const SignupScreen = props => {
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <ImageBackground source = {require('../assets/sunset_running_newstyle.png')} style={Styles.container}>
                 <View style = {style.empty}/>
-                {/*<View style = {style.popout}>*/}
                 <Animatable.View style = {style.popout} animation = "fadeInUpBig">
                     <Text style = {{fontSize: 30, borderBottomWidth: 2, borderBottomColor: 'black'}}>
                         Sign Up
@@ -67,7 +71,7 @@ const SignupScreen = props => {
                     </SignUpComponent>
                     <SignUpComponent title = 'Confirm Passwords:' placeholder = "Re-Enter Password" secureTextEntry = {true}>
                     </SignUpComponent>
-                    <View style = {{flexDirection: 'row', marginRight: 100,}}>
+                    <View style = {{flexDirection: 'row', marginRight: 105,}}>
                         <Text style = {{fontSize: 20, fontWeight: 'bold',marginTop: 20}}>Gender: </Text>
                         <View style = {style.dropDown}>
                             <Picker
@@ -80,6 +84,17 @@ const SignupScreen = props => {
                             </Picker>
                         </View>
                     </View>
+                    <View style = {{flexDirection: 'row', marginRight: 30,}}>
+                        <Text style = {{fontSize: 20, fontWeight: 'bold',marginTop: 20}}> Date of Birth: </Text>
+                        <CustButton onPress = {() => setShowTime(true)}
+                                style = {{borderRadius: 0, width: 150, backgroundColor: 'ghostwhite', borderWidth: 1, marginTop:10}}>
+                            <Text style = {{color: 'black'}}>{date.toLocaleDateString()}</Text>
+                        </CustButton>
+                    </View>
+                    {showTime && <DateTimePicker value={date}
+                                                   mode={'date'}
+                                                   display="spinner"
+                                                   onChange={onChangeTime} />}
                     <View style={Styles.buttonContainer}>
                         <GradientButton onPress={registeredPress}
                                         style={style.button}
@@ -92,8 +107,8 @@ const SignupScreen = props => {
                             Cancel
                         </GradientButton>
                     </View>
+
                 </Animatable.View>
-            {/*</View>*/}
             </ImageBackground>
         </TouchableWithoutFeedback>
     )

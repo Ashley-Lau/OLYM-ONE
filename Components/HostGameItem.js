@@ -83,14 +83,14 @@ const HostGameItem = props => {
             <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
                 <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                 onPress={props.closeHost}
-                                colors={['#30cfd0','#330867']}>
-                    <Text>Join</Text>
+                                colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
+                    <Text>Cancel</Text>
                 </GradientButton>
 
                 <GradientButton onPress={props.closeHost}
-                                colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}
+                                colors={['#30cfd0','#330867']}
                                 style={{...Styles.buttonSize}}>
-                    <Text>Cancel</Text>
+                    <Text>Host</Text>
                 </GradientButton>
             </View>
         </Modal>
