@@ -13,7 +13,7 @@ const GameItem = props => {
 
     const players = <Modal visible={playerDetails} animationType="slide">
         <ScrollView>
-            {props.title[5].map(names => (
+            {props.title[6].map(names => (
                 <View key={names}>
                     <Text>{names}</Text>
                 </View>
@@ -72,7 +72,7 @@ const GameItem = props => {
             </Modal>
             <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
-                <Text>{props.title[0]}</Text>
+                <Text>{props.title[3]} {props.title[0]} Players: {props.title[5]}</Text>
             </TouchableOpacity>
         </View>
 
@@ -82,11 +82,11 @@ const GameItem = props => {
 
 const styles = StyleSheet.create({
     games:{
-        borderRadius:5,
+        // borderRadius:5,
         borderWidth:1,
         width:"100%",
         height:45,
-        marginTop:20,
+        // marginTop:20,
         padding:5,
         justifyContent:"center",
         alignItems:"flex-start",

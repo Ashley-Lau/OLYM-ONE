@@ -11,11 +11,11 @@ const GameScreen = props => {
 
     // to be replaced with the Firebase db
     const [gamesList, setGameList] = useState([
-        {key: 0, value: ["Hougang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 1, value: ["Tampines", "Dennis", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 2, value: ["Pasir Ris", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 3, value: ["Seng Kang", "Dennis", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 4, value: ["Seng Kang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]}
+        {key: 0, value: ["Soccer", "Hougang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]},
+        {key: 1, value: ["BasketBall", "Tampines", "Dennis", "02/06/2020 ", "1800 ", "6/10", playerNames]},
+        {key: 2, value: ["Badminton", "Pasir Ris", "Ashley", "02/06/2020 ", "1800 ", "6/8", playerNames]},
+        {key: 3, value: ["Floorball", "Seng Kang", "Dennis", "02/06/2020 ", "1800 ", "6/20", playerNames]},
+        {key: 4, value: ["Soccer", "Seng Kang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]}
     ]);
 
     const [filteredList, findFilteredList] = useState([...gamesList]);
