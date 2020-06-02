@@ -11,6 +11,18 @@ const GameItem = props => {
     const [playerDetails, openPlayerDetails] = useState(false);
     const [gameDetails, openGameDetails] = useState(false);
 
+    //setting the textcolour based on the game
+    let gameColor = "rgb(234,38,38)";
+    if(props.title[0].toLowerCase() === "soccer"){
+        gameColor = "rgb(11,83,1)";
+    } else if(props.title[0].toLowerCase() === "basketball"){
+        gameColor = "rgb(165,40,0)";
+    } else if(props.title[0].toLowerCase() === "badminton"){
+        gameColor = "rgb(137,137,137)";
+    } else if(props.title[0].toLowerCase() === "floorball"){
+        gameColor = "rgb(147,147,0)";
+    }
+
     const players = <Modal visible={playerDetails} animationType="slide">
         <ScrollView>
             {props.title[6].map(names => (
@@ -72,7 +84,8 @@ const GameItem = props => {
             </Modal>
             <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
-                <Text>{props.title[3]} {props.title[0]} Players: {props.title[5]}</Text>
+                <Text style={{fontSize:25, color: gameColor}}>{props.title[0]} </Text>
+                <Text style={{fontSize:18}}> Date: {props.title[3]} Players: {props.title[5]}</Text>
             </TouchableOpacity>
         </View>
 
@@ -82,15 +95,16 @@ const GameItem = props => {
 
 const styles = StyleSheet.create({
     games:{
+        flexDirection:"row",
         // borderRadius:5,
-        borderWidth:1,
+        borderBottomWidth:1,
         width:"100%",
         height:45,
         // marginTop:20,
         padding:5,
-        justifyContent:"center",
-        alignItems:"flex-start",
-        backgroundColor:"rgba(255,255,255,0.4)",
+        justifyContent:"flex-start",
+        alignItems:"center",
+        backgroundColor:"transparent",
     },
     scrollBox:{
         flex:1,
