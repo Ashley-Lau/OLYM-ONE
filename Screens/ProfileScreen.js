@@ -7,7 +7,6 @@ import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton";
 import HostGameItem from "../Components/HostGameItem";
 
-
 const ProfileScreen = props => {
     const navigation = useNavigation();
     const[hostGame, setHostGame] = useState(false);

@@ -17,7 +17,7 @@ const HostGameItem = props => {
         <Modal visible={props.visible}>
             <Background style={{position:"absolute", right:0, top:0}}/>
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-                <Text style={{fontSize:30, }}>LOCATION :</Text>
+                <Text style={{fontSize:30, }}>LOCATION:</Text>
                 <View style={styles.dropDown}>
                     <Picker
                         selectedValue={location}
@@ -33,7 +33,7 @@ const HostGameItem = props => {
             </View>
 
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-                <Text style={{fontSize:30, }}>SPORT       :</Text>
+                <Text style={{fontSize:30, }}>SPORT      :</Text>
                 <View style={styles.dropDown}>
                     <Picker
                         selectedValue={sport}
@@ -49,8 +49,8 @@ const HostGameItem = props => {
             </View>
 
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-                <Text style={{fontSize:30, }}>PRICE        :</Text>
-                <TextInput keyboardType={"numeric"} style={styles.dropDown}/>
+                <Text style={{fontSize:30, }}>PRICE       :$</Text>
+                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
             </View>
 
 
@@ -77,13 +77,13 @@ const styles = StyleSheet.create({
     dropDown: {
         flexDirection:"row",
         marginTop: 18,
-        justifyContent: 'space-between',
+        justifyContent: 'center',
         alignItems:"center",
         backgroundColor: 'ghostwhite',
         height: 40,
         borderWidth: 1,
         borderRadius:4,
-        width: "65%",
+        width: "60%",
     }
 })
 
