@@ -31,12 +31,12 @@ const SignUpComponent = props => {
 }
 
 const reviewSchema = yup.object({
-    firstName: yup.string().required(),
-    lastName: yup.string().required(),
-    username: yup.string().required().min(6).max(16),
-    password: yup.string().required().min(6).max(16),
-    confirmPassword: yup.string().required()
-        .oneOf([yup.ref('password'), null], 'password must match'),
+    firstName: yup.string().label('First Name').required(),
+    lastName: yup.string().label('Last Name').required(),
+    username: yup.string().label('Username').required().min(6).max(16),
+    password: yup.string().label('Password').required().min(6).max(16),
+    confirmPassword: yup.string().label('Confirm Password').required()
+        .oneOf([yup.ref('password'), null], 'Password must match'),
     gender: yup.string().test('gender selector', 'Please select a gender', (val) => val === 'Male' || val === 'Female'),
     birthDate: yup.date().test('birthdate test', 'Birth date cannot be later than current date!', (val) => val < Date.now())
 
