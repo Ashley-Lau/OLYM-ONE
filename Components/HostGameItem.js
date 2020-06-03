@@ -21,7 +21,7 @@ const HostGameItem = props => {
 
     const onChangeTime = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        setShowTime(Platform.OS === 'android');
+        setShowTime(Platform.OS !== 'android');
         setDate(currentDate);
     };
 
@@ -31,7 +31,7 @@ const HostGameItem = props => {
 
     const onChangeDate = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        setShowDate(Platform.OS === 'android');
+        setShowDate(Platform.OS !== 'android');
         setDate(currentDate);
     };
 
@@ -85,7 +85,7 @@ const HostGameItem = props => {
                     <Text style = {{color: 'black', }}>{date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
                 </CustButton>
             </View>
-            {showTime && (<RNDateTimePicker  value={date} display="spinner" mode="date" onChange={onChangeDate}/>)}
+            {showDate && (<RNDateTimePicker  value={date} display="spinner" mode="date" onChange={onChangeDate}/>)}
 
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
                 <Text style={{fontSize:30, }}>TIME         :</Text>
