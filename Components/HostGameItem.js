@@ -1,9 +1,11 @@
 import React,{useState} from 'react';
-import {Text,TextInput, StyleSheet, Picker, Modal, View} from 'react-native';
+import {Text,TextInput, StyleSheet, Picker, Modal, View, Button} from 'react-native';
 
 import GradientButton from "./GradientButton";
 import Background from "../views/Background";
 import Styles from "../styling/Styles";
+import RNDateTimePicker from "@react-native-community/datetimepicker";
+import CustButton from "./CustButton";
 
 const HostGameItem = props => {
 
@@ -13,7 +15,29 @@ const HostGameItem = props => {
     const[sport, setSport] = useState("");
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
 
-    const[date, setDate] = useState(new Date())
+    const[date, setDate] = useState(new Date());
+    const [showTime, setShowTime] = useState(false)
+    const [showDate, setShowDate] = useState(false)
+
+    const onChangeTime = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowTime(Platform.OS === 'android');
+        setDate(currentDate);
+    };
+
+    const showTimePicker = () =>{
+        setShowTime(true);
+    }
+
+    const onChangeDate = (event, selectedDate) => {
+        const currentDate = selectedDate || date;
+        setShowDate(Platform.OS === 'android');
+        setDate(currentDate);
+    };
+
+    const showDatePicker = () =>{
+        setShowDate(true);
+    }
 
     return(
         <Modal visible={props.visible}>
@@ -52,6 +76,30 @@ const HostGameItem = props => {
                 </View>
             </View>
 
+
+
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, }}>DATE         :</Text>
+                <CustButton onPress = {showDatePicker}
+                            style = {{borderRadius:4, width: "60%", backgroundColor: 'ghostwhite', marginTop:10, borderWidth:1}}>
+                    <Text style = {{color: 'black', }}>{date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
+                </CustButton>
+            </View>
+            {showTime && (<RNDateTimePicker  value={date} display="spinner" mode="date" onChange={onChangeDate}/>)}
+
+            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
+                <Text style={{fontSize:30, }}>TIME         :</Text>
+                <CustButton onPress = {showTimePicker}
+                            style = {{borderRadius:4, width: "60%", backgroundColor: 'ghostwhite', marginTop:10, borderWidth:1}}>
+                    <Text style = {{color: 'black', }}>{date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
+                </CustButton>
+            </View>
+
+            {showTime && (<RNDateTimePicker  value={date} display="spinner" mode="time" onChange={onChangeTime}/>)}
+            {/*<TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>*/}
+
+
+
             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
                 <Text style={{fontSize:30, }}>PRICE       :$</Text>
                 <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
@@ -62,15 +110,8 @@ const HostGameItem = props => {
                 <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
             </View>
 
-            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-                <Text style={{fontSize:30, }}>DATE         :</Text>
-                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
-            </View>
 
-            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"space-between"}}>
-                <Text style={{fontSize:30, }}>TIME         :</Text>
-                <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
-            </View>
+
 
             <View style={{flexDirection:"row", alignItems:"flex-start", justifyContent:"space-between"}}>
                 <Text style={{fontSize:30, marginTop:20}}>NOTES      :</Text>
