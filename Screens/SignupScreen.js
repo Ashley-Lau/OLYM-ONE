@@ -37,7 +37,7 @@ const SignupScreen = props => {
 
     const onChangeTime = (event, selectedDate) => {
         const currentDate = selectedDate || date;
-        setShowTime(Platform.OS === 'andriod');
+        setShowTime(Platform.OS === 'android');
         setDate(currentDate);
     };
 
