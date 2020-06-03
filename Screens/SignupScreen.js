@@ -130,7 +130,10 @@ const SignupScreen = props => {
                                             <Picker
                                                 selectedValue={props.values.gender}
                                                 style={{ height: 50, width: 130, }}
-                                                onValueChange={(itemValue, itemIndex) => props.setFieldValue('gender', itemValue)}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    props.setFieldValue('gender', itemValue)
+                                                    props.setFieldTouched('gender')
+                                                }}
                                             >
                                                 <Picker.Item label="Select" value=""/>
                                                 <Picker.Item label="Male" value="Male" />
@@ -141,7 +144,7 @@ const SignupScreen = props => {
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.gender && props.errors.gender}</Text>
                                     <View style = {{flexDirection: 'row', marginRight: 30,}}>
                                         <Text style = {{fontSize: 20, fontWeight: 'bold',marginTop: 20}}> Date of Birth: </Text>
-                                        <CustButton onPress = {() => props.setFieldValue('showTime', true)}
+                                        <CustButton onPress = {() => {  props.setFieldValue('showTime', true)}}
                                                     style = {{borderRadius: 0, width: 150, backgroundColor: 'ghostwhite', borderWidth: 1, marginTop:10}}>
                                             <Text style = {{color: 'black'}}>{props.values.birthDate.toLocaleDateString()}</Text>
                                         </CustButton>
@@ -154,7 +157,8 @@ const SignupScreen = props => {
                                                                  onChange={(event, selectedDate) => {
                                                                      const currentDate = selectedDate || props.values.birthDate;
                                                                      props.setFieldValue('showTime',Platform.OS !== 'android');
-                                                                     props.setFieldValue('birthDate', currentDate);}} />}
+                                                                     props.setFieldValue('birthDate', currentDate);
+                                                                     props.setFieldTouched('birthDate');}}/>}
 
                                     <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
                                         <GradientButton onPress={() => {
