@@ -4,26 +4,16 @@ import {
     StyleSheet,
     Text,
     TextInput,
-    Button,
     Alert,
     Modal,
     ScrollView,
     Image,
-    TouchableOpacity
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
-import CustButton from "../Components/CustButton";
 import HostGameItem from "../Components/HostGameItem";
-import {LinearGradient} from "expo-linear-gradient";
-
-// const ElevatedComponent = (props) => {
-//     return <View style = {[...style.elevatedComponent, ...props.style]}>
-//
-//     </View>
-// }
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
