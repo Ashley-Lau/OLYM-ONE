@@ -29,7 +29,7 @@ const BottomTabs = () => {
             component={ProfileScreen}
             options={{
                 tabBarLabel: 'PROFILE',
-                tabBarColor: 'rgba(12,78,41,0.85)',
+                tabBarColor: '#026c45',
                 tabBarIcon: ({ color }) => (
                     <AntDesign name="user" color={color} size={26} />
                 ),
