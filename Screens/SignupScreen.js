@@ -117,7 +117,7 @@ const SignupScreen = props => {
                                                      value = {props.values.password}
                                                      onBlur = {props.handleBlur('password')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.password && props.errors.password}</Text>
-                                    <SignUpComponent title = 'Confirm Passwords:'
+                                    <SignUpComponent title = 'Confirm Password:'
                                                      placeholder = "Re-Enter Password"
                                                      secureTextEntry = {true}
                                                      onChangeText = {props.handleChange('confirmPassword')}

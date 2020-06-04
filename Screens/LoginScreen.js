@@ -1,5 +1,5 @@
 import React from 'react';
-import {Keyboard, StyleSheet, View, Image, Button, TouchableWithoutFeedback, ImageBackground, Text} from 'react-native';
+import {Keyboard, StyleSheet, View, Image, TouchableWithoutFeedback, ImageBackground} from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import {Sae} from 'react-native-textinput-effects';
@@ -87,6 +87,7 @@ const style = StyleSheet.create({
     },
     button: {
         width: 100,
+        height: 45,
     }
 })
 
