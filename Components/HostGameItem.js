@@ -121,7 +121,7 @@ const HostGameItem = props => {
                 <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
                     <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                     onPress={props.closeHost}
-                                    colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
+                                    colors={["red", "maroon"]}>
                         <Text>Cancel</Text>
                     </GradientButton>
 

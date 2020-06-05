@@ -27,12 +27,14 @@ const GameItem = props => {
     } else if(props.title[0].toLowerCase() === "floorball"){
         gameColor = "rgb(147,147,0)";
         sportIcon = <MaterialCommunityIcons name="hockey-sticks" size={35} color={gameColor}/>
+    } else if(props.title[0].toLowerCase() === "golf"){
+        gameColor = "rgb(27,99,2)";
+        sportIcon = <MaterialCommunityIcons name="golf" size={35} color={gameColor}/>
     }
 
     const players = <Modal visible={playerDetails} animationType="slide">
         <Background style={{top:0, right:-25, position:"absolute"}}/>
         <View style ={{flex:1}}>
-
             <ScrollView style={{flex:3}}>
                 {props.title[6].map(names => (
                     <View style={{flexDirection:"row", borderBottomWidth:1, justifyContent:"center", alignItems:"center"}}>
@@ -41,6 +43,8 @@ const GameItem = props => {
                     </View>
                 ))}
             </ScrollView>
+
+
             <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
                             onPress={() => openPlayerDetails(false)}
                             colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
@@ -58,8 +62,17 @@ const GameItem = props => {
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
                 <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                    <View style={{width:"100%",
+                        height:"15%",
+                        backgroundColor:"#7b0303",
+                        justifyContent:"center",
+                        alignItems:"center"
+                    }}>
+                        <Text style={{fontSize:40, color:"white"}}>GAME DETAILS</Text>
+                    </View>
 
                     <View style={styles.scrollBox}>
+
                         <ScrollView style={{flex:1, }}>
                             <Text style={{fontSize:35}}>Sport : {props.title[0]}</Text>
                             <Text style={{fontSize:35}}>Location: {props.title[1]}</Text>
@@ -78,7 +91,7 @@ const GameItem = props => {
 
                     <View style={{...Styles.horizontalbuttonContainer}}>
                         <GradientButton onPress={() => openGameDetails(false)}
-                                        colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}
+                                        colors={["red", "maroon"]}
                                         style={{...Styles.buttonSize, marginRight:75}}>
                             <Text>Cancel</Text>
                         </GradientButton>
