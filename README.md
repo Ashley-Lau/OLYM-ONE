@@ -7,3 +7,4 @@
 # signup page done and its sibei swee now
 # did layout of profile screen
 # updated the referee screen, looks the fking same as the game screen, and the referee item is the same as the profile page LOL
+# updated cancel button colour
