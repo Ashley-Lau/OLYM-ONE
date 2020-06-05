@@ -15,7 +15,7 @@ const GameScreen = props => {
         {key: 1, value: ["BasketBall", "Tampines", "Dennis", "02/06/2020 ", "1800 ", "6/10", playerNames]},
         {key: 2, value: ["Badminton", "Pasir Ris", "Ashley", "02/06/2020 ", "1800 ", "6/8", playerNames]},
         {key: 3, value: ["Floorball", "Seng Kang", "Dennis", "02/06/2020 ", "1800 ", "6/20", playerNames]},
-        {key: 4, value: ["Soccer", "Seng Kang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]}
+        {key: 4, value: ["Golf", "Seng Kang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]}
     ]);
 
     const [filteredList, findFilteredList] = useState([...gamesList]);

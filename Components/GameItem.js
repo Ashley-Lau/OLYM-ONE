@@ -33,16 +33,6 @@ const GameItem = props => {
         <Background style={{top:0, right:-25, position:"absolute"}}/>
         <View style ={{flex:1}}>
 
-            {/*<ScrollView style={{flex:3}}>*/}
-            {/*    {props.title[6].map(names => (*/}
-            {/*        <GradientButton key={names}*/}
-            {/*                        style={{width:"100%"}}*/}
-            {/*                        onPress={() => openPlayerDetails(false)}*/}
-            {/*                        colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>*/}
-            {/*            <Text>{names}</Text>*/}
-            {/*        </GradientButton>*/}
-            {/*    ))}*/}
-            {/*</ScrollView>*/}
             <ScrollView style={{flex:3}}>
                 {props.title[6].map(names => (
                     <View style={{flexDirection:"row", borderBottomWidth:1, justifyContent:"center", alignItems:"center"}}>
@@ -51,7 +41,7 @@ const GameItem = props => {
                     </View>
                 ))}
             </ScrollView>
-            <GradientButton style={{width:"100%"}}
+            <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
                             onPress={() => openPlayerDetails(false)}
                             colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
                 <Text>Go Back</Text>
