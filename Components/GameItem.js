@@ -112,7 +112,10 @@ const GameItem = props => {
                               onPress={() => {openGameDetails(true);}}>
                 {sportIcon}
                 <Text style={{fontSize:18, color: gameColor}}>{props.title[0]} </Text>
-                <Text style={{fontSize:18}}> Date: {props.title[3]} Players: {props.title[5]}</Text>
+                <View style={{flexDirection:"column"}}>
+                    <Text style={{fontSize:18}}> Date: {props.title[3]} </Text>
+                    <Text style={{fontSize:18}}> Slots: {props.title[5]} </Text>
+                </View>
             </TouchableOpacity>
         </View>
 
@@ -123,11 +126,9 @@ const GameItem = props => {
 const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
-        // borderRadius:5,
         borderBottomWidth:1,
         width:"100%",
-        height:45,
-        // marginTop:20,
+        height:50,
         padding:5,
         justifyContent:"flex-start",
         alignItems:"center",

@@ -1,5 +1,5 @@
 import React from 'react';
-import {View, StyleSheet, Image} from 'react-native';
+import {View, StyleSheet, Image, Dimensions} from 'react-native';
 
 const Background = props => {
     return (
@@ -13,26 +13,39 @@ const Background = props => {
     );
 }
 
+const winWidth = Dimensions.get("window").width;
+const winHeight = Dimensions.get("window").height;
+const heightRatio = winHeight/ 497;
+const widthRatio = winWidth/ 477;
+
 const styles = StyleSheet.create({
     container: {
         flex:1,
         backgroundColor:'white',
     },
     circle:{
-        width:500,
-        height:500,
-        borderRadius:250,
+        // width:500,
+        // height:500,
+        // borderRadius:250,
+        // backgroundColor:"rgb(239,239,239)",
+        // position:"absolute",
+        // top:-15,
+        // right: -20,
+        width:winWidth * 1.2,
+        height:winWidth * 1.2,
+        borderRadius:winWidth * 0.6,
         backgroundColor:"rgb(239,239,239)",
         position:"absolute",
-        top:-15,
-        right: -20,
+        top:-5 * heightRatio,
+        right: -25 * widthRatio,
+
     },
     image: {
         opacity:0.15,
-        width:360,
+        width:winWidth * 0.9,
         height:360,
-        top: 55,
-        left:80,
+        top: 40 * heightRatio,
+        left:90 * widthRatio,
     }
 })
 
