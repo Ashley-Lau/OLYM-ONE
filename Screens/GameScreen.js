@@ -65,6 +65,7 @@ const GameScreen = props => {
 
             <View style={{justifyContent: "space-around", marginTop:10}}>
                 <FlatList
+                    // key={filteredList.key.toString()}
                     contentContainerStyle={{justifyContent: "space-between"}}
                     keyExtractor={(item) => item.key.toString()}
                     data={filteredList}
