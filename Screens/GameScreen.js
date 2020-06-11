@@ -4,6 +4,7 @@ import {View, TextInput, StyleSheet, FlatList,} from 'react-native';
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
+import BackgroundTrial from "../views/BackgroundTrial";
 
 const GameScreen = props => {
 
@@ -49,12 +50,12 @@ const GameScreen = props => {
         findFilteredList([]);
     }
 
-    return (<Background style = {styles.container}>
+    return (<BackgroundTrial style = {styles.container}>
             <View style={styles.searchSpace}>
                 <View style={styles.searchBar}>
                     <TextInput style={styles.searchInput}
                                placeholder=" Keywords, Location, HostName"
-                               placeholderTextColor="#B9B9B9"
+                               placeholderTextColor="rgba(0,0,0,1.0)"
                                onChangeText={searchHandler}
                                value={searching}
                     />
@@ -72,27 +73,27 @@ const GameScreen = props => {
                     renderItem={({item}) => <GameItem title={item.value}/>}
                 />
             </View>
-        </Background>
+        </BackgroundTrial>
     )
 }
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        // marginTop:36,
         justifyContent: 'flex-start',
         flexDirection:"column"
     },
     searchBar:{
-        // marginTop: 20,
         flexDirection: "row",
         justifyContent:"space-between",
         alignItems:"center",
-        borderWidth:1,
+        // borderWidth:1,
         borderRadius:4,
         width:"98%",
         marginTop:36,
-        marginBottom:10
+        marginBottom:10,
+        borderColor:"white",
+        backgroundColor:"ghostwhite"
     },
     searchInput:{
         width:"85%",

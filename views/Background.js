@@ -24,13 +24,6 @@ const styles = StyleSheet.create({
         backgroundColor:'white',
     },
     circle:{
-        // width:500,
-        // height:500,
-        // borderRadius:250,
-        // backgroundColor:"rgb(239,239,239)",
-        // position:"absolute",
-        // top:-15,
-        // right: -20,
         width:winWidth * 1.2,
         height:winWidth * 1.2,
         borderRadius:winWidth * 0.6,

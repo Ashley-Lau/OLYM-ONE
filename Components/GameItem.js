@@ -16,7 +16,7 @@ const GameItem = props => {
     let gameColor = "rgb(234,38,38)";
     let sportIcon = <MaterialCommunityIcons name="soccer" size={35}/>
     if(props.title[0].toLowerCase() === "soccer"){
-        gameColor = "rgb(11,83,1)";
+        gameColor = "rgb(12,104,0)";
         sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
     } else if(props.title[0].toLowerCase() === "basketball"){
         gameColor = "rgb(165,40,0)";
@@ -48,7 +48,7 @@ const GameItem = props => {
             <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
                             onPress={() => openPlayerDetails(false)}
                             colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
-                <Text>Go Back</Text>
+                <Text style={{fontSize:40}}>Go Back</Text>
             </GradientButton>
         </View>
 
@@ -102,9 +102,6 @@ const GameItem = props => {
                             <Text>Join</Text>
                         </GradientButton>
                     </View>
-
-
-
                 </View>
 
             </Modal>
@@ -113,8 +110,8 @@ const GameItem = props => {
                 {sportIcon}
                 <Text style={{fontSize:18, color: gameColor}}>{props.title[0]} </Text>
                 <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18}}> Date: {props.title[3]} </Text>
-                    <Text style={{fontSize:18}}> Slots: {props.title[5]} </Text>
+                    <Text style={{fontSize:18, color:"ghostwhite"}}> Date: {props.title[3]} </Text>
+                    <Text style={{fontSize:18, color:"ghostwhite"}}> Slots: {props.title[5]} </Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -126,7 +123,8 @@ const GameItem = props => {
 const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
-        borderBottomWidth:1,
+        borderBottomWidth:0.7,
+        borderColor:"white",
         width:"100%",
         height:50,
         padding:5,
