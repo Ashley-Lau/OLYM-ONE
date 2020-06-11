@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Text,TouchableOpacity, StyleSheet, Modal, View, ScrollView} from 'react-native';
+import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import GradientButton from "./GradientButton";
@@ -35,9 +35,17 @@ const GameItem = props => {
     const players = <Modal visible={playerDetails} animationType="slide">
         <Background style={{top:0, right:-25, position:"absolute"}}/>
         <View style ={{flex:1}}>
+            <View style ={{flex:0.1, justifyContent:"center", alignItems:"center", backgroundColor:"maroon"}}>
+                <Text style={{fontSize:45, color:"white"}}>PLAYERS</Text>
+            </View>
             <ScrollView style={{flex:3}}>
                 {props.title[6].map(names => (
-                    <View style={{flexDirection:"row", borderBottomWidth:1, justifyContent:"center", alignItems:"center"}}>
+                    <View style={{flexDirection:"row",
+                        borderBottomWidth:1,
+                        justifyContent:"space-between",
+                        alignItems:"center",
+                        height:"20%"
+                    }}>
                         <MaterialCommunityIcons name="account" size={35}/>
                         <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
                     </View>
@@ -62,25 +70,18 @@ const GameItem = props => {
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
                 <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                    <View style={{width:"100%",
-                        height:"15%",
-                        backgroundColor:"#7b0303",
-                        justifyContent:"center",
-                        alignItems:"center"
-                    }}>
-                        <Text style={{fontSize:40, color:"white"}}>GAME DETAILS</Text>
-                    </View>
 
                     <View style={styles.scrollBox}>
 
-                        <ScrollView style={{flex:1, }}>
-                            <Text style={{fontSize:35}}>Sport : {props.title[0]}</Text>
-                            <Text style={{fontSize:35}}>Location: {props.title[1]}</Text>
-                            <Text style={{fontSize:35}}>Host : {props.title[2]}</Text>
-                            <Text style={{fontSize:35}}>Date  : {props.title[3]}</Text>
-                            <Text style={{fontSize:35}}>Time : {props.title[4]}</Text>
-                            <Text style={{fontSize:35}}>Price : {props.title[5]}</Text>
-                            <Text style={{fontSize:35}}>Availability: {props.title[4]}</Text>
+                        <ScrollView style={{flex:1}}>
+                            <Image source={require("../assets/hougang_sports_hall.jpg")} style={{flexWrap:"wrap"}}/>
+                            <Text style={{fontSize:35}}>{props.title[0]}</Text>
+                            <Text style={{fontSize:20}}>Location: {props.title[1]}</Text>
+                            <Text style={{fontSize:20}}>Host : {props.title[2]}</Text>
+                            <Text style={{fontSize:20}}>Date  : {props.title[3]}</Text>
+                            <Text style={{fontSize:20}}>Time : {props.title[4]}</Text>
+                            <Text style={{fontSize:20}}>Price : {props.title[5]}</Text>
+                            <Text style={{fontSize:20}}>Availability: {props.title[4]}</Text>
                             <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                             onPress={() => openPlayerDetails(true)}
                                             colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
@@ -107,8 +108,11 @@ const GameItem = props => {
             </Modal>
             <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
-                {sportIcon}
-                <Text style={{fontSize:18, color: gameColor}}>{props.title[0]} </Text>
+                <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                    {sportIcon}
+                    <Text style={{fontSize:18, color: gameColor, marginLeft:10}}>{props.title[0]} </Text>
+                </View>
+
                 <View style={{flexDirection:"column"}}>
                     <Text style={{fontSize:18, color:"ghostwhite"}}> Date: {props.title[3]} </Text>
                     <Text style={{fontSize:18, color:"ghostwhite"}}> Slots: {props.title[5]} </Text>
@@ -126,17 +130,17 @@ const styles = StyleSheet.create({
         borderBottomWidth:0.7,
         borderColor:"white",
         width:"100%",
-        height:50,
+        height:65,
         padding:5,
-        justifyContent:"flex-start",
+        justifyContent:"space-between",
         alignItems:"center",
         backgroundColor:"transparent",
     },
     scrollBox:{
         flex:1,
         borderWidth: 1,
-        margin:10,
-        borderRadius:10,
+        borderBottomEndRadius:10,
+        borderBottomStartRadius:10,
         backgroundColor: "rgba(200,200,200,0.2)",
         width:"100%"
     },
