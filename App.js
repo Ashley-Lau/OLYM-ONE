@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View,Image} from 'react-native';
+import {View} from 'react-native';
 
 import LoginScreen from "./Screens/LoginScreen";
 import BottomTabs from "./Components/BottomTabs";
