@@ -13,7 +13,7 @@ const LoginScreen = (props) => {
     const navigation = useNavigation()
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <ImageBackground source = {require('../assets/sunset_running_newstyle.png')} style={Styles.container}>
+            <ImageBackground source = {require("../assets/sunset_running_newstyle.png")} style={Styles.container}>
                 <Image style={Styles.logo} source={require("../assets/OLYMONE.png")}/>
                 <View style = {style.inputContainer}>
                     <Sae label= {'Username:'}
