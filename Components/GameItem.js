@@ -13,22 +13,22 @@ const GameItem = props => {
     const [gameDetails, openGameDetails] = useState(false);
 
     //setting the textcolour based on the game
-    let gameColor = "rgb(234,38,38)";
+    let gameColor = "rgb(255,255,255)";
     let sportIcon = <MaterialCommunityIcons name="soccer" size={35}/>
     if(props.title[0].toLowerCase() === "soccer"){
-        gameColor = "rgb(12,104,0)";
+        // gameColor = "rgb(12,104,0)";
         sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
     } else if(props.title[0].toLowerCase() === "basketball"){
-        gameColor = "rgb(165,40,0)";
+    //     gameColor = "rgb(165,40,0)";
         sportIcon = <MaterialCommunityIcons name="basketball" size={35} color={gameColor}/>
     } else if(props.title[0].toLowerCase() === "badminton"){
-        gameColor = "rgb(137,137,137)";
+        // gameColor = "rgb(137,137,137)";
         sportIcon = <MaterialCommunityIcons name="badminton" size={35} color={gameColor} />
     } else if(props.title[0].toLowerCase() === "floorball"){
-        gameColor = "rgb(147,147,0)";
+        // gameColor = "rgb(147,147,0)";
         sportIcon = <MaterialCommunityIcons name="hockey-sticks" size={35} color={gameColor}/>
     } else if(props.title[0].toLowerCase() === "golf"){
-        gameColor = "rgb(27,99,2)";
+        // gameColor = "rgb(27,99,2)";
         sportIcon = <MaterialCommunityIcons name="golf" size={35} color={gameColor}/>
     }
 
@@ -40,7 +40,7 @@ const GameItem = props => {
             </View>
             <ScrollView style={{flex:3}}>
                 {props.title[6].map(names => (
-                    <View style={{flexDirection:"row",
+                    <View key={props.title[6]} style={{flexDirection:"row",
                         borderBottomWidth:1,
                         justifyContent:"space-between",
                         alignItems:"center",

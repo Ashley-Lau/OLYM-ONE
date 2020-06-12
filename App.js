@@ -9,14 +9,17 @@ import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import AnimatedSplash from "react-native-animated-splash-screen";
 
+
 const Stack = createStackNavigator();
 
-export default function App(){
-  const [data, setData]  = useState({
+export default function App() {
+  const [data, setData] = useState({
     loading: false
   })
 
-  useEffect(() => {setTimeout(() => setData({loading: true}), 1000)})
+  useEffect(() => {
+    setTimeout(() => setData({loading: true}), 1000)
+  })
 
   return (
       <AnimatedSplash
@@ -27,7 +30,7 @@ export default function App(){
           logoHeight={300}
           logoWidht={300}
       >
-        <View style={{flex:1}}>
+        <View style={{flex: 1}}>
           <NavigationContainer>
             <Stack.Navigator initialRouteName="LoginScreen" headerMode={false}>
               <Stack.Screen name='LoginScreen' component={LoginScreen}/>
