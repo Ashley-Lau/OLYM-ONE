@@ -68,7 +68,7 @@ const LoginScreen = (props) => {
                                             colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
                                 Login
                             </GradientButton>
-                            <GradientButton onPress={() => navigation.navigate('ProfileStack')}
+                            <GradientButton onPress={() => navigation.navigate('SignupScreen')}
                                             style={style.button}
                                             colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
                                 Sign Up

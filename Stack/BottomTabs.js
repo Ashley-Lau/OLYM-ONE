@@ -32,7 +32,7 @@ const ChatStack = () => {
 
 const BottomTabs = () => {
     return <Tab.Navigator
-        initialRouteName= "ProfileScreen"
+        initialRouteName= "ProfileStack"
         activeColor="#fff"
         inactiveColor="#888888"
         barStyle={{
