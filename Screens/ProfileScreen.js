@@ -75,6 +75,13 @@ const ProfileScreen = props => {
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                             <View style = {style.titleBackground}>
                                 <Text style ={style.titleText}>
+                                    Referee applications
+                                </Text>
+                            </View>
+                        </View>
+                        <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
+                            <View style = {style.titleBackground}>
+                                <Text style ={style.titleText}>
                                     Upcoming Refereeing Games
                                 </Text>
                             </View>
