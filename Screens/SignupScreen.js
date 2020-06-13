@@ -21,26 +21,57 @@ import * as yup from 'yup';
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton";
-import SignUpComponent from "../Components/SignUpComponent";
+import firebase from "../firebase"
+
+const SignUpComponent = props => {
+    return <View style = {{marginTop: 10, width: 300}}>
+                <Text style = {{fontSize: 15, fontWeight: 'bold'}}>{props.title}</Text>
+                <TextInput  style = {{marginTop: 0, fontSize:20, borderBottomWidth: 2, borderBottomColor: 'black' }}
+                            placeholderTextColor = '#708090' {...props}/>
+            </View>
+}
 
 const reviewSchema = yup.object({
     firstName: yup.string().label('First Name').required(),
     lastName: yup.string().label('Last Name').required(),
-    email: yup.string().label('Email').email('Email is not valid').required(),
     username: yup.string().label('Username').required().min(6).max(16),
     password: yup.string().label('Password').required().min(6).max(16),
     confirmPassword: yup.string().label('Confirm Password').required()
         .oneOf([yup.ref('password'), null], 'Password must match'),
     gender: yup.string().test('gender selector', 'Please select a gender', (val) => val === 'Male' || val === 'Female'),
     birthDate: yup.date().test('birthdate test', 'Birth date cannot be later than current date!', (val) => val < Date.now())
-})
 
+})
 const SignupScreen = props => {
-    const navigation = useNavigation()
+
+    const navigation = useNavigation();
+
+    const handleCreateUser = () => firebase.firestore()
+        .collection('users')
+        .add({
+            firstName: data.firstName,
+            lastName: data.lastName,
+            username: data.username,
+            gender: data.gender,
+            password: data.password,
+            birthDate: data.birthDate,
+            showTime: false,
+        })
+        .then(() => setData({
+            firstName: '',
+            lastName: '',
+            username: '',
+            password: '',
+            gender: '',
+            birthDate: new Date(),
+            showTime: false,
+            // signUpSuccess: true
+        })).catch(err => console.error(err))
+
+
     const [data, setData] = useState({
         firstName: '',
         lastName: '',
-        email: '',
         username: '',
         password: '',
         gender: '',
@@ -63,6 +94,7 @@ const SignupScreen = props => {
     }
 
     const registeredPress = () => {
+        handleCreateUser().then(r => {});
         registeredAlert();
         navigation.goBack();
     }
@@ -77,7 +109,7 @@ const SignupScreen = props => {
                     </Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Formik
-                            initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: data.birthDate, showTime: data.showTime}}
+                            initialValues = {{ firstName: '', lastName: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: data.birthDate, showTime: data.showTime}}
                             validationSchema = {reviewSchema}
                             onSubmit={(values, actions) => {
                                 handleData(values)
@@ -99,12 +131,6 @@ const SignupScreen = props => {
                                                      value = {props.values.lastName}
                                                      onBlur = {props.handleBlur('lastName')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.lastName && props.errors.lastName}</Text>
-                                    <SignUpComponent title = 'Email:'
-                                                     placeholder = "Email"
-                                                     onChangeText = {props.handleChange('email')}
-                                                     value = {props.values.email}
-                                                     onBlur = {props.handleBlur('email')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.email && props.errors.email}</Text>
                                     <SignUpComponent title = 'Username:'
                                                      placeholder = "6 - 16 characters"
                                                      onChangeText = {props.handleChange('username')}
