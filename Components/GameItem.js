@@ -40,7 +40,8 @@ const GameItem = props => {
             </View>
             <ScrollView style={{flex:3}}>
                 {props.title[6].map(names => (
-                    <View key={props.title[6]} style={{flexDirection:"row",
+                    <View key={names} style={{
+                        flexDirection:"row",
                         borderBottomWidth:1,
                         justifyContent:"space-between",
                         alignItems:"center",
