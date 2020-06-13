@@ -41,7 +41,8 @@ const ProfileScreen = props => {
                                 <HostGameItem visible={hostGame} closeHost={() =>setHostGame(false)}/>
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
-                                                textStyle = {{fontSize: 15}}>
+                                                textStyle = {{fontSize: 15}}
+                                                onPress = {() => navigation.push('UpdateDetailScreen')}>
                                     Update details
                                 </GradientButton>
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}

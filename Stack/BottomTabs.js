@@ -1,5 +1,7 @@
 import React from 'react';
+
 import {createMaterialBottomTabNavigator} from "@react-navigation/material-bottom-tabs";
+import {createStackNavigator} from "@react-navigation/stack";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -8,8 +10,17 @@ import ChatScreen from "../../OLYM-ONE/Screens/ChatScreen";
 import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
 import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
+import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
 
 const Tab = createMaterialBottomTabNavigator();
+const Stack = createStackNavigator();
+
+const ProfileStack = () => {
+    return  <Stack.Navigator initialRouteName={ProfileScreen} headerMode={false}>
+                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>
+                <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
+            </Stack.Navigator>
+}
 
 const BottomTabs = () => {
     return <Tab.Navigator
@@ -26,7 +37,7 @@ const BottomTabs = () => {
     >
         <Tab.Screen
             name="ProfileScreen"
-            component={ProfileScreen}
+            children={ProfileStack}
             options={{
                 tabBarLabel: 'PROFILE',
                 tabBarColor: '#026c45',
