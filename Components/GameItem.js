@@ -52,10 +52,9 @@ const GameItem = props => {
                 ))}
             </ScrollView>
 
-
             <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
                             onPress={() => openPlayerDetails(false)}
-                            colors={["rgba(155,113,170,0.84)", "rgba(229,29,62,0.6)"]}>
+                            colors={["red", "maroon"]}>
                 <Text style={{fontSize:40}}>Go Back</Text>
             </GradientButton>
         </View>
@@ -82,11 +81,12 @@ const GameItem = props => {
                             <Text style={{fontSize:20}}>Time : {props.title[4]}</Text>
                             <Text style={{fontSize:20}}>Price : {props.title[5]}</Text>
                             <Text style={{fontSize:20}}>Availability: {props.title[4]}</Text>
-                            <GradientButton style={{...Styles.buttonSize, marginRight:75}}
+                            <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => openPlayerDetails(true)}
-                                            colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
+                                            colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                                 <Text>View Players</Text>
                             </GradientButton>
+                            <View style = {{marginBottom: 10}} />
                         </ScrollView>
                     </View>
 
