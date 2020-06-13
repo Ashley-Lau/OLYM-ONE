@@ -102,6 +102,13 @@ const style = StyleSheet.create({
         backgroundColor: 'white',
         marginTop: 40,
         borderRadius:10,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
     },
     titleBackground: {
         backgroundColor: 'green',

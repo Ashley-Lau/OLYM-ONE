@@ -68,9 +68,8 @@ const BottomTabs = () => {
                 ),
             }}
         />
-        </Tab.Navigator>
+    </Tab.Navigator>
 }
 
 
 export default BottomTabs;
-

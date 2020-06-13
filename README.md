@@ -10,3 +10,4 @@
 # updated cancel button colour
 # updated the dimensions of the background
 # added splash page for initial start up of the app
+# refined the app

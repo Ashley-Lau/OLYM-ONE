@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View} from 'react-native';
 
 import LoginScreen from "./Screens/LoginScreen";
-import BottomTabs from "./Components/BottomTabs";
+import BottomTabs from "./Stack/BottomTabs";
 import SignupScreen from "./Screens/SignupScreen";
 
 import {NavigationContainer} from "@react-navigation/native";
@@ -34,7 +34,7 @@ export default function App() {
           <NavigationContainer>
             <Stack.Navigator initialRouteName="LoginScreen" headerMode={false}>
               <Stack.Screen name='LoginScreen' component={LoginScreen}/>
-              <Stack.Screen name='BottomTabs' component={BottomTabs}/>
+              <Stack.Screen name='BottomTabs' children={BottomTabs}/>
               <Stack.Screen name='SignupScreen' component={SignupScreen}/>
             </Stack.Navigator>
           </NavigationContainer>
