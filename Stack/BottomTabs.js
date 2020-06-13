@@ -11,6 +11,7 @@ import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
 import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
 import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
+import ChatDetailScreen from "../Screens/ChatDetailScreen";
 
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -19,6 +20,13 @@ const ProfileStack = () => {
     return  <Stack.Navigator initialRouteName={ProfileScreen} headerMode={false}>
                 <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
+            </Stack.Navigator>
+}
+
+const ChatStack = () => {
+    return  <Stack.Navigator initialRouteName={ChatDetailScreen} headerMode={false}>
+                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen}/>
+                <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
             </Stack.Navigator>
 }
 
@@ -36,7 +44,7 @@ const BottomTabs = () => {
         }}
     >
         <Tab.Screen
-            name="ProfileScreen"
+            name="ProfileStack"
             children={ProfileStack}
             options={{
                 tabBarLabel: 'PROFILE',
@@ -69,11 +77,11 @@ const BottomTabs = () => {
             }}
         />
         <Tab.Screen
-            name="ChatScreen"
-            component={ChatScreen}
+            name="ChatStack"
+            children={ChatStack}
             options={{
                 tabBarLabel: 'CHATS',
-                tabBarColour: 'rgba(71,51,121,0.76)',
+                tabBarColour: 'rgb(71,51,121)',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name="chat" color={color} size={26} />
                 ),
