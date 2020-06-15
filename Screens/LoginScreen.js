@@ -53,7 +53,7 @@ const LoginScreen = (props) => {
                 <ImageBackground source = {backSunset} style={Styles.container}>
                     <Image style={Styles.logo} source={logo}/>
                     <View style = {style.inputContainer}>
-                        <Sae label= {'Username:'}
+                        <Sae label= {'Email:'}
                              iconClass = {FontAwesome5}
                              iconName = {'user'}
                              iconColor = {'black'}
