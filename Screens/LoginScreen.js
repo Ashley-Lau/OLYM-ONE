@@ -10,21 +10,41 @@ import {Asset} from "expo-asset";
 
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
+import firebaseDb from "../firebaseDb";
 
 const LoginScreen = (props) => {
     const navigation = useNavigation()
     const [loaded, setLoaded] = useState(false);
+    const [userName, setUserName] = useState('');
+    const [password, setPassword] = useState('');
 
 
     const backSunset = require("../assets/sunset_running_newstyle.png");
     const logo = require("../assets/OLYMONE.png")
 
-    // images dont load until the animation is being loaded
-    // animation takes longer to load
     const getImages = () => {
         return Asset.loadAsync(backSunset);
-        // setTimeout(()=>{}, 1000);
     }
+
+    const signInUser = () => {
+        firebaseDb.auth()
+            .signInWithEmailAndPassword(userName,password)
+            .then(() =>{ setUserName('');
+                         setPassword('');
+                         navigation.push('BottomTabs')})
+            .catch(error => {
+                if (error.code === 'auth/email-already-in-use'){
+                    console.log("nimama is alrea in use");
+                }
+
+                if (error.code === 'auth/invalid-email'){
+                    console.log("nimama not valid");
+                }
+
+                console.error(error);
+            })
+    }
+
 
 
     if(loaded){
@@ -44,6 +64,8 @@ const LoginScreen = (props) => {
                              inputPadding = {16}
                              labelStyle = {style.labelStyle}
                              inputStyle = {style.textStyle}
+                             onChangeText={user => setUserName(user)}
+                             value = {userName}
 
                         />
                         <Sae label= {'Password:'}
@@ -59,11 +81,13 @@ const LoginScreen = (props) => {
                              labelStyle = {style.labelStyle}
                              inputStyle = {style.textStyle}
                              secureTextEntry={true}
+                             onChangeText={pw => setPassword(pw)}
+                             value = {password}
 
 
                         />
                         <View style={Styles.buttonContainer}>
-                            <GradientButton onPress={() => navigation.push('BottomTabs')}
+                            <GradientButton onPress={() => signInUser()}
                                             style={style.button}
                                             colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
                                 Login
@@ -83,8 +107,6 @@ const LoginScreen = (props) => {
             startAsync={getImages}
             onFinish={() => setLoaded(true)}
         />
-
-
         )
     }
 
