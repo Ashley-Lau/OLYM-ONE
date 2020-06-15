@@ -20,7 +20,8 @@ import * as yup from 'yup';
 
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
-import CustButton from "../Components/CustButton";
+import CustButton from "../Components/CustButton"
+
 import firebaseDb from "../firebaseDb"
 
 const SignUpComponent = props => {

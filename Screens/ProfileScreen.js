@@ -12,6 +12,7 @@ import {useNavigation} from "@react-navigation/native";
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
+import firebaseDb from "../firebaseDb";
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
@@ -30,6 +31,13 @@ const ProfileScreen = props => {
             {cancelable: false}
         )
     }
+
+    const logout = () => {
+        firebaseDb.auth()
+            .signOut()
+            .then(() => confirmLogOut());
+    }
+
     return <Background>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>
@@ -47,7 +55,7 @@ const ProfileScreen = props => {
                                 </GradientButton>
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {["red", "maroon"]}
-                                                onPress = {confirmLogOut}
+                                                onPress = {logout}
                                                 textStyle = {{fontSize: 15}}>
                                     Log Out
                                 </GradientButton>

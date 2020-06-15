@@ -3,7 +3,7 @@ import {View} from 'react-native';
 
 import LoginScreen from "./Screens/LoginScreen";
 import BottomTabs from "./Stack/BottomTabs";
-import SignupScreen from "./Screens/SignupScreen";
+import SignupScreen from "./Screens/SignupScreen"
 
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
