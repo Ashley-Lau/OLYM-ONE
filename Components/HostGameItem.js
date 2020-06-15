@@ -6,6 +6,7 @@ import Background from "../views/Background";
 import Styles from "../styling/Styles";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import CustButton from "./CustButton";
+import firebaseDb from "../firebaseDb";
 
 
 const HostGameItem = props => {
@@ -15,6 +16,13 @@ const HostGameItem = props => {
 
     const[sport, setSport] = useState("");
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+
+    const [price, setPrice] = useState("");
+    const changePrice = (some) => {
+        setPrice(some);
+    }
+
+
 
     const[date, setDate] = useState(new Date());
     const [showTime, setShowTime] = useState(false)
@@ -39,6 +47,16 @@ const HostGameItem = props => {
     const showDatePicker = () =>{
         setShowDate(true);
     }
+
+    const handleCreateGame = () => firebaseDb.firestore()
+        .collection('game_details')
+        .add({
+            price: price,
+            sport: "soccer"
+
+        })
+        .then(() => setPrice(''))
+        .catch(err => console.error(err))
 
     return(
         <Modal visible={props.visible}>
@@ -104,7 +122,11 @@ const HostGameItem = props => {
 
                 <View style={styles.selectionItem}>
                     <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
-                    <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+                    <TextInput keyboardType={"number-pad"}
+                               style={{...styles.dropDown, fontSize:16}}
+                               onChangeText={changePrice}
+                               value={price}
+                    />
                 </View>
 
                 <View style={styles.selectionItem}
@@ -125,7 +147,9 @@ const HostGameItem = props => {
                         <Text>Cancel</Text>
                     </GradientButton>
 
-                    <GradientButton onPress={props.closeHost}
+                    <GradientButton onPress={() => {props.closeHost();
+                                                    console.log(price);
+                                                    handleCreateGame().then(r => {})}}
                                     colors={['#30cfd0','#330867']}
                                     style={{...Styles.buttonSize}}>
                         <Text>Host</Text>
