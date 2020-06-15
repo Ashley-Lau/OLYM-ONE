@@ -21,7 +21,7 @@ import * as yup from 'yup';
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton";
-import firebase from "../firebase"
+import firebaseDb from "../firebaseDb"
 
 const SignUpComponent = props => {
     return <View style = {{marginTop: 10, width: 300}}>
@@ -46,7 +46,7 @@ const SignupScreen = props => {
 
     const navigation = useNavigation();
 
-    const handleCreateUser = () => firebase.firestore()
+    const handleCreateUser = () => firebaseDb.firestore()
         .collection('users')
         .add({
             firstName: data.firstName,
@@ -70,7 +70,7 @@ const SignupScreen = props => {
 
 
     const [data, setData] = useState({
-        firstName: '',
+        firstName: 'nimama',
         lastName: '',
         username: '',
         password: '',
@@ -79,11 +79,33 @@ const SignupScreen = props => {
         showTime: false,
     })
 
+
     const handleData = values => {
-        setData({
-            ...data,
-            values,
-        })
+        console.log({...values})
+
+        // setData(prevState => {
+        //         return {
+        //             ... prevState,
+        //             ...values
+        //     }
+        // }
+        // )
+        // // setData(values);
+        //
+        // console.log(data);
+        firebaseDb.firestore()
+            .collection("users")
+            .add({...values})
+            .then(() => setData({
+                firstName: '',
+                lastName: '',
+                username: '',
+                password: '',
+                gender: '',
+                birthDate: new Date(),
+                showTime: false,
+                // signUpSuccess: true
+            })).catch(err => console.error(err))
     }
 
     const registeredAlert = () => {
@@ -94,7 +116,8 @@ const SignupScreen = props => {
     }
 
     const registeredPress = () => {
-        handleCreateUser().then(r => {});
+        // console.log(data);
+        // handleCreateUser().then(r => {});
         registeredAlert();
         navigation.goBack();
     }
