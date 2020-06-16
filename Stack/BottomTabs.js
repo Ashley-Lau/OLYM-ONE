@@ -33,7 +33,6 @@ const ChatStack = () => {
 }
 
 const BottomTabs = () => {
-
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         activeColor="#fff"

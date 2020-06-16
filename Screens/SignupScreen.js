@@ -35,6 +35,7 @@ const SignUpComponent = props => {
 const reviewSchema = yup.object({
     firstName: yup.string().label('First Name').required(),
     lastName: yup.string().label('Last Name').required(),
+    email: yup.string().label('Email').email('Email is not valid').required(),
     username: yup.string().label('Username').required().min(6).max(16),
     password: yup.string().label('Password').required().min(6).max(16),
     confirmPassword: yup.string().label('Confirm Password').required()
@@ -47,66 +48,38 @@ const SignupScreen = props => {
 
     const navigation = useNavigation();
 
-    const handleCreateUser = () => firebaseDb.firestore()
-        .collection('users')
-        .add({
-            firstName: data.firstName,
-            lastName: data.lastName,
-            username: data.username,
-            gender: data.gender,
-            password: data.password,
-            birthDate: data.birthDate,
-            showTime: false,
+    const handleCreateUser = values => {
+        firebaseDb.auth().createUserWithEmailAndPassword(values.email, values.password)
+            .then((response) => {
+            const uid = response.user.uid
+            const data = {
+                id: uid,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                username: values.username.toLowerCase(),
+                email: values.email,
+                gender: values.gender,
+                password: values.password,
+                birthDate: values.birthDate,
+            };
+            const usersRef = firebaseDb.firestore().collection('users')
+            usersRef
+                .doc(uid)
+                .set(data)
+                .then(() => {
+                    Alert.alert(
+                        "Account Registered!",
+                        "Login Now!"
+                    )
+                    navigation.navigate('LoginScreen')
+                })
+                .catch((error) => {
+                    alert(error)
+                });
         })
-        .then(() => setData({
-            firstName: '',
-            lastName: '',
-            username: '',
-            password: '',
-            gender: '',
-            birthDate: new Date(),
-            showTime: false,
-            // signUpSuccess: true
-        })).catch(err => console.error(err))
-
-
-    const [data, setData] = useState({
-        firstName: 'nimama',
-        lastName: '',
-        username: '',
-        password: '',
-        gender: '',
-        birthDate: new Date(),
-        showTime: false,
-    })
-
-
-    const handleData = values => {
-        console.log({...values})
-
-        // setData(prevState => {
-        //         return {
-        //             ... prevState,
-        //             ...values
-        //     }
-        // }
-        // )
-        // // setData(values);
-        //
-        // console.log(data);
-        firebaseDb.firestore()
-            .collection("users")
-            .add({...values})
-            .then(() => setData({
-                firstName: '',
-                lastName: '',
-                username: '',
-                password: '',
-                gender: '',
-                birthDate: new Date(),
-                showTime: false,
-                // signUpSuccess: true
-            })).catch(err => console.error(err))
+            .catch((error) => {
+                alert(error)
+            });
     }
 
     const registeredAlert = () => {
@@ -117,8 +90,6 @@ const SignupScreen = props => {
     }
 
     const registeredPress = () => {
-        // console.log(data);
-        // handleCreateUser().then(r => {});
         registeredAlert();
         navigation.goBack();
     }
@@ -133,12 +104,11 @@ const SignupScreen = props => {
                     </Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Formik
-                            initialValues = {{ firstName: '', lastName: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: data.birthDate, showTime: data.showTime}}
+                            initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: new Date(), showTime: false}}
                             validationSchema = {reviewSchema}
                             onSubmit={(values, actions) => {
-                                handleData(values)
+                                handleCreateUser(values)
                                 actions.resetForm()
-                                registeredPress()
                             }}
                         >
                             {(props) => (
@@ -155,6 +125,12 @@ const SignupScreen = props => {
                                                      value = {props.values.lastName}
                                                      onBlur = {props.handleBlur('lastName')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.lastName && props.errors.lastName}</Text>
+                                    <SignUpComponent title = 'Email:'
+                                                     placeholder = "Email"
+                                                     onChangeText = {props.handleChange('email')}
+                                                     value = {props.values.email}
+                                                     onBlur = {props.handleBlur('email')}/>
+                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.email && props.errors.email}</Text>
                                     <SignUpComponent title = 'Username:'
                                                      placeholder = "6 - 16 characters"
                                                      onChangeText = {props.handleChange('username')}
