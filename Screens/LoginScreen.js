@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Keyboard, StyleSheet, View, Image, TouchableWithoutFeedback, ImageBackground, Text} from 'react-native';
+import {Keyboard, StyleSheet, View, Image, TouchableWithoutFeedback, ImageBackground, Text, Alert} from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import {Sae} from 'react-native-textinput-effects';
@@ -11,37 +11,57 @@ import {Asset} from "expo-asset";
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
+import {get} from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const LoginScreen = (props) => {
     const navigation = useNavigation()
     const [loaded, setLoaded] = useState(false);
-    const [userName, setUserName] = useState('');
+    const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
 
     const backSunset = require("../assets/sunset_running_newstyle.png");
     const logo = require("../assets/OLYMONE.png")
 
+    const alertMessage = () => Alert.alert(
+        "Invalid Username or Password!",
+    )
     const getImages = () => {
         return Asset.loadAsync(backSunset);
     }
 
     const signInUser = () => {
         firebaseDb.auth()
-            .signInWithEmailAndPassword(userName,password)
-            .then(() =>{ setUserName('');
-                         setPassword('');
-                         navigation.push('BottomTabs')})
+            .signInWithEmailAndPassword(email, password)
+            .then((response) => {
+                const uid = response.user.uid
+                const usersRef = firebaseDb.firestore().collection('users')
+                usersRef
+                    .doc(uid)
+                    .get()
+                    .then(firestoreDocument => {
+                        setEmail('')
+                        setPassword('')
+                        if (!firestoreDocument.exists) {
+                            alert("User does not exist anymore.")
+                            return;
+                        }
+                        const user = firestoreDocument.data()
+                        navigation.navigate('BottomTabs', {
+                            screen: 'ProfileStack',
+                            params: {
+                                screen: 'ProfileScreen',
+                                params: {
+                                    user: user},
+                            },
+                        })
+                    })
+                    .catch(error => {
+                        alert(error)
+                    });
+            })
             .catch(error => {
-                if (error.code === 'auth/email-already-in-use'){
-                    console.log("nimama is alrea in use");
-                }
-
-                if (error.code === 'auth/invalid-email'){
-                    console.log("nimama not valid");
-                }
-
-                console.error(error);
+                alertMessage()
             })
     }
 
@@ -64,8 +84,8 @@ const LoginScreen = (props) => {
                              inputPadding = {16}
                              labelStyle = {style.labelStyle}
                              inputStyle = {style.textStyle}
-                             onChangeText={user => setUserName(user)}
-                             value = {userName}
+                             onChangeText={email => setEmail(email)}
+                             value = {email}
 
                         />
                         <Sae label= {'Password:'}
@@ -83,11 +103,9 @@ const LoginScreen = (props) => {
                              secureTextEntry={true}
                              onChangeText={pw => setPassword(pw)}
                              value = {password}
-
-
                         />
                         <View style={Styles.buttonContainer}>
-                            <GradientButton onPress={() => signInUser()}
+                            <GradientButton onPress={signInUser}
                                             style={style.button}
                                             colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
                                 Login

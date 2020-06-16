@@ -61,9 +61,9 @@ const ProfileScreen = props => {
                                 </GradientButton>
                             </View>
                             <View style = {{alignItems: 'center'}}>
-                                <Text style = {{fontSize: 20}}> Name: Dennis Lim nimama </Text>
-                                <Text style = {{fontSize: 20}}> UserName: NIMAMA DE </Text>
-                                <Text style = {{fontSize: 20}}> DOB: 29/ 10/ 1998 </Text>
+                                <Text style = {{fontSize: 20}}> Name: {props.route.params.user.firstName} {props.route.params.user.lastName}</Text>
+                                <Text style = {{fontSize: 20}}> UserName: {props.route.params.user.username} </Text>
+                                <Text style = {{fontSize: 20}}> DOB: </Text>
                                 <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
                             </View>
                             <HostGameItem visible={hostGame} closeHost={() =>setHostGame(false)}/>
