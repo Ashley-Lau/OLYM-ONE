@@ -1,10 +1,15 @@
-import React, {useState} from 'react';
-import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text} from 'react-native';
+import firebase from 'firebase';
 
-import Background from "../views/Background";
+// import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
 import BackgroundTrial from "../views/BackgroundTrial";
+import firebaseDb from "../firebaseDb";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+
 
 const GameScreen = props => {
 
@@ -50,6 +55,32 @@ const GameScreen = props => {
         filterList()
     }
 
+    const [game, setGame] = useState ([{key:"0",
+                                                  value: {sport:"floorball"}}]);
+    const gamesRef = firebaseDb.firestore().collection('game_details');
+    const allGames = () => {
+        gamesRef.get()
+            . then(snapshot => {
+                const someGame =[];
+                let num = 0;
+                snapshot.forEach( doc => {
+                        someGame.push({key: num, value: doc.data()});
+                        num = num + 1;
+                    }
+                )
+                setGame(someGame)
+                console.log(game)
+
+            })
+
+            .catch(err => {
+                console.log("error", err);
+            });
+    }
+    // need to be able to use useEffects, so that the items load without having to press on the search button
+    // useEffect (async() => {await allGames() })
+
+
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <BackgroundTrial style = {styles.container}>
                 <View style={styles.searchSpace}>
@@ -60,18 +91,53 @@ const GameScreen = props => {
                                    onChangeText={searchHandler}
                                    value={searching}
                         />
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); Keyboard.dismiss();}}/>
+                        {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {allGames();Keyboard.dismiss();}}/>
                     </View>
                 </View>
 
                 <View style={{justifyContent: "space-around", marginTop:10}}>
-                    <FlatList
-                        // key={filteredList.key.toString()}
-                        contentContainerStyle={{justifyContent: "space-between"}}
-                        keyExtractor={(item) => item.key.toString()}
-                        data={filteredList}
-                        renderItem={({item}) => <GameItem title={item.value}/>}
-                    />
+                    {
+                        game.length > 0 &&
+                        <FlatList
+                            // key = {game.key.toString()}
+                            contentContainerStyle= {{justifyContent:"space-between"}}
+                            keyExtractor={(item) => item.key.toString()}
+                            data = {game}
+                            renderItem= {({item}) => <GameItem title={item.value}/>}
+                        >
+
+                        </FlatList>
+                    }
+                    {/*{game.map(item => (*/}
+                    {/*    <View style={{*/}
+                    {/*        flexDirection:"row",*/}
+                    {/*        borderBottomWidth:1,*/}
+                    {/*        justifyContent:"space-between",*/}
+                    {/*        alignItems:"center",*/}
+                    {/*        height:"20%"*/}
+                    {/*    }}>*/}
+                    {/*        <MaterialCommunityIcons name="account" size={35}/>*/}
+                    {/*        <TouchableWithoutFeedback key ={item}*/}
+                    {/*                                  style={{fontSize:35, marginLeft:35}}*/}
+                    {/*                                  onPress={() => console.log(item.value.date.toDate().toString())}*/}
+                    {/*        >*/}
+                    {/*            <Text>{item.value.sport}</Text>*/}
+                    {/*        </TouchableWithoutFeedback>*/}
+                    {/*    </View>*/}
+                    {/*))*/}
+                    {/*}*/}
+
+
+
+                {/*    <FlatList*/}
+                {/*        // key={filteredList.key.toString()}*/}
+                {/*        contentContainerStyle={{justifyContent: "space-between"}}*/}
+                {/*        keyExtractor={(item) => item.key.toString()}*/}
+                {/*        data={filteredList}*/}
+                {/*// props.title should return only one object*/}
+                {/*        renderItem={({item}) => <GameItem title={item.value}/>}*/}
+                {/*    />*/}
                 </View>
             </BackgroundTrial>
         </TouchableWithoutFeedback>
