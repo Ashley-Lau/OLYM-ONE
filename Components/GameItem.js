@@ -1,6 +1,7 @@
-import React,{useState} from 'react';
+import React,{useState, useEffect} from 'react';
 import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import firebase from 'firebase';
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
@@ -12,60 +13,72 @@ const GameItem = props => {
     const [playerDetails, openPlayerDetails] = useState(false);
     const [gameDetails, openGameDetails] = useState(false);
 
+
     //setting the textcolour based on the game
     let gameColor = "rgb(255,255,255)";
     let sportIcon = <MaterialCommunityIcons name="soccer" size={35}/>
-    if(props.title[0].toLowerCase() === "soccer"){
+    if(props.title.sport.toLowerCase() === "soccer"){
         // gameColor = "rgb(12,104,0)";
         sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
-    } else if(props.title[0].toLowerCase() === "basketball"){
+    } else if(props.title.sport.toLowerCase() === "basketball"){
     //     gameColor = "rgb(165,40,0)";
         sportIcon = <MaterialCommunityIcons name="basketball" size={35} color={gameColor}/>
-    } else if(props.title[0].toLowerCase() === "badminton"){
+    } else if(props.title.sport.toLowerCase() === "badminton"){
         // gameColor = "rgb(137,137,137)";
         sportIcon = <MaterialCommunityIcons name="badminton" size={35} color={gameColor} />
-    } else if(props.title[0].toLowerCase() === "floorball"){
+    } else if(props.title.sport.toLowerCase() === "floorball"){
         // gameColor = "rgb(147,147,0)";
         sportIcon = <MaterialCommunityIcons name="hockey-sticks" size={35} color={gameColor}/>
-    } else if(props.title[0].toLowerCase() === "golf"){
+    } else if(props.title.sport.toLowerCase() === "golf"){
         // gameColor = "rgb(27,99,2)";
         sportIcon = <MaterialCommunityIcons name="golf" size={35} color={gameColor}/>
     }
 
-    const players = <Modal visible={playerDetails} animationType="slide">
-        <Background style={{top:0, right:-25, position:"absolute"}}/>
-        <View style ={{flex:1}}>
-            <View style ={{flex:0.1, justifyContent:"center", alignItems:"center", backgroundColor:"maroon"}}>
-                <Text style={{fontSize:45, color:"white"}}>PLAYERS</Text>
-            </View>
-            <ScrollView style={{flex:3}}>
-                {props.title[6].map(names => (
-                    <View key={names} style={{
-                        flexDirection:"row",
-                        borderBottomWidth:1,
-                        justifyContent:"space-between",
-                        alignItems:"center",
-                        height:"20%"
-                    }}>
-                        <MaterialCommunityIcons name="account" size={35}/>
-                        <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
-                    </View>
-                ))}
-            </ScrollView>
+    let gameDate = props.title.date
+    if(props.title.date){
+        gameDate = props.title.date.toDate().toString().slice(4,15);
+    }
 
-            <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
-                            onPress={() => openPlayerDetails(false)}
-                            colors={["red", "maroon"]}>
-                <Text style={{fontSize:40}}>Go Back</Text>
-            </GradientButton>
-        </View>
+    let gameTime = props.title.date
+    if(props.title.date){
+        gameTime = props.title.date.toDate().toString().slice(16,21);
+    }
 
-    </Modal>
+    // const players = <Modal visible={playerDetails} animationType="slide">
+    //     <Background style={{top:0, right:-25, position:"absolute"}}/>
+    //     <View style ={{flex:1}}>
+    //         <View style ={{flex:0.1, justifyContent:"center", alignItems:"center", backgroundColor:"maroon"}}>
+    //             <Text style={{fontSize:45, color:"white"}}>PLAYERS</Text>
+    //         </View>
+    //         <ScrollView style={{flex:3}}>
+    //             {props.title[6].map(names => (
+    //                 <View key={names} style={{
+    //                     flexDirection:"row",
+    //                     borderBottomWidth:1,
+    //                     justifyContent:"space-between",
+    //                     alignItems:"center",
+    //                     height:"20%"
+    //                 }}>
+    //                     <MaterialCommunityIcons name="account" size={35}/>
+    //                     <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
+    //                 </View>
+    //             ))}
+    //         </ScrollView>
+    //
+    //         <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
+    //                         onPress={() => openPlayerDetails(false)}
+    //                         colors={["red", "maroon"]}>
+    //             <Text style={{fontSize:40}}>Go Back</Text>
+    //         </GradientButton>
+    //     </View>
+    //
+    // </Modal>
 
 
     return (
         <View>
-            {players}
+            {/*to add additional details in firestore for the players modal*/}
+            {/*{players}*/}
             <Modal visible = {gameDetails} animationType="slide">
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
@@ -75,13 +88,13 @@ const GameItem = props => {
 
                         <ScrollView style={{flex:1}}>
                             <Image source={require("../assets/hougang_sports_hall.jpg")} style={{flexWrap:"wrap"}}/>
-                            <Text style={{fontSize:35}}>{props.title[0]}</Text>
-                            <Text style={{fontSize:20}}>Location: {props.title[1]}</Text>
-                            <Text style={{fontSize:20}}>Host : {props.title[2]}</Text>
-                            <Text style={{fontSize:20}}>Date  : {props.title[3]}</Text>
-                            <Text style={{fontSize:20}}>Time : {props.title[4]}</Text>
-                            <Text style={{fontSize:20}}>Price : {props.title[5]}</Text>
-                            <Text style={{fontSize:20}}>Availability: {props.title[4]}</Text>
+                            <Text style={{fontSize:35}}>{props.title.sport.toUpperCase()}</Text>
+                            <Text style={{fontSize:20}}>Location: {props.title.location}</Text>
+                            <Text style={{fontSize:20}}>Host : {props.title.host}</Text>
+                            <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
+                            <Text style={{fontSize:20}}>Time : {gameTime}</Text>
+                            <Text style={{fontSize:20}}>Price : {props.title.price}</Text>
+                            <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => openPlayerDetails(true)}
                                             colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
@@ -111,12 +124,12 @@ const GameItem = props => {
                               onPress={() => {openGameDetails(true);}}>
                 <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
                     {sportIcon}
-                    <Text style={{fontSize:18, color: gameColor, marginLeft:10}}>{props.title[0]} </Text>
+                    <Text style={{fontSize:18, color: gameColor, marginLeft:10}}>{props.title.sport} </Text>
                 </View>
 
                 <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"ghostwhite"}}> Date: {props.title[3]} </Text>
-                    <Text style={{fontSize:18, color:"ghostwhite"}}> Slots: {props.title[5]} </Text>
+                    <Text style={{fontSize:18, color:"ghostwhite"}}> Date: {gameDate} </Text>
+                    <Text style={{fontSize:18, color:"ghostwhite"}}> Slots Left: {props.title.availability} </Text>
                 </View>
             </TouchableOpacity>
         </View>
