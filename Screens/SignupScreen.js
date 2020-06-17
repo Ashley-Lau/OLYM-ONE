@@ -82,15 +82,8 @@ const SignupScreen = props => {
             });
     }
 
-    const registeredAlert = () => {
-        Alert.alert(
-            "Account Registered!",
-            "Fuck You!"
-        )
-    }
 
-    const registeredPress = () => {
-        registeredAlert();
+    const cancelledPress = () => {
         navigation.goBack();
     }
 
@@ -189,7 +182,7 @@ const SignupScreen = props => {
 
                                     <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
                                         <GradientButton onPress={() => {
-                                            registeredPress()
+                                            cancelledPress()
                                             props.handleReset()}}
                                                         style={style.button}
                                                         colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
