@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text} from 'react-native';
+import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert} from 'react-native';
 import firebase from 'firebase';
 
 // import Background from "../views/Background";
@@ -8,10 +8,10 @@ import GameItem from "../Components/GameItem";
 import BackgroundTrial from "../views/BackgroundTrial";
 import firebaseDb from "../firebaseDb";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-// import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
-const GameScreen = props => {
+
+const GameScreen = (props) => {
 
     const playerNames =["Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan"]
 
@@ -55,8 +55,8 @@ const GameScreen = props => {
         filterList()
     }
 
-    const [game, setGame] = useState ([{key:"0",
-                                                  value: {sport:"floorball"}}]);
+    const [game, setGame] = useState ([]);
+
     const gamesRef = firebaseDb.firestore().collection('game_details');
     const allGames = () => {
         gamesRef.get()
@@ -69,16 +69,17 @@ const GameScreen = props => {
                     }
                 )
                 setGame(someGame)
-                console.log(game)
+                console.log("nimamama")
 
             })
 
             .catch(err => {
-                console.log("error", err);
+                Alert.alert("error", err);
             });
     }
-    // need to be able to use useEffects, so that the items load without having to press on the search button
-    // useEffect (async() => {await allGames() })
+    // keeps the function running, so the items keep rerendering, will pose a problem as the page will
+    // keep rerendering itself, might make it difficult for users
+    useEffect (() => {setTimeout(() =>{allGames(); setTimeout(()=>{},100000)}, 1000)})
 
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
@@ -92,7 +93,7 @@ const GameScreen = props => {
                                    value={searching}
                         />
                         {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {allGames();Keyboard.dismiss();}}/>
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {console.log(game);Keyboard.dismiss();}}/>
                     </View>
                 </View>
 
@@ -109,24 +110,7 @@ const GameScreen = props => {
 
                         </FlatList>
                     }
-                    {/*{game.map(item => (*/}
-                    {/*    <View style={{*/}
-                    {/*        flexDirection:"row",*/}
-                    {/*        borderBottomWidth:1,*/}
-                    {/*        justifyContent:"space-between",*/}
-                    {/*        alignItems:"center",*/}
-                    {/*        height:"20%"*/}
-                    {/*    }}>*/}
-                    {/*        <MaterialCommunityIcons name="account" size={35}/>*/}
-                    {/*        <TouchableWithoutFeedback key ={item}*/}
-                    {/*                                  style={{fontSize:35, marginLeft:35}}*/}
-                    {/*                                  onPress={() => console.log(item.value.date.toDate().toString())}*/}
-                    {/*        >*/}
-                    {/*            <Text>{item.value.sport}</Text>*/}
-                    {/*        </TouchableWithoutFeedback>*/}
-                    {/*    </View>*/}
-                    {/*))*/}
-                    {/*}*/}
+
 
 
 
