@@ -12,6 +12,7 @@ import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
 import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
 import ChatDetailScreen from "../Screens/ChatDetailScreen";
+import firebaseDb from "../firebaseDb";
 
 
 
@@ -33,6 +34,9 @@ const ChatStack = () => {
 }
 
 const BottomTabs = () => {
+
+
+
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         activeColor="#fff"

@@ -19,7 +19,9 @@ export default function App() {
   })
 
   useEffect(() => {
-    setTimeout(() => setData({loading: true}), 1000)
+    setTimeout(() => {
+      setData({loading: true});
+    }, 1000)
   })
 
   return (
