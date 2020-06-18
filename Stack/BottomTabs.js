@@ -18,9 +18,9 @@ import ChatDetailScreen from "../Screens/ChatDetailScreen";
 const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 
-const ProfileStack = () => {
-    return  <Stack.Navigator initialRouteName={ProfileScreen} headerMode={false}>
-                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>
+const ProfileStack = (props) => {
+    return  <Stack.Navigator headerMode={false}>
+                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
             </Stack.Navigator>
 }
@@ -32,7 +32,7 @@ const ChatStack = () => {
             </Stack.Navigator>
 }
 
-const BottomTabs = () => {
+const BottomTabs = (props) => {
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         activeColor="#fff"
@@ -55,7 +55,9 @@ const BottomTabs = () => {
                     <AntDesign name="user" color={color} size={26} />
                 ),
             }}
-        />
+        >
+            {prop => <ProfileStack {...prop}  extraData = {props.extraData}/>}
+        </Tab.Screen>
         <Tab.Screen
             name="GameScreen"
             component={GameScreen}

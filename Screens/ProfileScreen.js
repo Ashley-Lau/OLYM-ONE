@@ -16,26 +16,54 @@ import firebaseDb from "../firebaseDb";
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
+
+    const user = props.route.params.user
+    const [data, setData] = useState({
+        firstName:  user.firstName,
+        lastName: user.lastName,
+        username: user.username,
+        password: user.password,
+        birthDate: user.birthDate,
+        email: user.email,
+        id: user.id,
+
+    })
     const[hostGame, setHostGame] = useState(false);
 
-    const confirmLogOut = () => {
+    const handleData = values => {
+        if(values.password !== '') {
+            firebaseDb.auth().currentUser.updatePassword(values.password).then()
+                .catch(error => error)
+        }
+        firebaseDb.firestore().collection('users')
+            .doc(data.id).update({
+            firstName: values.firstName,
+            lastName: values.lastName,
+            username: values.username,
+            password: values.password !== '' ? values.password : data.password,
+        }).then(() => {
+            setData({
+                ...data,
+                firstName: values.firstName,
+                lastName: values.lastName,
+                username: values.username,
+                password: values.password !== '' ? values.password : data.password,
+            })
+        }).catch(error => error)
+    }
+
+    const logout = () => {
         Alert.alert("Confirm Log Out",
             "Do you want to log out?",
             [{
                 text: "Yes",
-                onPress: () => navigation.navigate('LoginScreen'),
+                onPress: () => firebaseDb.auth().signOut(),
                 style: 'cancel'
             },
                 {text:"Cancel", onPress: () => {},  style:'cancel'}
             ],
             {cancelable: false}
         )
-    }
-
-    const logout = () => {
-        firebaseDb.auth()
-            .signOut()
-            .then(() => confirmLogOut());
     }
 
     return <Background>
@@ -50,7 +78,7 @@ const ProfileScreen = props => {
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
                                                 textStyle = {{fontSize: 15}}
-                                                onPress = {() => navigation.push('UpdateDetailScreen')}>
+                                                onPress = {() => navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData})}>
                                     Update details
                                 </GradientButton>
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
@@ -61,11 +89,13 @@ const ProfileScreen = props => {
                                 </GradientButton>
                             </View>
                             <View style = {{alignItems: 'center'}}>
-                                <Text style = {{fontSize: 20}}> Name: {props.route.params.user.firstName} {props.route.params.user.lastName}</Text>
-                                <Text style = {{fontSize: 20}}> UserName: {props.route.params.user.username} </Text>
-                                <Text style = {{fontSize: 20}}> DOB: </Text>
+                                <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
+                                <Text style = {{fontSize: 20}}> UserName: {data.username} </Text>
+                                <Text style = {{fontSize: 20}}> DOB: {data.password}</Text>
                                 <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
                             </View>
+                            {/*{console.log('profile1')}*/}
+                            {/*{console.log(props)}*/}
                             <HostGameItem visible={hostGame} closeHost={() =>setHostGame(false)}/>
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 20, marginLeft: 10}}
                                             colors = {['#1bb479','#026c45']}

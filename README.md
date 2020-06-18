@@ -11,3 +11,4 @@
 # updated the dimensions of the background
 # added splash page for initial start up of the app
 # refined the app
+# Update details screen and profile screen connected to fb
