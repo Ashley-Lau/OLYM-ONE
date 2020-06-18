@@ -69,7 +69,6 @@ const GameScreen = (props) => {
                     }
                 )
                 setGame(someGame)
-                console.log("nimamama")
 
             })
 
