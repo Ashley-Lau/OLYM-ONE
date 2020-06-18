@@ -94,9 +94,11 @@ const ProfileScreen = props => {
                                 <Text style = {{fontSize: 20}}> DOB: {data.password}</Text>
                                 <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
                             </View>
-                            {/*{console.log('profile1')}*/}
-                            {/*{console.log(props)}*/}
-                            <HostGameItem visible={hostGame} closeHost={() =>setHostGame(false)}/>
+
+                            <HostGameItem visible={hostGame}
+                                          closeHost={() =>setHostGame(false)}
+                                          username ={props.route.params.user.username}
+                            />
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 20, marginLeft: 10}}
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => setHostGame(true)}
