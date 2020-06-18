@@ -23,9 +23,14 @@ const LoginScreen = (props) => {
     const backSunset = require("../assets/sunset_running_newstyle.png");
     const logo = require("../assets/OLYMONE.png")
 
-    const alertMessage = () => Alert.alert(
-        "Invalid Username or Password!",
+    const alertMessage = () => Alert.alert("Invalid Email or Password",
+        "Please enter a valid email address and password.",
+        [
+            {text:"Confirm", onPress: () => {},  style:'cancel'}
+        ],
+        {cancelable: false}
     )
+
     const getImages = () => {
         return Asset.loadAsync(backSunset);
     }
@@ -40,21 +45,10 @@ const LoginScreen = (props) => {
                     .doc(uid)
                     .get()
                     .then(firestoreDocument => {
-                        setEmail('')
-                        setPassword('')
                         if (!firestoreDocument.exists) {
                             alert("User does not exist anymore.")
                             return;
                         }
-                        const user = firestoreDocument.data()
-                        navigation.navigate('BottomTabs', {
-                            screen: 'ProfileStack',
-                            params: {
-                                screen: 'ProfileScreen',
-                                params: {
-                                    user: user},
-                            },
-                        })
                     })
                     .catch(error => {
                         alert(error)

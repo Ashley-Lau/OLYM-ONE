@@ -35,7 +35,16 @@ const SignUpComponent = props => {
 const reviewSchema = yup.object({
     firstName: yup.string().label('First Name').required(),
     lastName: yup.string().label('Last Name').required(),
-    email: yup.string().label('Email').email('Email is not valid').required(),
+    email: yup.string().label('Email').email('Email is not valid').required()
+        .test('check if email is in use', 'Email has been registered',
+                val => {
+                    const emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
+                    let isValidEmail = emailRegex.test(val);
+                    if(isValidEmail) {
+                        return firebaseDb.auth().fetchSignInMethodsForEmail(val).then(array => array.length === 0).catch((error) => {})
+                    }
+                    return true
+                }),
     username: yup.string().label('Username').required().min(6).max(16),
     password: yup.string().label('Password').required().min(6).max(16),
     confirmPassword: yup.string().label('Confirm Password').required()
@@ -69,9 +78,8 @@ const SignupScreen = props => {
                 .then(() => {
                     Alert.alert(
                         "Account Registered!",
-                        "Login Now!"
+                        "Use the app now!"
                     )
-                    navigation.navigate('LoginScreen')
                 })
                 .catch((error) => {
                     alert(error)

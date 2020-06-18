@@ -8,6 +8,8 @@ import SignupScreen from "./Screens/SignupScreen"
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import AnimatedSplash from "react-native-animated-splash-screen";
+import firebaseDb from "./firebaseDb";
+
 import {set} from "react-native-reanimated";
 
 
@@ -15,14 +17,28 @@ const Stack = createStackNavigator();
 
 export default function App() {
   const [data, setData] = useState({
-    loading: false
+    loading: false,
+    user: null
   })
 
   useEffect(() => {
-    setTimeout(() => {
-      setData({loading: true});
-    }, 1000)
-  })
+
+    const usersRef = firebaseDb.firestore().collection('users');
+    firebaseDb.auth().onAuthStateChanged(user => {
+      if (user) {
+        usersRef
+            .doc(user.uid)
+            .get()
+            .then((document) => {
+              const userData = document.data()
+              setData({user: userData, loading: true})
+            })
+            .catch((error) => error);
+      } else {
+        setData({loading: true})
+      }
+    });
+  }, [])
 
   return (
       <AnimatedSplash
@@ -35,14 +51,21 @@ export default function App() {
       >
         <View style={{flex: 1}}>
           <NavigationContainer>
-            <Stack.Navigator initialRouteName="LoginScreen" headerMode={false}>
-              <Stack.Screen name='LoginScreen' component={LoginScreen}/>
-              <Stack.Screen name='BottomTabs' children={BottomTabs}/>
-              <Stack.Screen name='SignupScreen' component={SignupScreen}/>
+            <Stack.Navigator headerMode={false}>
+              {data.user ? (
+                  <Stack.Screen name='BottomTabs'>
+                    {props => <BottomTabs {...props} extraData={data.user} />}
+                  </Stack.Screen>
+                ) : (
+                  <>
+                  <Stack.Screen name='LoginScreen' component={LoginScreen}/>
+                  <Stack.Screen name='SignupScreen' component={SignupScreen}/>
+                  </>
+                )
+              }
             </Stack.Navigator>
           </NavigationContainer>
         </View>
-
       </AnimatedSplash>
   )
 }

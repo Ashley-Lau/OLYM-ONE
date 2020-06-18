@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, Picker, Keyboard, TouchableWithoutFeedback, Alert, ScrollView} from 'react-native'
+import {View, Text, StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback, Alert,} from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -13,36 +13,36 @@ import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton";
 import SignUpComponent from "../Components/SignUpComponent";
 
-const reviewSchema = yup.object({
+const reviewSchema = (password) => yup.object({
     firstName: yup.string().label('First Name').required(),
     lastName: yup.string().label('Last Name').required(),
-    email: yup.string().label('Email').email('Email is not valid').required(),
     username: yup.string().label('Username').required().min(6).max(16),
-    password: yup.string().label('Password').required().min(6).max(16),
-    confirmPassword: yup.string().label('Confirm Password').required()
-        .oneOf([yup.ref('password'), null], 'Password must match'),
+    newPassword: yup.string().label('Password').min(6).max(16),
+    confirmPassword: yup.string().label('Confirm Password')
+        .oneOf([yup.ref('newPassword'), null], 'New Passwords must match'),
+    currentPassword: yup.string().label('Current Password')
+        .when('confirmPassword', {
+            is: val=> val !== undefined ,
+            then: yup.string().required().test("Checker", 'Current Password does not match', val => val === password),
+            otherwise: yup.string().notRequired(),
+        }),
 })
 
 const UpdateDetailScreen = (props) => {
     const navigation = useNavigation()
+    // const [data, setData] = useState({
+    //     ...props.route.params.data
+    // })
 
-    const [data, setData] = useState({
-        firstName: '',
-        lastName: '',
-        email: '',
-        username: '',
-        password: '',
-    })
-
-    const handleData = values => {
-        setData({
-            ...data,
-            values,
-        })
-    }
+    // const handleData = values => {
+    //     setData({
+    //         ...data,
+    //         values,
+    //     })
+    // }
 
     const registeredPress = () => {
-        navigation.goBack();
+        navigation.navigate('ProfileScreen');
     }
 
     return (
@@ -54,10 +54,20 @@ const UpdateDetailScreen = (props) => {
                 <View style = {{marginTop: 20, marginHorizontal: 52}}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Formik
-                            initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: ''}}
-                            validationSchema = {reviewSchema}
+                            initialValues = {{  firstName: props.route.params.data.firstName,
+                                                lastName: props.route.params.data.lastName,
+                                                username: props.route.params.data.username,
+                                                currentPassword: '',
+                                                newPassword: '',
+                                                confirmPassword: '',}}
+                            validationSchema = {reviewSchema(props.route.params.data.password)}
                             onSubmit={(values, actions) => {
-                                handleData(values)
+                                props.route.params.handler({
+                                    firstName: values.firstName,
+                                    lastName: values.lastName,
+                                    username: values.username,
+                                    password: values.confirmPassword,
+                                })
                                 actions.resetForm()
                                 registeredPress()
                             }}
@@ -76,33 +86,34 @@ const UpdateDetailScreen = (props) => {
                                                      value = {props.values.lastName}
                                                      onBlur = {props.handleBlur('lastName')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.lastName && props.errors.lastName}</Text>
-                                    <SignUpComponent title = 'Email:'
-                                                     placeholder = "Email"
-                                                     onChangeText = {props.handleChange('email')}
-                                                     value = {props.values.email}
-                                                     onBlur = {props.handleBlur('email')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.email && props.errors.email}</Text>
                                     <SignUpComponent title = 'Username:'
                                                      placeholder = "6 - 16 characters"
                                                      onChangeText = {props.handleChange('username')}
                                                      value = {props.values.username}
                                                      onBlur = {props.handleBlur('username')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.username && props.errors.username}</Text>
-                                    <SignUpComponent title = 'Password:'
-                                                     placeholder = "Password"
+                                    <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section to update your password(Optional).</Text>
+                                    <SignUpComponent title = 'Current Password:'
+                                                     placeholder = "Current Password"
                                                      secureTextEntry = {true}
-                                                     onChangeText = {props.handleChange('password')}
-                                                     value = {props.values.password}
+                                                     onChangeText = {props.handleChange('currentPassword')}
+                                                     value = {props.values.currentPassword}
                                                      onBlur = {props.handleBlur('password')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.password && props.errors.password}</Text>
-                                    <SignUpComponent title = 'Confirm Password:'
+                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.currentPassword && props.errors.currentPassword}</Text>
+                                    <SignUpComponent title = 'New Password:'
+                                                     placeholder = "New Password"
+                                                     secureTextEntry = {true}
+                                                     onChangeText = {props.handleChange('newPassword')}
+                                                     value = {props.values.newPassword}
+                                                     onBlur = {props.handleBlur('password')}/>
+                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.newPassword && props.errors.newPassword}</Text>
+                                    <SignUpComponent title = 'Confirm New Password:'
                                                      placeholder = "Re-Enter Password"
                                                      secureTextEntry = {true}
                                                      onChangeText = {props.handleChange('confirmPassword')}
                                                      value = {props.values.confirmPassword}
                                                      onBlur = {props.handleBlur('confirmPassword')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
-
                                     <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 100}}>
                                         <GradientButton onPress={() => { registeredPress(); props.handleReset();}}
                                                         style={style.button}
@@ -112,7 +123,7 @@ const UpdateDetailScreen = (props) => {
                                         <GradientButton onPress={props.handleSubmit}
                                                         style={style.button}
                                                         colors={['#1bb479','#026c45']}>
-                                            Register
+                                            Update
                                         </GradientButton>
                                     </View>
                                 </View>
