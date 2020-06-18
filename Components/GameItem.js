@@ -32,6 +32,8 @@ const GameItem = props => {
     } else if(props.title.sport.toLowerCase() === "golf"){
         // gameColor = "rgb(27,99,2)";
         sportIcon = <MaterialCommunityIcons name="golf" size={35} color={gameColor}/>
+    } else {
+        sportIcon = <MaterialCommunityIcons name ="soccer-field" size={35} color={gameColor}/>
     }
 
     let gameDate = props.title.date

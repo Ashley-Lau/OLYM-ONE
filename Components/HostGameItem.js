@@ -12,16 +12,23 @@ import firebaseDb from "../firebaseDb";
 const HostGameItem = props => {
 
     const [location, setLocation] = useState("")
-    const sgLocations = ["Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
+    const sgLocations = ["Select","Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
 
     const[sport, setSport] = useState("");
-    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+    const sports = ["Select", "Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
 
-    const [price, setPrice] = useState("");
+    const [price, setPrice] = useState(0.00);
     const changePrice = (some) => {
-        setPrice(some);
+        setPrice(parseFloat(some));
     }
-
+    const [slots, setSlots] = useState( 0);
+    const changeSlots = (num) => {
+        setSlots(parseInt(num));
+    }
+    const [notes, setNotes] = useState("");
+    const changeNotes = (value) => {
+        setNotes(value);
+    }
 
 
     const[date, setDate] = useState(new Date());
@@ -52,10 +59,23 @@ const HostGameItem = props => {
         .collection('game_details')
         .add({
             price: price,
-            sport: "soccer"
+            sport: sport,
+            location: location,
+            notes: notes,
+            availability : slots,
+            date: date,
+            host: props.username
+
 
         })
-        .then(() => setPrice(''))
+        .then(() => {
+            setPrice(0);
+            setLocation("");
+            setDate(new Date());
+            setNotes("");
+            setSlots(0);
+            setSport("")
+        })
         .catch(err => console.error(err))
 
     return(
@@ -63,7 +83,7 @@ const HostGameItem = props => {
             <Background style={{position:"absolute", right:0, top:0}}/>
 
             <View style={styles.header}>
-                <Text style={{fontSize:40, color:"white"}}>GAME DETAILS</Text>
+                <Text style={{fontSize:22, color:"white"}}>GAME DETAILS</Text>
             </View>
 
             <ScrollView>
@@ -132,12 +152,19 @@ const HostGameItem = props => {
                 <View style={styles.selectionItem}
                 >
                     <Text style={{fontSize:15, marginLeft:8}}>PLAYERS :</Text>
-                    <TextInput keyboardType={"number-pad"} style={{...styles.dropDown, fontSize:16}}/>
+                    <TextInput keyboardType={"number-pad"}
+                               style={{...styles.dropDown, fontSize:16}}
+                               onChangeText = {changeSlots}
+                               value = {slots}
+                    />
                 </View>
 
                 <View style={styles.selectionItem}>
                     <Text style={{fontSize:15, marginLeft:8}}>NOTES      :</Text>
-                    <TextInput keyboardType={"number-pad"} style={{...styles.dropDownNotes, fontSize:16}}/>
+                    <TextInput  style={{...styles.dropDownNotes, fontSize:16}}
+                                onChangeText = {changeNotes}
+                                value = {notes}
+                    />
                 </View>
 
                 <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
@@ -148,7 +175,6 @@ const HostGameItem = props => {
                     </GradientButton>
 
                     <GradientButton onPress={() => {props.closeHost();
-                                                    console.log(price);
                                                     handleCreateGame().then(r => {})}}
                                     colors={['#30cfd0','#330867']}
                                     style={{...Styles.buttonSize}}>
@@ -166,9 +192,10 @@ const styles = StyleSheet.create({
     header:{
         width:"100%",
         height:"10%",
-        backgroundColor:"rgba(71,51,121,0.85)",
-        justifyContent:"center",
-        alignItems:"center"
+        backgroundColor:"rgba(78,121,255,0.85)",
+        justifyContent:"flex-end",
+        alignItems:"flex-start",
+        elevation: 5
     },
     dropDown: {
         flexDirection:"row",
@@ -185,12 +212,13 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         marginTop: 5,
         justifyContent: 'center',
-        alignItems:"center",
+        alignItems:'center',
         backgroundColor: 'ghostwhite',
         height: 200,
         borderWidth: 1,
         borderRadius:4,
-        width: "97%",
+        width: '97%',
+        textAlignVertical: 'top'
     },
     selectionItem:{
         flexDirection:"column",
