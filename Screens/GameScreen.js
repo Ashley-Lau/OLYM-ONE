@@ -57,6 +57,22 @@ const GameScreen = (props) => {
 
     const [game, setGame] = useState ([]);
 
+    const updateGames = () => {
+        gamesRef.get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    const d = new Date();
+                    const now = doc.data().date.toMillis()
+                    if(now < d.getTime()){
+                        doc.ref.delete().then(()=>{});
+                    }
+                })
+            })
+            .catch(err => {
+                Alert.alert("Error", err)
+            })
+    }
+
     const gamesRef = firebaseDb.firestore().collection('game_details');
     const allGames = () => {
         gamesRef.get()
@@ -92,7 +108,7 @@ const GameScreen = (props) => {
                                    value={searching}
                         />
                         {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {console.log(game);Keyboard.dismiss();}}/>
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {updateGames();Keyboard.dismiss();}}/>
                     </View>
                 </View>
 
