@@ -12,6 +12,7 @@ import {useNavigation} from "@react-navigation/native";
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
+import HostGameItem2 from "../Components/HostGameItem2";
 import firebaseDb from "../firebaseDb";
 
 const ProfileScreen = props => {
@@ -74,7 +75,10 @@ const ProfileScreen = props => {
                                 <View style = {style.photoFrame}>
                                     <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {require('../assets/OLYMONE.png')}/>
                                 </View>
-                                <HostGameItem visible={hostGame} closeHost={() =>setHostGame(false)}/>
+                                <HostGameItem visible={hostGame}
+                                              closeHost={() =>setHostGame(false)}
+                                              userName ={data.username}
+                                />
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
                                                 textStyle = {{fontSize: 15}}
@@ -95,7 +99,7 @@ const ProfileScreen = props => {
                                 <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
                             </View>
 
-                            <HostGameItem visible={hostGame}
+                            <HostGameItem2 visible={hostGame}
                                           closeHost={() =>setHostGame(false)}
                                           username ={props.route.params.user.username}
                             />
