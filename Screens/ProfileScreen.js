@@ -12,7 +12,6 @@ import {useNavigation} from "@react-navigation/native";
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
-import HostGameItem2 from "../Components/HostGameItem2";
 import firebaseDb from "../firebaseDb";
 
 const ProfileScreen = props => {
@@ -99,10 +98,6 @@ const ProfileScreen = props => {
                                 <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
                             </View>
 
-                            <HostGameItem2 visible={hostGame}
-                                          closeHost={() =>setHostGame(false)}
-                                          username ={props.route.params.user.username}
-                            />
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 20, marginLeft: 10}}
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => setHostGame(true)}
