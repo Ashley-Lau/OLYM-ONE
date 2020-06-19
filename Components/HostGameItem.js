@@ -41,7 +41,7 @@ const HostGameItem = props => {
                 notes: values.notes,
                 availability : values.players,
                 date: values.date,
-                host: props.username,
+                host: props.userName,
                 price: values.price,
             })
             .then(() => {closeHost()})
@@ -68,9 +68,7 @@ const HostGameItem = props => {
                     showTime: false}}
                         validationSchema={reviewSchema}
                         onSubmit={(values, actions) => {
-                            console.log("nimama")
                             handleCreateGame(values);
-                            console.log("knn")
                             actions.resetForm();
                         }
                         }
