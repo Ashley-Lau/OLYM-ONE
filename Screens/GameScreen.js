@@ -97,18 +97,16 @@ const GameScreen = (props) => {
                 </View>
 
                 <View style={{justifyContent: "space-around", marginTop:10}}>
-                    {
-                        game.length > 0 &&
-                        <FlatList
-                            // key = {game.key.toString()}
-                            contentContainerStyle= {{justifyContent:"space-between"}}
-                            keyExtractor={(item) => item.key.toString()}
-                            data = {game}
-                            renderItem= {({item}) => <GameItem title={item.value}/>}
-                        >
+                    <FlatList
+                        // key = {game.key.toString()}
+                        contentContainerStyle= {{justifyContent:"space-between"}}
+                        keyExtractor={(item) => item.key.toString()}
+                        data = {game}
+                        renderItem= {({item}) => <GameItem title={item.value}/>}
+                    >
 
-                        </FlatList>
-                    }
+                    </FlatList>
+
 
 
 

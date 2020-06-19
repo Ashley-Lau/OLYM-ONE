@@ -5,78 +5,49 @@ import GradientButton from "./GradientButton";
 import Background from "../views/Background";
 import Styles from "../styling/Styles";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import {Formik} from 'formik';
+import * as yup from 'yup'
 import CustButton from "./CustButton";
 import firebaseDb from "../firebaseDb";
 
 
+
+const reviewSchema = yup.object({
+    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location !== 'Select'),
+    sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport !== 'Select'),
+    date: yup.date().label('Date'),
+    time: yup.date().label('Time'),
+    price: yup.number().label('Price').required("Please state the price to pay per player!"),
+    players: yup.number().label('Players').required().max(100),
+    notes: yup.string(),
+
+})
+
+
 const HostGameItem = props => {
 
-    const [location, setLocation] = useState("")
     const sgLocations = ["Select","Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
-
-    const[sport, setSport] = useState("");
     const sports = ["Select", "Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
 
-    const [price, setPrice] = useState(0.00);
-    const changePrice = (some) => {
-        setPrice(parseFloat(some));
+    const closeHost = () => {props.closeHost()}
+
+
+    const handleCreateGame = values => {
+        firebaseDb.firestore()
+            .collection('game_details')
+            .add({
+                sport: values.sport,
+                location: values.location,
+                notes: values.notes,
+                availability : values.players,
+                date: values.date,
+                host: props.username,
+                price: values.price,
+            })
+            .then(() => {closeHost()})
+            .catch(err => console.error(err))
+
     }
-    const [slots, setSlots] = useState( 0);
-    const changeSlots = (num) => {
-        setSlots(parseInt(num));
-    }
-    const [notes, setNotes] = useState("");
-    const changeNotes = (value) => {
-        setNotes(value);
-    }
-
-
-    const[date, setDate] = useState(new Date());
-    const [showTime, setShowTime] = useState(false)
-    const [showDate, setShowDate] = useState(false)
-
-    const onChangeTime = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowTime(Platform.OS !== 'android');
-        setDate(currentDate);
-    };
-
-    const showTimePicker = () =>{
-        setShowTime(true);
-    }
-
-    const onChangeDate = (event, selectedDate) => {
-        const currentDate = selectedDate || date;
-        setShowDate(Platform.OS !== 'android');
-        setDate(currentDate);
-    };
-
-    const showDatePicker = () =>{
-        setShowDate(true);
-    }
-
-    const handleCreateGame = () => firebaseDb.firestore()
-        .collection('game_details')
-        .add({
-            price: price,
-            sport: sport,
-            location: location,
-            notes: notes,
-            availability : slots,
-            date: date,
-            host: props.username
-
-
-        })
-        .then(() => {
-            setPrice(0);
-            setLocation("");
-            setDate(new Date());
-            setNotes("");
-            setSlots(0);
-            setSport("")
-        })
-        .catch(err => console.error(err))
 
     return(
         <Modal visible={props.visible}>
@@ -87,101 +58,180 @@ const HostGameItem = props => {
             </View>
 
             <ScrollView>
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
-                    <View style={styles.dropDown}>
-                        <Picker
-                            mode="dropdown"
-                            selectedValue={location}
-                            style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                            onValueChange={(itemValue, itemIndex) => setLocation(itemValue)}
-                        >
-                            {sgLocations.map(locations => (
-                                <Picker.Item key={locations} label={locations} value={locations}/>
-                            ))}
-                        </Picker>
-
-                    </View>
-                </View>
-
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>SPORT :</Text>
-                    <View style={styles.dropDown}>
-                        <Picker
-                            mode="dropdown"
-                            selectedValue={sport}
-                            style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                            onValueChange={(itemValue, itemIndex) => setSport(itemValue)}
-                        >
-                            {sports.map(game => (
-                                <Picker.Item key={game} label={game} value={game}/>
-                            ))}
-                        </Picker>
-
-                    </View>
-                </View>
-
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>DATE :</Text>
-                    <CustButton onPress = {showDatePicker}
-                                style = {styles.dropDown}>
-                        <Text style = {{color: 'black', }}>{date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
-                    </CustButton>
-                </View>
-                {showDate && (<RNDateTimePicker  value={date} display="spinner" mode="date" onChange={onChangeDate}/>)}
-
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>TIME :</Text>
-                    <CustButton onPress = {showTimePicker}
-                                style = {styles.dropDown}>
-                        <Text style = {{color: 'black', }}>{date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
-                    </CustButton>
-                </View>
-
-                {showTime && (<RNDateTimePicker  value={date} display="spinner" mode="time" onChange={onChangeTime}/>)}
-
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
-                    <TextInput keyboardType={"number-pad"}
-                               style={{...styles.dropDown, fontSize:16}}
-                               onChangeText={changePrice}
-                               value={price}
-                    />
-                </View>
-
-                <View style={styles.selectionItem}
+                <Formik initialValues={{location: '',
+                    sport:'',
+                    price:0.00,
+                    players:0,
+                    date:new Date(),
+                    notes:'',
+                    showDate: false,
+                    showTime: false}}
+                        validationSchema={reviewSchema}
+                        onSubmit={(values, actions) => {
+                            console.log("nimama")
+                            handleCreateGame(values);
+                            console.log("knn")
+                            actions.resetForm();
+                        }
+                        }
                 >
-                    <Text style={{fontSize:15, marginLeft:8}}>PLAYERS :</Text>
-                    <TextInput keyboardType={"number-pad"}
-                               style={{...styles.dropDown, fontSize:16}}
-                               onChangeText = {changeSlots}
-                               value = {slots}
-                    />
-                </View>
+                    {/*// LOCATION ------------------------------------------------------------------------*/}
+                    {(props) => (
 
-                <View style={styles.selectionItem}>
-                    <Text style={{fontSize:15, marginLeft:8}}>NOTES      :</Text>
-                    <TextInput  style={{...styles.dropDownNotes, fontSize:16}}
-                                onChangeText = {changeNotes}
-                                value = {notes}
-                    />
-                </View>
+                        <View>
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
+                                <View style={styles.dropDown}>
+                                    <Picker
+                                        mode="dropdown"
+                                        selectedValue={props.values.location}
+                                        style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
+                                        onValueChange={(itemValue, itemIndex) => {
+                                            props.setFieldValue('location', itemValue)
+                                            props.setFieldTouched('location')
+                                        }}
+                                    >
+                                        {sgLocations.map(locations => (
+                                            <Picker.Item key={locations} label={locations} value={locations}/>
+                                        ))}
+                                    </Picker>
 
-                <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
-                    <GradientButton style={{...Styles.buttonSize, marginRight:75}}
-                                    onPress={props.closeHost}
-                                    colors={["red", "maroon"]}>
-                        <Text>Cancel</Text>
-                    </GradientButton>
 
-                    <GradientButton onPress={() => {props.closeHost();
-                                                    handleCreateGame().then(r => {})}}
-                                    colors={['#30cfd0','#330867']}
-                                    style={{...Styles.buttonSize}}>
-                        <Text>Host</Text>
-                    </GradientButton>
-                </View>
+                                </View>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
+                            </View>
+
+                            {/*// SPORT ------------------------------------------------------------------------*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>SPORT :</Text>
+                                <View style={styles.dropDown}>
+                                    <Picker
+                                        mode="dropdown"
+                                        selectedValue={props.values.sport}
+                                        style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
+                                        onValueChange={(itemValue, itemIndex) => {
+                                            props.setFieldValue('sport', itemValue)
+                                            props.setFieldTouched('sport')
+                                        }}
+                                    >
+                                        {sports.map(game => (
+                                            <Picker.Item key={game} label={game} value={game}/>
+                                        ))}
+                                    </Picker>
+
+                                </View>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.sport && props.errors.sport}</Text>
+                            </View>
+
+                            {/*// DATE AND TIME ------------------------------------------------------------------------*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>DATE :</Text>
+                                <CustButton onPress = {() => props.setFieldValue('showDate', true)}
+                                            style = {styles.dropDown}>
+                                    <Text style = {{color: 'black', }}>{props.values.date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
+                                </CustButton>
+                            </View>
+                            {props.values.showDate && (<RNDateTimePicker  value={props.values.date}
+                                                                          display="spinner"
+                                                                          mode="date"
+                                                                          onChange={(event, selectedDate) => {
+                                                                              const currentDate = selectedDate || props.values.date;
+                                                                              props.setFieldValue('showDate',Platform.OS !== 'android');
+                                                                              props.setFieldValue('date', currentDate);
+                                                                              props.setFieldTouched('date');}}
+                            />)}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>TIME :</Text>
+                                <CustButton onPress = {() => props.setFieldValue('showTime', true)}
+                                            style = {styles.dropDown}>
+                                    <Text style = {{color: 'black', }}>{props.values.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
+                                </CustButton>
+                            </View>
+
+                            {props.values.showTime && (<RNDateTimePicker  value={props.values.date} display="spinner"
+                                                                          mode="time"
+                                                                          onChange={(event, selectedDate) => {
+                                                                              const currentDate = selectedDate || props.values.date;
+                                                                              props.setFieldValue('showTime',Platform.OS !== 'android');
+                                                                              props.setFieldValue('date', currentDate);
+                                                                              props.setFieldTouched('date');}}
+                            />)}
+                            {/*// PRICE ------------------------------------------------------------------------*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
+                                <View style={{...styles.dropDown, padding:5}}>
+                                    <TextInput keyboardType={"number-pad"}
+                                               style={{...styles.dropDownText, fontSize:16}}
+                                               onChangeText={props.handleChange('price')}
+                                               value={props.values.price}
+                                               onBlur = {props.handleBlur('price')}
+                                    />
+                                </View>
+
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.price && props.errors.price}</Text>
+                            </View>
+
+                            {/*// PLAYERS ------------------------------------------------------------------------*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>NO. OF PLAYERS  :</Text>
+                                <View style={{...styles.dropDown, padding:5}}>
+                                    <TextInput keyboardType={"number-pad"}
+                                               style={{...styles.dropDownText, fontSize:16}}
+                                               onChangeText={props.handleChange('players')}
+                                               value={props.values.players}
+                                               onBlur = {props.handleBlur('players')}
+                                    />
+                                </View>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.players && props.errors.players}</Text>
+                            </View>
+
+                            {/*//NOTES----------------------------------------------------------------------------*/}
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>NOTES      :</Text>
+                                <View style ={{...styles.dropDownNotes}}>
+                                    <TextInput
+                                        multiline={true}
+                                        style={{...styles.dropDownNotesText}}
+                                        onChangeText = {props.handleChange('notes')}
+                                        value = {props.values.notes}
+                                    />
+                                </View>
+
+                            </View>
+
+
+                            {/*//BUTTONS at the Bottom------------------------------------------------------------------------*/}
+
+                            <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
+                                <GradientButton style={{...Styles.buttonSize, marginRight:75}}
+                                                onPress={() => {props.handleReset();
+                                                    closeHost();}}
+                                                colors={["red", "maroon"]}>
+                                    <Text>Cancel</Text>
+                                </GradientButton>
+
+                                <GradientButton onPress={props.handleSubmit}
+                                                colors={['#30cfd0','#330867']}
+                                                style={{...Styles.buttonSize}}>
+                                    <Text>Host</Text>
+                                </GradientButton>
+                            </View>
+
+                        </View>
+
+                    )}
+
+                </Formik>
+
+
+
             </ScrollView>
+
 
 
         </Modal>
@@ -208,17 +258,34 @@ const styles = StyleSheet.create({
         borderRadius:4,
         width: "97%",
     },
+    dropDownText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        height: 40,
+        width: "97%",
+    },
+    dropDownNotesText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        width: "97%",
+        textAlignVertical: 'top',
+        fontSize:16,
+        height:200,
+        marginTop:5
+    },
     dropDownNotes: {
         flexDirection:"row",
         marginTop: 5,
         justifyContent: 'center',
-        alignItems:'center',
+        alignItems:'flex-start',
         backgroundColor: 'ghostwhite',
         height: 200,
         borderWidth: 1,
         borderRadius:4,
         width: '97%',
-        textAlignVertical: 'top'
+
     },
     selectionItem:{
         flexDirection:"column",

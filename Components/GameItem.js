@@ -96,7 +96,10 @@ const GameItem = props => {
                             <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
                             <Text style={{fontSize:20}}>Time : {gameTime}</Text>
                             <Text style={{fontSize:20}}>Price : {props.title.price}</Text>
+                            <Text style={{fontSize:20}}>To Take Note: </Text>
+                            <Text style={{fontSize:20}}>{props.title.notes}</Text>
                             <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
+
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => openPlayerDetails(true)}
                                             colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
