@@ -46,6 +46,14 @@ const GameScreen = (props) => {
     }
 
     const [game, setGame] = useState ([]);
+    const[uid, setUid] = useState('')
+    const currentUser = firebaseDb.auth().currentUser.uid;
+    const username = firebaseDb.firestore().collection('users')
+        .doc(currentUser)
+        .get()
+        .then(doc => {
+            setUid(doc.data().username);
+        });
 
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
@@ -53,7 +61,6 @@ const GameScreen = (props) => {
         gamesRef.get()
             . then(snapshot => {
                 const someGame =[];
-                let num = 0;
                 const now = new Date().getTime();
                 snapshot.forEach( doc => {
                         const d = doc.data()
@@ -61,8 +68,7 @@ const GameScreen = (props) => {
                             doc.ref.delete().then(() => {
                             })
                         } else {
-                            someGame.push({key: num, value: doc.data()});
-                            num = num + 1;
+                            someGame.push({key: doc.id, value: doc.data()});
                         }
                     }
                 )
@@ -89,34 +95,20 @@ const GameScreen = (props) => {
                                    value={searching}
                         />
                         {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {Keyboard.dismiss();}}/>
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {console.log(uid);Keyboard.dismiss();}}/>
                     </View>
                 </View>
 
-                <View style={{justifyContent: "space-around", marginTop:10}}>
+                {/*<View style={{flex:1, justifyContent: "space-around", marginTop:10}}>*/}
                     <FlatList
                         // key = {game.key.toString()}
                         contentContainerStyle= {{justifyContent:"space-between"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
-                        renderItem= {({item}) => <GameItem title={item.value}/>}
+                        renderItem= {({item}) => <GameItem title={item.value} gameId={item.key} user={uid}/>}
                     >
-
                     </FlatList>
 
-
-
-
-
-                {/*    <FlatList*/}
-                {/*        // key={filteredList.key.toString()}*/}
-                {/*        contentContainerStyle={{justifyContent: "space-between"}}*/}
-                {/*        keyExtractor={(item) => item.key.toString()}*/}
-                {/*        data={filteredList}*/}
-                {/*// props.title should return only one object*/}
-                {/*        renderItem={({item}) => <GameItem title={item.value}/>}*/}
-                {/*    />*/}
-                </View>
             </BackgroundTrial>
         </TouchableWithoutFeedback>
     )

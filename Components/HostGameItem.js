@@ -13,16 +13,14 @@ import firebaseDb from "../firebaseDb";
 
 
 const reviewSchema = yup.object({
-    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location !== 'Select'),
-    sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport !== 'Select'),
-    date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > new Date()),
-    time: yup.date().label('Time').test('test time', 'The Game Cannot Be Earlier Than Now!', (val) => val > new Date()),
+    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location != 'Select'),
+    sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != 'Select'),
+    date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > Date.now()),
+    time: yup.date().label('Time'),
     price: yup.string().label('Price')
-        .required("Please state the price to pay per player!")
-        .test('Valid Price', 'Please enter a valid price!', (val) => !(val).includes(",") && parseFloat(val) > 0),
-    players: yup.string().label('Players')
-        .required()
-        .test('Valid Slots', 'Please enter a valid number of players!', (val) => !(val).includes(",") && parseInt(val) > 0),
+        .test('Valid Price', 'Please enter a valid price!', (val) => parseInt(val) >= 0 && !(val).includes(",")),
+    slots: yup.string().label('Slots')
+        .test('Valid Slots', 'Please enter a valid number of players!',  (val) => parseInt(val) > 0 && !(val).includes(",")),
     notes: yup.string(),
 
 })
@@ -43,10 +41,11 @@ const HostGameItem = props => {
                 sport: values.sport,
                 location: values.location,
                 notes: values.notes,
-                availability : values.players,
+                availability : values.slots,
                 date: values.date,
                 host: props.userName,
                 price: values.price,
+                players: [props.userName]
             })
             .then(() => {closeHost()})
             .catch(err => console.error(err))
@@ -62,10 +61,11 @@ const HostGameItem = props => {
             </View>
 
             <ScrollView>
-                <Formik initialValues={{location: '',
+                <Formik initialValues={{
+                    location: '',
                     sport:'',
-                    price:0.00,
-                    players:0,
+                    price:'0.00',
+                    slots:'0',
                     date:new Date(),
                     notes:'',
                     showDate: false,
@@ -183,7 +183,7 @@ const HostGameItem = props => {
 
                             </View>
 
-                            {/*// PLAYERS ------------------------------------------------------------------------*/}
+                            {/*// SLOTS LEFT ------------------------------------------------------------------------*/}
 
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>NO. OF PLAYERS  :</Text>
@@ -191,12 +191,12 @@ const HostGameItem = props => {
                                     <TextInput keyboardType={"number-pad"}
                                                placeholder={"Number of Available Slots"}
                                                style={{...styles.dropDownText, fontSize:16}}
-                                               onChangeText={props.handleChange('players')}
-                                               value={props.values.players}
-                                               onBlur = {props.handleBlur('players')}
+                                               onChangeText={props.handleChange('slots')}
+                                               value={props.values.slots}
+                                               onBlur = {props.handleBlur('slots')}
                                     />
                                 </View>
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.players && props.errors.players}</Text>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.slots && props.errors.slots}</Text>
                             </View>
 
                             {/*//NOTES----------------------------------------------------------------------------*/}
