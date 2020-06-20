@@ -13,32 +13,22 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 const GameScreen = (props) => {
 
-    const playerNames =["Ashley", "Dennis", "Lum Jian Yang", "Kenny Seeeeeet", "JoeAlpharius", "KeaneChan"]
 
-    // to be replaced with the Firebase db
-    const [gamesList, setGameList] = useState([
-        {key: 0, value: ["Soccer", "Hougang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 1, value: ["BasketBall", "Tampines", "Dennis", "02/06/2020 ", "1800 ", "6/10", playerNames]},
-        {key: 2, value: ["Badminton", "Pasir Ris", "Ashley", "02/06/2020 ", "1800 ", "6/8", playerNames]},
-        {key: 3, value: ["Floorball", "Seng Kang", "Dennis", "02/06/2020 ", "1800 ", "6/20", playerNames]},
-        {key: 4, value: ["Golf", "Seng Kang", "Ashley", "02/06/2020 ", "1800 ", "6/10", playerNames]}
-    ]);
-
-    const [filteredList, findFilteredList] = useState(gamesList);
+    const [filteredList, findFilteredList] = useState(game);
     const [searching, findSearching] = useState("");
 
     //need to refine search method
     const filterList = () => {
         findFilteredList([])
 
-        let filtering = gamesList.map(a => a.value);
+        let filtering = game.map(a => a.value);
         if (searching.length !== 0) {
             let temp = []
             for (let i = 0; i < filtering.length; i++) {
                 for (let j = 0; j < 3; j++) {
                     if (typeof filtering[i][j] === "string") {
                         if (filtering[i][j].toLowerCase().includes(searching.toLowerCase())) {
-                            temp.push(gamesList[i])
+                            temp.push(game[i])
                             break
                         }
                     }
@@ -46,7 +36,7 @@ const GameScreen = (props) => {
             }
             findFilteredList(temp)
         } else {
-            findFilteredList(gamesList);
+            findFilteredList(game);
         }
     }
 
@@ -57,21 +47,6 @@ const GameScreen = (props) => {
 
     const [game, setGame] = useState ([]);
 
-    const updateGames = () => {
-        gamesRef.get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    const d = new Date();
-                    const now = doc.data().date.toMillis()
-                    if(now < d.getTime()){
-                        doc.ref.delete().then(()=>{});
-                    }
-                })
-            })
-            .catch(err => {
-                Alert.alert("Error", err)
-            })
-    }
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
     const allGames = () => {
@@ -79,13 +54,19 @@ const GameScreen = (props) => {
             . then(snapshot => {
                 const someGame =[];
                 let num = 0;
+                const now = new Date().getTime();
                 snapshot.forEach( doc => {
-                        someGame.push({key: num, value: doc.data()});
-                        num = num + 1;
+                        const d = doc.data()
+                        if (d.date.toMillis() < now) {
+                            doc.ref.delete().then(() => {
+                            })
+                        } else {
+                            someGame.push({key: num, value: doc.data()});
+                            num = num + 1;
+                        }
                     }
                 )
                 setGame(someGame)
-
             })
 
             .catch(err => {
@@ -108,7 +89,7 @@ const GameScreen = (props) => {
                                    value={searching}
                         />
                         {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {updateGames();Keyboard.dismiss();}}/>
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {Keyboard.dismiss();}}/>
                     </View>
                 </View>
 

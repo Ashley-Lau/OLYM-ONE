@@ -15,10 +15,14 @@ import firebaseDb from "../firebaseDb";
 const reviewSchema = yup.object({
     location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location !== 'Select'),
     sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport !== 'Select'),
-    date: yup.date().label('Date'),
-    time: yup.date().label('Time'),
-    price: yup.number().label('Price').required("Please state the price to pay per player!"),
-    players: yup.number().label('Players').required().max(100),
+    date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > new Date()),
+    time: yup.date().label('Time').test('test time', 'The Game Cannot Be Earlier Than Now!', (val) => val > new Date()),
+    price: yup.string().label('Price')
+        .required("Please state the price to pay per player!")
+        .test('Valid Price', 'Please enter a valid price!', (val) => !(val).includes(",") && parseFloat(val) > 0),
+    players: yup.string().label('Players')
+        .required()
+        .test('Valid Slots', 'Please enter a valid number of players!', (val) => !(val).includes(",") && parseInt(val) > 0),
     notes: yup.string(),
 
 })
@@ -130,6 +134,7 @@ const HostGameItem = props => {
                                             style = {styles.dropDown}>
                                     <Text style = {{color: 'black', }}>{props.values.date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
                                 </CustButton>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.date && props.errors.date}</Text>
                             </View>
                             {props.values.showDate && (<RNDateTimePicker  value={props.values.date}
                                                                           display="spinner"
@@ -147,6 +152,8 @@ const HostGameItem = props => {
                                             style = {styles.dropDown}>
                                     <Text style = {{color: 'black', }}>{props.values.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
                                 </CustButton>
+
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.time && props.errors.time}</Text>
                             </View>
 
                             {props.values.showTime && (<RNDateTimePicker  value={props.values.date} display="spinner"
@@ -157,12 +164,14 @@ const HostGameItem = props => {
                                                                               props.setFieldValue('date', currentDate);
                                                                               props.setFieldTouched('date');}}
                             />)}
+
                             {/*// PRICE ------------------------------------------------------------------------*/}
 
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
                                 <View style={{...styles.dropDown, padding:5}}>
                                     <TextInput keyboardType={"number-pad"}
+                                               placeholder={"Price to be paid per Player"}
                                                style={{...styles.dropDownText, fontSize:16}}
                                                onChangeText={props.handleChange('price')}
                                                value={props.values.price}
@@ -171,6 +180,7 @@ const HostGameItem = props => {
                                 </View>
 
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.price && props.errors.price}</Text>
+
                             </View>
 
                             {/*// PLAYERS ------------------------------------------------------------------------*/}
@@ -179,6 +189,7 @@ const HostGameItem = props => {
                                 <Text style={{fontSize:15, marginLeft:8}}>NO. OF PLAYERS  :</Text>
                                 <View style={{...styles.dropDown, padding:5}}>
                                     <TextInput keyboardType={"number-pad"}
+                                               placeholder={"Number of Available Slots"}
                                                style={{...styles.dropDownText, fontSize:16}}
                                                onChangeText={props.handleChange('players')}
                                                value={props.values.players}
@@ -194,6 +205,7 @@ const HostGameItem = props => {
                                 <View style ={{...styles.dropDownNotes}}>
                                     <TextInput
                                         multiline={true}
+                                        placeholder={"Things You Want the Players to Take Note of"}
                                         style={{...styles.dropDownNotesText}}
                                         onChangeText = {props.handleChange('notes')}
                                         value = {props.values.notes}
