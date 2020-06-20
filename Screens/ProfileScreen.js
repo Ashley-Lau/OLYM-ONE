@@ -13,6 +13,35 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
 import firebaseDb from "../firebaseDb";
+import firebase from 'firebase';
+
+function uploadImage(uri, mime = 'application/octet-stream') {
+    return new Promise((resolve, reject) => {
+        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+        let uploadBlob = null
+
+        const imageRef = firebaseDb.storage().ref('images').child('image_001')
+
+        fs.readFile(uploadUri, 'base64')
+            .then((data) => {
+                return Blob.build(data, { type: `${mime};BASE64` })
+            })
+            .then((blob) => {
+                uploadBlob = blob
+                return imageRef.put(blob, { contentType: mime })
+            })
+            .then(() => {
+                uploadBlob.close()
+                return imageRef.getDownloadURL()
+            })
+            .then((url) => {
+                resolve(url)
+            })
+            .catch((error) => {
+                reject(error)
+            })
+    })
+}
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
@@ -26,6 +55,7 @@ const ProfileScreen = props => {
         birthDate: user.birthDate,
         email: user.email,
         id: user.id,
+        uri: user.uri,
 
     })
     const[hostGame, setHostGame] = useState(false);
@@ -35,11 +65,23 @@ const ProfileScreen = props => {
             firebaseDb.auth().currentUser.updatePassword(values.password).then()
                 .catch(error => error)
         }
+        console.log('mother fker')
+        let tempURI = data.uri
+        if (values.uri !== tempURI) {
+            console.log('fking cb')
+            uploadImage(tempURI)
+                .then(url => {
+                    console.log('mother die')
+                    tempURI = url
+                    })
+                .catch(error => console.log(error))
+        }
         firebaseDb.firestore().collection('users')
             .doc(data.id).update({
             firstName: values.firstName,
             lastName: values.lastName,
             username: values.username,
+            uri: tempURI,
             password: values.password !== '' ? values.password : data.password,
         }).then(() => {
             setData({
@@ -47,6 +89,7 @@ const ProfileScreen = props => {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 username: values.username,
+                uri: tempURI,
                 password: values.password !== '' ? values.password : data.password,
             })
         }).catch(error => error)
@@ -72,7 +115,9 @@ const ProfileScreen = props => {
                         <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
                             <View style = {{flexDirection: 'row', justifyContent: 'space-around', paddingTop: 5,}}>
                                 <View style = {style.photoFrame}>
-                                    <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {require('../assets/OLYMONE.png')}/>
+                                    <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                        uri: data.uri
+                                    }}/>
                                 </View>
                                 <HostGameItem visible={hostGame}
                                               closeHost={() =>setHostGame(false)}
@@ -94,8 +139,7 @@ const ProfileScreen = props => {
                             <View style = {{alignItems: 'center'}}>
                                 <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
                                 <Text style = {{fontSize: 20}}> UserName: {data.username} </Text>
-                                <Text style = {{fontSize: 20}}> DOB: {data.password}</Text>
-                                <Text style = {{fontSize: 20}}> Occupation: Dou Jiang maker </Text>
+                                <Text style = {{fontSize: 20}}> DOB: {data.birthDate.toDate().toString().slice(4,15)}</Text>
                             </View>
 
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 20, marginLeft: 10}}
@@ -175,12 +219,16 @@ const style = StyleSheet.create({
         height: 85,
         width: 85,
         borderRadius: 170,
-        elevation: 10,
+        elevation: 30,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 3.27,
         justifyContent: 'center',
-        borderWidth: 2,
         backgroundColor: 'white',
     }
-
 })
 
 export default ProfileScreen;
