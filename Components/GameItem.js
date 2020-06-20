@@ -1,14 +1,33 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image} from 'react-native';
+import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import firebase from 'firebase';
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
 import Background from "../views/Background";
+import firebaseDb from "../firebaseDb"
 
 
 const GameItem = props => {
+
+    const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
+    const gameJoin = () => {
+
+        const slots = parseInt(props.title.availability) - 1
+        gameRef.update({availability : slots.toString(), players:[...props.title.players, props.user]}).then(() => {})
+    }
+
+    const alreadyJoined = () => {
+        if(props.title.players.includes(props.user)){
+            Alert.alert("Already in Game!", "You are already joined this game!")
+        } else {
+            gameJoin();
+        }
+
+    }
+
+
 
     const [playerDetails, openPlayerDetails] = useState(false);
     const [gameDetails, openGameDetails] = useState(false);
@@ -46,41 +65,41 @@ const GameItem = props => {
         gameTime = props.title.date.toDate().toString().slice(16,21);
     }
 
-    // const players = <Modal visible={playerDetails} animationType="slide">
-    //     <Background style={{top:0, right:-25, position:"absolute"}}/>
-    //     <View style ={{flex:1}}>
-    //         <View style ={{flex:0.1, justifyContent:"center", alignItems:"center", backgroundColor:"maroon"}}>
-    //             <Text style={{fontSize:45, color:"white"}}>PLAYERS</Text>
-    //         </View>
-    //         <ScrollView style={{flex:3}}>
-    //             {props.title[6].map(names => (
-    //                 <View key={names} style={{
-    //                     flexDirection:"row",
-    //                     borderBottomWidth:1,
-    //                     justifyContent:"space-between",
-    //                     alignItems:"center",
-    //                     height:"20%"
-    //                 }}>
-    //                     <MaterialCommunityIcons name="account" size={35}/>
-    //                     <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
-    //                 </View>
-    //             ))}
-    //         </ScrollView>
-    //
-    //         <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
-    //                         onPress={() => openPlayerDetails(false)}
-    //                         colors={["red", "maroon"]}>
-    //             <Text style={{fontSize:40}}>Go Back</Text>
-    //         </GradientButton>
-    //     </View>
-    //
-    // </Modal>
+    const players = <Modal visible={playerDetails} animationType="slide">
+        <Background style={{top:0, right:-25, position:"absolute"}}/>
+        <View style ={{flex:1}}>
+            <View style ={{flex:0.1, justifyContent:"flex-end", alignItems:"flex-start", backgroundColor:"maroon"}}>
+                <Text style={{fontSize:22, color:"white"}}>PLAYERS</Text>
+            </View>
+            <ScrollView style={{flex:3}}>
+                {props.title.players.map(names => (
+                    <View key={names} style={{
+                        flexDirection:"row",
+                        borderBottomWidth:1,
+                        justifyContent:"space-between",
+                        alignItems:"center",
+                        height:50
+                    }}>
+                        <MaterialCommunityIcons name="account" size={35}/>
+                        <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
+                    </View>
+                ))}
+            </ScrollView>
+
+            <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
+                            onPress={() => openPlayerDetails(false)}
+                            colors={["red", "maroon"]}>
+                <Text style={{fontSize:40}}>Go Back</Text>
+            </GradientButton>
+        </View>
+
+    </Modal>
 
 
     return (
         <View>
             {/*to add additional details in firestore for the players modal*/}
-            {/*{players}*/}
+            {players}
             <Modal visible = {gameDetails} animationType="slide">
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
@@ -117,7 +136,10 @@ const GameItem = props => {
                         </GradientButton>
 
                         <GradientButton style={{...Styles.buttonSize}}
-                                        onPress={() => openGameDetails(false)}
+                                        onPress={() => {
+                                            alreadyJoined();
+                                            openGameDetails(false);
+                                        }}
                                         colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                             <Text>Join</Text>
                         </GradientButton>
