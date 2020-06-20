@@ -41,7 +41,7 @@ const reviewSchema = yup.object({
                     const emailRegex = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
                     let isValidEmail = emailRegex.test(val);
                     if(isValidEmail) {
-                        return firebaseDb.auth().fetchSignInMethodsForEmail(val).then(array => array.length === 0).catch((error) => {})
+                        return firebaseDb.auth().fetchSignInMethodsForEmail(val.toLowerCase()).then(array => array.length === 0).catch((error) => {})
                     }
                     return true
                 }),
@@ -70,6 +70,8 @@ const SignupScreen = props => {
                 gender: values.gender,
                 password: values.password,
                 birthDate: values.birthDate,
+                uri: 'https://i.dlpng.com/static/png/6542357_preview.png',
+
             };
             const usersRef = firebaseDb.firestore().collection('users')
             usersRef

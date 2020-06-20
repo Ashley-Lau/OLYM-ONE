@@ -1,17 +1,29 @@
 import React, {useState} from 'react';
-import {View, Text, StyleSheet, ScrollView, Keyboard, TouchableWithoutFeedback, Alert,} from 'react-native'
+import {
+    View,
+    Text,
+    StyleSheet,
+    ScrollView,
+    Keyboard,
+    TouchableWithoutFeedback,
+    Alert,
+    Image,
+    TouchableOpacity,
+} from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
 import {Formik} from 'formik';
 import * as yup from 'yup';
-
+import { LinearGradient } from 'expo-linear-gradient';
+import * as ImagePicker from 'expo-image-picker';
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
-import CustButton from "../Components/CustButton";
 import SignUpComponent from "../Components/SignUpComponent";
+import {setFormikInitialValue} from "react-native-formik";
+
 
 const reviewSchema = (password) => yup.object({
     firstName: yup.string().label('First Name').required(),
@@ -30,16 +42,6 @@ const reviewSchema = (password) => yup.object({
 
 const UpdateDetailScreen = (props) => {
     const navigation = useNavigation()
-    // const [data, setData] = useState({
-    //     ...props.route.params.data
-    // })
-
-    // const handleData = values => {
-    //     setData({
-    //         ...data,
-    //         values,
-    //     })
-    // }
 
     const registeredPress = () => {
         navigation.navigate('ProfileScreen');
@@ -54,12 +56,14 @@ const UpdateDetailScreen = (props) => {
                 <View style = {{marginTop: 20, marginHorizontal: 52}}>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Formik
-                            initialValues = {{  firstName: props.route.params.data.firstName,
-                                                lastName: props.route.params.data.lastName,
-                                                username: props.route.params.data.username,
-                                                currentPassword: '',
-                                                newPassword: '',
-                                                confirmPassword: '',}}
+                            initialValues = {{
+                                uri: props.route.params.data.uri,
+                                firstName: props.route.params.data.firstName,
+                                lastName: props.route.params.data.lastName,
+                                username: props.route.params.data.username,
+                                currentPassword: '',
+                                newPassword: '',
+                                confirmPassword: '',}}
                             validationSchema = {reviewSchema(props.route.params.data.password)}
                             onSubmit={(values, actions) => {
                                 props.route.params.handler({
@@ -67,13 +71,39 @@ const UpdateDetailScreen = (props) => {
                                     lastName: values.lastName,
                                     username: values.username,
                                     password: values.confirmPassword,
+                                    uri: values.uri,
                                 })
                                 actions.resetForm()
                                 registeredPress()
                             }}
                         >
                             {(props) => (
-                                <View>
+                                <View style = {{justifyContent: 'center'}}>
+                                    <View style = {{...style.photoFrame, marginBottom: 15}}>
+                                        <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                            uri: props.values.uri
+                                        }}/>
+                                    </View>
+                                    <View style = {{alignSelf: 'center', justifyContent: 'center'}}>
+                                        <TouchableOpacity style={{width: 75, height: 25, justifyContent: 'center', alignSelf: 'center'}}
+                                                          onPress={ async () => {
+                                                              let result = await ImagePicker.launchImageLibraryAsync({
+                                                                  mediaTypes: ImagePicker.MediaTypeOptions.All,
+                                                                  allowsEditing: true,
+                                                                  aspect: [4, 3],
+                                                                  quality: 1,
+                                                              });
+
+                                                              if (!result.cancelled) {
+                                                                  props.setFieldValue('uri', result.uri);
+                                                              }
+                                                          }}
+                                                          activeOpacity={.9}>
+                                            <LinearGradient style = {{borderRadius: 4, flex: 1, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 10,}} colors ={['#1bb479','#026c45']}>
+                                                <Text style={{fontSize: 15, color: 'white', }}>Change</Text>
+                                            </LinearGradient>
+                                        </TouchableOpacity>
+                                    </View>
                                     <SignUpComponent title = 'First Name:'
                                                      placeholder = "First Name"
                                                      onChangeText = {props.handleChange('firstName')}
@@ -141,6 +171,21 @@ const style = StyleSheet.create({
         fontSize: 30,
         borderBottomWidth: 4,
         borderBottomColor: 'black'
+    },
+    photoFrame: {
+        height: 85,
+        width: 85,
+        borderRadius: 170,
+        elevation: 30,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 3.27,
+        justifyContent: 'center',
+        backgroundColor: 'white',
+        alignSelf: 'center'
     }
 })
 
