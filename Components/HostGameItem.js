@@ -33,7 +33,6 @@ const HostGameItem = props => {
 
     const closeHost = () => {props.closeHost()}
 
-
     const handleCreateGame = values => {
         firebaseDb.firestore()
             .collection('game_details')

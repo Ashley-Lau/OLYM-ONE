@@ -2,7 +2,7 @@ import React,{useState, useEffect} from 'react';
 import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import firebase from 'firebase';
-import * as admin from 'firebase-admin';
+
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
@@ -13,6 +13,8 @@ import ViewPlayerItem from "../Components/ViewPlayerItem"
 
 const GameItem = props => {
 
+
+    // LIST OF PLAYERS ================================================================================================
     const [playerUser, setPlayerUser] = useState([]);
 
     const username = () => {
@@ -28,16 +30,39 @@ const GameItem = props => {
         })
         setPlayerUser(playerList);
     }
+    //GETTING USER UPCOMING_GAME ARRAY =================================================================================
+    const [upcomingGame, setUpcomingGame] = useState([]);
 
+    const userRef = firebaseDb.firestore().collection('users');
+
+    const getGames = () => {
+        setUpcomingGame([])
+        userRef.get()
+            .then(snapshot => {
+                let gamelist = [];
+                snapshot.forEach(doc => {
+                    if(doc.data().id === props.user){
+                        gamelist = doc.data().upcoming_games
+                    }
+                })
+                setUpcomingGame(gamelist);
+            })
+    }
+
+    //JOINING GAME ====================================================================================================================
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
-    const userRef = firebaseDb.firestore().collection('users').doc(props.user)
 
     const gameJoin = () => {
+        getGames();
+
         const slots = parseInt(props.title.availability) - 1
         gameRef.update({availability : slots.toString(), players:[...props.title.players, props.user]}).then(() => {})
+        userRef.update({upcoming_games: [...upcomingGame, props.gameId]}).then(() => {});
     }
 
     const alreadyJoined = () => {
+
+
         if(props.title.players.includes(props.user)){
             Alert.alert("Already in Game!", "You are already joined this game!")
         } else if(props.title.availability <= 0){
@@ -48,32 +73,29 @@ const GameItem = props => {
 
     }
 
+    //MODAL STATES ================================================================================================================
     const [playerDetails, openPlayerDetails] = useState(false);
     const [gameDetails, openGameDetails] = useState(false);
 
 
-    //setting the textcolour based on the game
+    //SPORT ICON ================================================================================================================================
     let gameColor = "rgb(255,255,255)";
     let sportIcon = <MaterialCommunityIcons name="soccer" size={35}/>
     if(props.title.sport.toLowerCase() === "soccer"){
-        // gameColor = "rgb(12,104,0)";
         sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
     } else if(props.title.sport.toLowerCase() === "basketball"){
-        //     gameColor = "rgb(165,40,0)";
         sportIcon = <MaterialCommunityIcons name="basketball" size={35} color={gameColor}/>
     } else if(props.title.sport.toLowerCase() === "badminton"){
-        // gameColor = "rgb(137,137,137)";
         sportIcon = <MaterialCommunityIcons name="badminton" size={35} color={gameColor} />
     } else if(props.title.sport.toLowerCase() === "floorball"){
-        // gameColor = "rgb(147,147,0)";
         sportIcon = <MaterialCommunityIcons name="hockey-sticks" size={35} color={gameColor}/>
-    } else if(props.title.sport.toLowerCase() === "golf"){
-        // gameColor = "rgb(27,99,2)";
-        sportIcon = <MaterialCommunityIcons name="golf" size={35} color={gameColor}/>
+    } else if(props.title.sport.toLowerCase() === "tennis"){
+        sportIcon = <MaterialCommunityIcons name="tennis" size={35} color={gameColor}/>
     } else {
         sportIcon = <MaterialCommunityIcons name ="soccer-field" size={35} color={gameColor}/>
     }
 
+    //DATE AND TIME STRING ================================================================================================
     let gameDate = props.title.date
     if(props.title.date){
         gameDate = props.title.date.toDate().toString().slice(4,15);
