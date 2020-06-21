@@ -48,12 +48,7 @@ const GameScreen = (props) => {
     const [game, setGame] = useState ([]);
     const[uid, setUid] = useState('')
     const currentUser = firebaseDb.auth().currentUser.uid;
-    const username = firebaseDb.firestore().collection('users')
-        .doc(currentUser)
-        .get()
-        .then(doc => {
-            setUid(doc.data().username);
-        });
+
 
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
@@ -105,7 +100,7 @@ const GameScreen = (props) => {
                         contentContainerStyle= {{justifyContent:"space-between"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
-                        renderItem= {({item}) => <GameItem title={item.value} gameId={item.key} user={uid}/>}
+                        renderItem= {({item}) => <GameItem title={item.value} gameId={item.key} user={currentUser}/>}
                     >
                     </FlatList>
 

@@ -7,9 +7,27 @@ import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
 import Background from "../views/Background";
 import firebaseDb from "../firebaseDb"
+import ViewPlayerItem from "../Components/ViewPlayerItem"
 
 
 const GameItem = props => {
+
+    const [playerUser, setPlayerUser] = useState([]);
+
+    const username = () => {
+        setPlayerUser([]);
+        let playerList = [];
+        props.title.players.map(uid => {
+            firebaseDb.firestore().collection('users')
+                .doc(uid)
+                .get()
+                .then(doc => {
+                    playerList.push(doc.data().username);
+                    console.log(playerList);
+                });
+        })
+        setPlayerUser(playerList);
+    }
 
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
     const gameJoin = () => {
@@ -27,8 +45,6 @@ const GameItem = props => {
 
     }
 
-
-
     const [playerDetails, openPlayerDetails] = useState(false);
     const [gameDetails, openGameDetails] = useState(false);
 
@@ -40,7 +56,7 @@ const GameItem = props => {
         // gameColor = "rgb(12,104,0)";
         sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
     } else if(props.title.sport.toLowerCase() === "basketball"){
-    //     gameColor = "rgb(165,40,0)";
+        //     gameColor = "rgb(165,40,0)";
         sportIcon = <MaterialCommunityIcons name="basketball" size={35} color={gameColor}/>
     } else if(props.title.sport.toLowerCase() === "badminton"){
         // gameColor = "rgb(137,137,137)";
@@ -65,41 +81,13 @@ const GameItem = props => {
         gameTime = props.title.date.toDate().toString().slice(16,21);
     }
 
-    const players = <Modal visible={playerDetails} animationType="slide">
-        <Background style={{top:0, right:-25, position:"absolute"}}/>
-        <View style ={{flex:1}}>
-            <View style ={{flex:0.1, justifyContent:"flex-end", alignItems:"flex-start", backgroundColor:"maroon"}}>
-                <Text style={{fontSize:22, color:"white"}}>PLAYERS</Text>
-            </View>
-            <ScrollView style={{flex:3}}>
-                {props.title.players.map(names => (
-                    <View key={names} style={{
-                        flexDirection:"row",
-                        borderBottomWidth:1,
-                        justifyContent:"space-between",
-                        alignItems:"center",
-                        height:50
-                    }}>
-                        <MaterialCommunityIcons name="account" size={35}/>
-                        <Text key ={names} style={{fontSize:35, marginLeft:35}}>{names}</Text>
-                    </View>
-                ))}
-            </ScrollView>
-
-            <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
-                            onPress={() => openPlayerDetails(false)}
-                            colors={["red", "maroon"]}>
-                <Text style={{fontSize:40}}>Go Back</Text>
-            </GradientButton>
-        </View>
-
-    </Modal>
-
 
     return (
         <View>
             {/*to add additional details in firestore for the players modal*/}
-            {players}
+            <ViewPlayerItem visible={playerDetails}
+                            username={playerUser}
+                            closePlayer ={() => {openPlayerDetails(false)}}/>
             <Modal visible = {gameDetails} animationType="slide">
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
@@ -120,7 +108,9 @@ const GameItem = props => {
                             <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
 
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
-                                            onPress={() => openPlayerDetails(true)}
+                                            onPress={() => {
+                                                username();
+                                                openPlayerDetails(true);}}
                                             colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                                 <Text>View Players</Text>
                             </GradientButton>
