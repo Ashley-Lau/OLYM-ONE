@@ -64,8 +64,8 @@ const HostGameItem = props => {
                 <Formik initialValues={{
                     location: '',
                     sport:'',
-                    price:'0.00',
-                    slots:'0',
+                    price:'',
+                    slots:'',
                     date:new Date(),
                     notes:'',
                     showDate: false,
@@ -171,7 +171,7 @@ const HostGameItem = props => {
                                 <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
                                 <View style={{...styles.dropDown, padding:5}}>
                                     <TextInput keyboardType={"number-pad"}
-                                               placeholder={"Price to be paid per Player"}
+                                               placeholder={"0.00"}
                                                style={{...styles.dropDownText, fontSize:16}}
                                                onChangeText={props.handleChange('price')}
                                                value={props.values.price}
@@ -189,7 +189,7 @@ const HostGameItem = props => {
                                 <Text style={{fontSize:15, marginLeft:8}}>NO. OF PLAYERS  :</Text>
                                 <View style={{...styles.dropDown, padding:5}}>
                                     <TextInput keyboardType={"number-pad"}
-                                               placeholder={"Number of Available Slots"}
+                                               placeholder={"0"}
                                                style={{...styles.dropDownText, fontSize:16}}
                                                onChangeText={props.handleChange('slots')}
                                                value={props.values.slots}
