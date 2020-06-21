@@ -81,7 +81,7 @@ const ProfileScreen = props => {
                                 </View>
                                 <HostGameItem visible={hostGame}
                                               closeHost={() =>setHostGame(false)}
-                                              userName ={data.username}
+                                              userName ={data.id}
                                 />
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}

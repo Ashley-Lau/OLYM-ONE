@@ -14,6 +14,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 const GameScreen = (props) => {
 
 
+    // FOR SEARCH FUNCTION ================================================================================================
     const [filteredList, findFilteredList] = useState(game);
     const [searching, findSearching] = useState("");
 
@@ -47,9 +48,12 @@ const GameScreen = (props) => {
 
     const [game, setGame] = useState ([]);
     const[uid, setUid] = useState('')
+
+    //UID OF USER ================================================================================================
     const currentUser = firebaseDb.auth().currentUser.uid;
 
 
+    //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
     const allGames = () => {
@@ -74,8 +78,7 @@ const GameScreen = (props) => {
                 Alert.alert("error", err);
             });
     }
-    // keeps the function running, so the items keep rerendering, will pose a problem as the page will
-    // keep rerendering itself, might make it difficult for users
+
     useEffect (() => {setTimeout(() =>{allGames(); setTimeout(()=>{},100000)}, 1000)})
 
 
