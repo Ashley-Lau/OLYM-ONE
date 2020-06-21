@@ -2,6 +2,7 @@ import React,{useState, useEffect} from 'react';
 import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import firebase from 'firebase';
+import * as admin from 'firebase-admin';
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
@@ -23,15 +24,15 @@ const GameItem = props => {
                 .get()
                 .then(doc => {
                     playerList.push(doc.data().username);
-                    console.log(playerList);
                 });
         })
         setPlayerUser(playerList);
     }
 
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
-    const gameJoin = () => {
+    const userRef = firebaseDb.firestore().collection('users').doc(props.user)
 
+    const gameJoin = () => {
         const slots = parseInt(props.title.availability) - 1
         gameRef.update({availability : slots.toString(), players:[...props.title.players, props.user]}).then(() => {})
     }
@@ -39,6 +40,8 @@ const GameItem = props => {
     const alreadyJoined = () => {
         if(props.title.players.includes(props.user)){
             Alert.alert("Already in Game!", "You are already joined this game!")
+        } else if(props.title.availability <= 0){
+            Alert.alert("Game is Full!", "There are no more slots available!")
         } else {
             gameJoin();
         }
