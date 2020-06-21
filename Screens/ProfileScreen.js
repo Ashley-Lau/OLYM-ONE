@@ -13,35 +13,6 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
 import firebaseDb from "../firebaseDb";
-import firebase from 'firebase';
-
-function uploadImage(uri, mime = 'application/octet-stream') {
-    return new Promise((resolve, reject) => {
-        const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
-        let uploadBlob = null
-
-        const imageRef = firebaseDb.storage().ref('images').child('image_001')
-
-        fs.readFile(uploadUri, 'base64')
-            .then((data) => {
-                return Blob.build(data, { type: `${mime};BASE64` })
-            })
-            .then((blob) => {
-                uploadBlob = blob
-                return imageRef.put(blob, { contentType: mime })
-            })
-            .then(() => {
-                uploadBlob.close()
-                return imageRef.getDownloadURL()
-            })
-            .then((url) => {
-                resolve(url)
-            })
-            .catch((error) => {
-                reject(error)
-            })
-    })
-}
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
@@ -65,23 +36,12 @@ const ProfileScreen = props => {
             firebaseDb.auth().currentUser.updatePassword(values.password).then()
                 .catch(error => error)
         }
-        console.log('mother fker')
-        let tempURI = data.uri
-        if (values.uri !== tempURI) {
-            console.log('fking cb')
-            uploadImage(tempURI)
-                .then(url => {
-                    console.log('mother die')
-                    tempURI = url
-                    })
-                .catch(error => console.log(error))
-        }
         firebaseDb.firestore().collection('users')
             .doc(data.id).update({
             firstName: values.firstName,
             lastName: values.lastName,
             username: values.username,
-            uri: tempURI,
+            uri: values.uri,
             password: values.password !== '' ? values.password : data.password,
         }).then(() => {
             setData({
@@ -89,7 +49,7 @@ const ProfileScreen = props => {
                 firstName: values.firstName,
                 lastName: values.lastName,
                 username: values.username,
-                uri: tempURI,
+                uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
             })
         }).catch(error => error)
@@ -136,9 +96,11 @@ const ProfileScreen = props => {
                                     Log Out
                                 </GradientButton>
                             </View>
-                            <View style = {{alignItems: 'center'}}>
+                            <View style = {{paddingLeft: 30}}>
                                 <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
-                                <Text style = {{fontSize: 20}}> UserName: {data.username} </Text>
+                                <Text style = {{fontSize: 20}}> Username: {data.username} </Text>
+                                <Text style = {{fontSize: 20}}> Email: {data.email}</Text>
+
                                 <Text style = {{fontSize: 20}}> DOB: {data.birthDate.toDate().toString().slice(4,15)}</Text>
                             </View>
 
