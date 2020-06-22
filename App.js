@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View} from 'react-native';
+import {View, YellowBox} from 'react-native';
 
 import LoginScreen from "./Screens/LoginScreen";
 import BottomTabs from "./Stack/BottomTabs";
@@ -11,6 +11,10 @@ import AnimatedSplash from "react-native-animated-splash-screen";
 import firebaseDb from "./firebaseDb";
 
 import {set} from "react-native-reanimated";
+
+YellowBox.ignoreWarnings([
+  'Non-serializable values were found in the navigation state',
+]);
 
 
 const Stack = createStackNavigator();

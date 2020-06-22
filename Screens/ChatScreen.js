@@ -1,5 +1,5 @@
 import React, {useState} from 'react';
-import {View, StyleSheet, Text, TextInput, Button, Keyboard, TouchableWithoutFeedback, KeyboardAvoidingView} from 'react-native';
+import {View, StyleSheet, Text, TextInput, Button, Keyboard, TouchableWithoutFeedback, TouchableOpacity, KeyboardAvoidingView} from 'react-native';
 
 import { GiftedChat } from 'react-native-gifted-chat'
 import Ionicons from 'react-native-vector-icons/Ionicons';
@@ -7,24 +7,27 @@ import {useNavigation} from "@react-navigation/native";
 
 import Background from "../views/Background";
 import CustButton from "../Components/CustButton";
-
+import firebaseDb from "../firebaseDb";
 
 const ChatScreen = props => {
     const navigation = useNavigation()
     const [data, setData]  = useState({
         messages: [{
-            _id: 1,
+            _id: 'dasdsadas',
             text: 'Hello developer',
             createdAt: new Date(),
             user: {
                 _id: 2,
                 name: 'React Native',
                 avatar: 'https://placeimg.com/140/140/any',
+                sent: true,
             },
         }],
     })
-
+    console.log('XiQiMscVpnXd35kpeVjM0WIUT6q2' < 'bkhZgJFymHcqRRFr0b718c0h9y83')
+    // const user = firebaseDb.ref
     const onSend = messages => {
+        console.log(messages)
         setData(previousState => ({
             messages: GiftedChat.append(previousState.messages, messages),
         }))
@@ -32,20 +35,22 @@ const ChatScreen = props => {
 
     const chat = <GiftedChat messages = {data.messages} onSend = {messages => onSend(messages)} user={{_id: 1,}}/>
 
-    return <TouchableWithoutFeedback onPress = {Keyboard.dismiss()} accessible = {false}>
-                <Background>
-                    <View style = {{flex: 1, backgroundColor: 'rgb(71,51,121)', justifyContent: 'space-around', flexDirection: 'row'}}>
-                        <CustButton style = {{backgroundColor: 'rgb(71,51,121)', justifyContent: 'center',}} onPress = {() => navigation.goBack()}>
-                            <Ionicons name="ios-arrow-back" color={'white'} size={50} />
-                            <Text style = {{fontSize: 40}}> back</Text>
-                        </CustButton>
-                        <Text style = {style.text}> Name </Text>
-                    </View>
+    return  <Background>
+                <View style = {{width: '100%', height: 60, backgroundColor: 'rgb(71,51,121)', flexDirection: 'row', alignItems: 'center'}}>
+                    <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
+                                      onPress = {() => navigation.goBack()}
+                                      activeOpacity= {0.8}>
+                        <Ionicons name="ios-arrow-back" color={'white'} size={40} />
+                        <Text style = {{fontSize: 30, marginLeft: 10, color: 'white'}}>Back</Text>
+                    </TouchableOpacity>
+                    <Text style = {{...style.text, marginLeft: 50, }}> Name </Text>
+                </View>
+                <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
                     <View style = {{flex: 10}}>
                         <GiftedChat messages = {data.messages} onSend = {messages => onSend(messages)} user={{_id: 1,}}/>
                     </View>
-                </Background>
-            </TouchableWithoutFeedback>
+                </TouchableWithoutFeedback>
+            </Background>
 }
 
 const style = StyleSheet.create({
