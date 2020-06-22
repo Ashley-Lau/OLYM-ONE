@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert} from 'react-native';
+import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
 
 // import Background from "../views/Background";
@@ -51,7 +51,7 @@ const GameScreen = (props) => {
 
     //UID OF USER ================================================================================================
     const currentUser = props.route.params.user.id;
-    console.log(props.route.params.user.username)
+    // console.log(props.route.params.user.username)
 
     //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
 
@@ -79,9 +79,6 @@ const GameScreen = (props) => {
             });
     }
 
-    // useEffect (() => {
-    //     setTimeout(() =>{allGames(); setTimeout(()=>{},100000)}, 1000)})
-
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <BackgroundTrial style = {styles.container}>
@@ -98,15 +95,28 @@ const GameScreen = (props) => {
                     </View>
                 </View>
 
-                {/*<View style={{flex:1, justifyContent: "space-around", marginTop:10}}>*/}
+                {game.length !== 0
+                    ?
                     <FlatList
-                        // key = {game.key.toString()}
-                        contentContainerStyle= {{justifyContent:"space-between"}}
-                        keyExtractor={(item) => item.key.toString()}
-                        data = {game}
-                        renderItem= {({item}) => <GameItem title={item.value} gameId={item.key} user={currentUser}/>}
-                    >
+                    // key = {game.key.toString()}
+                    contentContainerStyle= {{justifyContent:"space-between"}}
+                    keyExtractor={(item) => item.key.toString()}
+                    data = {game}
+                    renderItem= {({item}) => <GameItem updateGames ={allGames} title={item.value} gameId={item.key} user={currentUser}/>}
+                >
+
                     </FlatList>
+                    :
+                    <TouchableOpacity onPress={allGames} style = {{flex:1, justifyContent:"center", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="refresh" size={250} style={{color:"white"}}/>
+                        <Text style={{color:"white", fontSize:15}}>Please refresh to load games!</Text>
+
+                    </TouchableOpacity>
+
+                }
+
+
+
 
             </BackgroundTrial>
         </TouchableWithoutFeedback>

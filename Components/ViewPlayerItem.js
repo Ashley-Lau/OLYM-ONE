@@ -32,6 +32,7 @@ const ViewPlayerItem = props => {
 
                 <GradientButton style={{width:"100%", height:"10%", alignItem:"center", justifyContent: "center"}}
                                 onPress={() => {
+                                    // console.log(props.username)
                                     props.closePlayer();
                                 }}
                                 colors={["red", "maroon"]}>

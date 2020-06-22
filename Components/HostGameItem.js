@@ -28,11 +28,15 @@ const reviewSchema = yup.object({
 
 const HostGameItem = props => {
 
+    //ARRAY FOR PICKER ==============================================================================================================
+
     const sgLocations = ["Select","Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
     const sports = ["Select", "Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
-
+    //CLOSING HOST GAME ITEM ==============================================================================================================
     const closeHost = () => {props.closeHost()}
 
+
+    // UPDATING THE GAMEITEM AND DETAIL ==============================================================================================================
     const handleCreateGame = values => {
         firebaseDb.firestore()
             .collection('game_details')
@@ -42,9 +46,9 @@ const HostGameItem = props => {
                 notes: values.notes,
                 availability : values.slots,
                 date: values.date,
-                host: props.userName,
+                host: props.username,
                 price: values.price,
-                players: [props.userName]
+                players: [props.uid]
             })
             .then(() => {closeHost()})
             .catch(err => console.error(err))
@@ -61,8 +65,8 @@ const HostGameItem = props => {
 
             <ScrollView>
                 <Formik initialValues={{
-                    location: '',
-                    sport:'',
+                    location: 'Select',
+                    sport:'Select',
                     price:'',
                     slots:'',
                     date:new Date(),
@@ -88,6 +92,7 @@ const HostGameItem = props => {
                                         selectedValue={props.values.location}
                                         style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
                                         onValueChange={(itemValue, itemIndex) => {
+                                            console.log(props.values.location)
                                             props.setFieldValue('location', itemValue)
                                             props.setFieldTouched('location')
                                         }}
@@ -133,7 +138,7 @@ const HostGameItem = props => {
                                             style = {styles.dropDown}>
                                     <Text style = {{color: 'black', }}>{props.values.date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
                                 </CustButton>
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.date && props.errors.date}</Text>
+                                <Text style={{fontSize: 15, color: 'red'}}>{ props.touched.date && props.errors.date}</Text>
                             </View>
                             {props.values.showDate && (<RNDateTimePicker  value={props.values.date}
                                                                           display="spinner"
@@ -152,7 +157,6 @@ const HostGameItem = props => {
                                     <Text style = {{color: 'black', }}>{props.values.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
                                 </CustButton>
 
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.time && props.errors.time}</Text>
                             </View>
 
                             {props.values.showTime && (<RNDateTimePicker  value={props.values.date} display="spinner"
