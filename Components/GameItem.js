@@ -32,20 +32,15 @@ const GameItem = props => {
     }
     //GETTING USER UPCOMING_GAME ARRAY =================================================================================
     const [upcomingGame, setUpcomingGame] = useState([]);
+    const gamelist = [];
 
-    const userRef = firebaseDb.firestore().collection('users');
+    const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
     const getGames = () => {
         setUpcomingGame([])
         userRef.get()
-            .then(snapshot => {
-                let gamelist = [];
-                snapshot.forEach(doc => {
-                    if(doc.data().id === props.user){
-                        gamelist = doc.data().upcoming_games
-                    }
-                })
-                setUpcomingGame(gamelist);
+            .then(doc => {
+                setUpcomingGame(doc.data().upcoming_games)
             })
     }
 
@@ -135,6 +130,7 @@ const GameItem = props => {
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => {
                                                 username();
+                                                props.updateGames();
                                                 openPlayerDetails(true);}}
                                             colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                                 <Text>View Players</Text>
@@ -144,7 +140,10 @@ const GameItem = props => {
                     </View>
 
                     <View style={{...Styles.horizontalbuttonContainer}}>
-                        <GradientButton onPress={() => openGameDetails(false)}
+                        <GradientButton onPress={() => {
+                            props.updateGames();
+                            openGameDetails(false)
+                        }}
                                         colors={["red", "maroon"]}
                                         style={{...Styles.buttonSize, marginRight:75}}>
                             <Text>Cancel</Text>
@@ -153,7 +152,9 @@ const GameItem = props => {
                         <GradientButton style={{...Styles.buttonSize}}
                                         onPress={() => {
                                             alreadyJoined();
+                                            props.updateGames();
                                             openGameDetails(false);
+
                                         }}
                                         colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                             <Text>Join</Text>

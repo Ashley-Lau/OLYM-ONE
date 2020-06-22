@@ -28,6 +28,7 @@ const ProfileScreen = props => {
         email: user.email,
         id: user.id,
         uri: user.uri,
+        upcoming_games: user.upcoming_games
 
     })
     const[hostGame, setHostGame] = useState(false);
@@ -81,7 +82,9 @@ const ProfileScreen = props => {
                                 </View>
                                 <HostGameItem visible={hostGame}
                                               closeHost={() =>setHostGame(false)}
-                                              userName ={data.id}
+                                              uid ={data.id}
+                                              username = {data.username}
+                                              upcoming = {data.upcoming_games}
                                 />
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
