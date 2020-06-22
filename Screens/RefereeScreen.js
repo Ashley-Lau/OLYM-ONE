@@ -7,6 +7,7 @@ import RefereeItem from "../Components/RefereeItem";
 
 const RefereeScreen = props => {
 
+    const userId = props.route.params.user.id
     // to be replaced with the Firebase db
     const [refereeList, setRefereeList] = useState([
         {key: 0, value: ["Soccer", "Ashley"]},

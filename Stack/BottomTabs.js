@@ -26,9 +26,9 @@ const ProfileStack = (props) => {
             </Stack.Navigator>
 }
 
-const ChatStack = () => {
+const ChatStack = (props) => {
     return  <Stack.Navigator initialRouteName={ChatDetailScreen} headerMode={false}>
-                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen}/>
+                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams = {{user: props.extraData}}/>
                 <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
             </Stack.Navigator>
 }
@@ -63,6 +63,7 @@ const BottomTabs = (props) => {
         <Tab.Screen
             name="GameScreen"
             component={GameScreen}
+            initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'GAMES',
                 tabBarColor: '#7b0303',
@@ -71,9 +72,11 @@ const BottomTabs = (props) => {
                 ),
             }}
         />
+
         <Tab.Screen
             name="RefereeScreen"
             component={RefereeScreen}
+            initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'Referee',
                 tabBarColor: '#0f2471',
@@ -92,7 +95,9 @@ const BottomTabs = (props) => {
                     <MaterialCommunityIcons name="chat" color={color} size={26} />
                 ),
             }}
-        />
+        >
+            {prop => <ChatStack {...prop}  extraData = {props.extraData}/>}
+        </Tab.Screen>
     </Tab.Navigator>
 
 

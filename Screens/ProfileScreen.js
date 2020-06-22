@@ -6,6 +6,7 @@ import {
     Alert,
     ScrollView,
     Image,
+    Button,
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 
@@ -68,7 +69,6 @@ const ProfileScreen = props => {
             {cancelable: false}
         )
     }
-
     return <Background>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>
@@ -86,7 +86,7 @@ const ProfileScreen = props => {
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
                                                 textStyle = {{fontSize: 15}}
-                                                onPress = {() => navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData})}>
+                                                onPress = {() => navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)})}>
                                     Update details
                                 </GradientButton>
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
@@ -100,7 +100,6 @@ const ProfileScreen = props => {
                                 <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
                                 <Text style = {{fontSize: 20}}> Username: {data.username} </Text>
                                 <Text style = {{fontSize: 20}}> Email: {data.email}</Text>
-
                                 <Text style = {{fontSize: 20}}> DOB: {data.birthDate.toDate().toString().slice(4,15)}</Text>
                             </View>
 
@@ -117,6 +116,15 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
+                            {/*
+                                testing for chat app // remove only if you doing up this portion
+                            */}
+                            <GradientButton style={{width: "95%", height:"20%", marginTop: 20, marginLeft: 10}}
+                                            colors = {['#1bb479','#026c45']}
+                                            onPress={() => navigation.navigate('ChatScreen')}
+                                            textStyle = {{fontSize: 20}}>
+                                Sex chat
+                            </GradientButton>
                         </View>
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                             <View style = {style.titleBackground}>

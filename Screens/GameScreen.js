@@ -50,8 +50,8 @@ const GameScreen = (props) => {
     const[uid, setUid] = useState('')
 
     //UID OF USER ================================================================================================
-    const currentUser = firebaseDb.auth().currentUser.uid;
-
+    const currentUser = props.route.params.user.id;
+    console.log(props.route.params.user.username)
 
     //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
 
@@ -79,7 +79,8 @@ const GameScreen = (props) => {
             });
     }
 
-    useEffect (() => {setTimeout(() =>{allGames(); setTimeout(()=>{},100000)}, 1000)})
+    // useEffect (() => {
+    //     setTimeout(() =>{allGames(); setTimeout(()=>{},100000)}, 1000)})
 
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
