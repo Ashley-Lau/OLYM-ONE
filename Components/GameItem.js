@@ -1,7 +1,7 @@
 import React,{useState, useEffect} from 'react';
 import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import firebase from 'firebase';
+import * as firebase from 'firebase';
 
 
 import GradientButton from "./GradientButton";
@@ -9,6 +9,7 @@ import Styles from "../../OLYM-ONE/styling/Styles";
 import Background from "../views/Background";
 import firebaseDb from "../firebaseDb"
 import ViewPlayerItem from "../Components/ViewPlayerItem"
+import GameItemBackGround from "../views/GameItemBackGround";
 
 
 const GameItem = props => {
@@ -31,36 +32,25 @@ const GameItem = props => {
         setPlayerUser(playerList);
     }
     //GETTING USER UPCOMING_GAME ARRAY =================================================================================
-    const [upcomingGame, setUpcomingGame] = useState([]);
-    const gamelist = [];
-
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
-    const getGames = () => {
-        setUpcomingGame([])
-        userRef.get()
-            .then(doc => {
-                setUpcomingGame(doc.data().upcoming_games)
-            })
-    }
 
     //JOINING GAME ====================================================================================================================
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
 
     const gameJoin = () => {
-        getGames();
-
         const slots = parseInt(props.title.availability) - 1
-        gameRef.update({availability : slots.toString(), players:[...props.title.players, props.user]}).then(() => {})
-        userRef.update({upcoming_games: [...upcomingGame, props.gameId]}).then(() => {});
+        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.user)}).then(() => {})
+        userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayUnion(props.gameId)}).then(() => {});
     }
 
     const alreadyJoined = () => {
-
-
+        //rejects the join game request if the user is already in the game
         if(props.title.players.includes(props.user)){
-            Alert.alert("Already in Game!", "You are already joined this game!")
-        } else if(props.title.availability <= 0){
+            Alert.alert("Already in Game!", "You are already in this game!")
+        }
+        //rejects the join request if there are no slots left
+        else if(props.title.availability <= 0){
             Alert.alert("Game is Full!", "There are no more slots available!")
         } else {
             gameJoin();
@@ -75,29 +65,14 @@ const GameItem = props => {
 
     //SPORT ICON ================================================================================================================================
     let gameColor = "rgb(255,255,255)";
-    let sportIcon = <MaterialCommunityIcons name="soccer" size={35}/>
-    if(props.title.sport.toLowerCase() === "soccer"){
-        sportIcon = <MaterialCommunityIcons name="soccer" size={35} color={gameColor}/>
-    } else if(props.title.sport.toLowerCase() === "basketball"){
-        sportIcon = <MaterialCommunityIcons name="basketball" size={35} color={gameColor}/>
-    } else if(props.title.sport.toLowerCase() === "badminton"){
-        sportIcon = <MaterialCommunityIcons name="badminton" size={35} color={gameColor} />
-    } else if(props.title.sport.toLowerCase() === "floorball"){
-        sportIcon = <MaterialCommunityIcons name="hockey-sticks" size={35} color={gameColor}/>
-    } else if(props.title.sport.toLowerCase() === "tennis"){
-        sportIcon = <MaterialCommunityIcons name="tennis" size={35} color={gameColor}/>
-    } else {
-        sportIcon = <MaterialCommunityIcons name ="soccer-field" size={35} color={gameColor}/>
-    }
+    let sportIcon = props.title.sport.toLowerCase();
+
 
     //DATE AND TIME STRING ================================================================================================
     let gameDate = props.title.date
-    if(props.title.date){
-        gameDate = props.title.date.toDate().toString().slice(4,15);
-    }
-
     let gameTime = props.title.date
     if(props.title.date){
+        gameDate = props.title.date.toDate().toString().slice(4,15);
         gameTime = props.title.date.toDate().toString().slice(16,21);
     }
 
@@ -165,14 +140,13 @@ const GameItem = props => {
             </Modal>
             <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
-                <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
-                    {sportIcon}
-                    <Text style={{fontSize:18, color: gameColor, marginLeft:10}}>{props.title.sport} </Text>
-                </View>
+                <GameItemBackGround iconName={sportIcon}>
+                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.title.sport} </Text>
+                </GameItemBackGround>
 
                 <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"ghostwhite"}}> Date: {gameDate} </Text>
-                    <Text style={{fontSize:18, color:"ghostwhite"}}> Slots Left: {props.title.availability} </Text>
+                    <Text style={{fontSize:18, color:"black"}}> Date: {gameDate} </Text>
+                    <Text style={{fontSize:18, color:"black"}}> Slots Left: {props.title.availability} </Text>
                 </View>
             </TouchableOpacity>
         </View>
