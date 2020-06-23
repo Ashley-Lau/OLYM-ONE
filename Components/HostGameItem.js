@@ -48,7 +48,8 @@ const HostGameItem = props => {
                 date: values.date,
                 host: props.username,
                 price: values.price,
-                players: [props.uid]
+                players: [props.uid],
+                hostId: props.uid
             })
             .then(() => {closeHost()})
             .catch(err => console.error(err))

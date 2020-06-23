@@ -7,17 +7,24 @@ import {
     ScrollView,
     Image,
     Button,
+    FlatList,
+    TouchableOpacity
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import firebase from 'firebase';
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
+import UpcomingGameItem from "../Components/UpcomingGameItem";
 import firebaseDb from "../firebaseDb";
+import GameItem from "../Components/GameItem";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
 
+    // GETTING USER DATA ================================================================================================
     const user = props.route.params.user
     const [data, setData] = useState({
         firstName:  user.firstName,
@@ -31,8 +38,26 @@ const ProfileScreen = props => {
         upcoming_games: user.upcoming_games
 
     })
+    //GETTING UPCOMING GAMES =========================================================================================================
+    const [upcomingGameList, setList] = useState([])
+    const getUpcoming = () => {
+        let gameList = [];
+        for(x of data.upcoming_games){
+            firebaseDb.firestore().collection('game_details').doc(x)
+                .get()
+                .then(doc => {
+                    gameList.push({key:x, value:doc.data()})
+                    setList([...upcomingGameList, ...gameList])
+                }
+                )
+        }
+
+    }
+
+    //MODAL STATES =======================================================================================================
     const[hostGame, setHostGame] = useState(false);
 
+    //UPDATING USER DATA ================================================================================================
     const handleData = values => {
         if(values.password !== '') {
             firebaseDb.auth().currentUser.updatePassword(values.password).then()
@@ -57,6 +82,8 @@ const ProfileScreen = props => {
         }).catch(error => error)
     }
 
+
+    //LOG OUT FUNCTION ================================================================================================
     const logout = () => {
         Alert.alert("Confirm Log Out",
             "Do you want to log out?",
@@ -119,15 +146,37 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {/*
-                                testing for chat app // remove only if you doing up this portion
-                            */}
-                            <GradientButton style={{width: "95%", height:"20%", marginTop: 20, marginLeft: 10}}
-                                            colors = {['#1bb479','#026c45']}
-                                            onPress={() => navigation.navigate('ChatScreen')}
-                                            textStyle = {{fontSize: 20}}>
-                                Sex chat
-                            </GradientButton>
+                            {data.upcoming_games.length < 0
+                                ? <View>
+                                    <Text>No Upcoming Games!</Text>
+                                </View>
+
+                                :upcomingGameList.length > 0
+                                ?<ScrollView nestedScrollEnabled={true}>
+                                    {upcomingGameList.map(game =>
+                                        (
+                                            <UpcomingGameItem key={game.key}
+                                                              gameDetails={game.value}
+                                                              gameId={game.key}
+                                                              user={user.id}
+                                                              refresh={getUpcoming}
+                                            />
+                                        )
+                                    )}
+                                </ScrollView>
+
+                                : <View style={{justifyContent:"center", alignItems:"center"}}>
+                                    <TouchableOpacity onPress={() => {
+                                        getUpcoming()
+                                        console.log(upcomingGameList);
+
+                                    }} >
+                                        <MaterialCommunityIcons name="refresh" size ={25}/>
+                                    </TouchableOpacity>
+
+                                    <Text>Please Refresh!</Text>
+                                </View>
+                            }
                         </View>
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                             <View style = {style.titleBackground}>

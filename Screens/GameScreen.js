@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
 
-// import Background from "../views/Background";
+import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
-import BackgroundTrial from "../views/BackgroundTrial";
+// import BackgroundTrial from "../views/BackgroundTrial";
 import firebaseDb from "../firebaseDb";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
@@ -63,9 +63,13 @@ const GameScreen = (props) => {
                 const now = new Date().getTime();
                 snapshot.forEach( doc => {
                         const d = doc.data()
+                        //deletes gameitems that are overdue and
+                        //will not display game items that do not have slots left
                         if (d.date.toMillis() < now) {
                             doc.ref.delete().then(() => {
                             })
+                        } else if (d.availability <= 0){
+
                         } else {
                             someGame.push({key: doc.id, value: doc.data()});
                         }
@@ -81,12 +85,12 @@ const GameScreen = (props) => {
 
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <BackgroundTrial style = {styles.container}>
+            <Background style = {styles.container}>
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
                         <TextInput style={styles.searchInput}
                                    placeholder=" Keywords, Location, HostName"
-                                   placeholderTextColor="rgba(0,0,0,1.0)"
+                                   placeholderTextColor="#B9B9B9"
                                    onChangeText={searchHandler}
                                    value={searching}
                         />
@@ -108,8 +112,8 @@ const GameScreen = (props) => {
                     </FlatList>
                     :
                     <TouchableOpacity onPress={allGames} style = {{flex:1, justifyContent:"center", alignItems:"center"}}>
-                        <MaterialCommunityIcons name="refresh" size={250} style={{color:"white"}}/>
-                        <Text style={{color:"white", fontSize:15}}>Please refresh to load games!</Text>
+                        <MaterialCommunityIcons name="refresh" size={250} style={{color:"black"}}/>
+                        <Text style={{color:"black", fontSize:15}}>Please refresh to load games!</Text>
 
                     </TouchableOpacity>
 
@@ -118,7 +122,7 @@ const GameScreen = (props) => {
 
 
 
-            </BackgroundTrial>
+            </Background>
         </TouchableWithoutFeedback>
     )
 }
@@ -133,13 +137,13 @@ const styles = StyleSheet.create({
         flexDirection: "row",
         justifyContent:"space-between",
         alignItems:"center",
-        // borderWidth:1,
+        borderWidth:1,
         borderRadius:4,
         width:"98%",
         marginTop:36,
         marginBottom:10,
-        borderColor:"white",
-        backgroundColor:"ghostwhite"
+        borderColor:"black",
+        backgroundColor:"transparent"
     },
     searchInput:{
         width:"85%",
