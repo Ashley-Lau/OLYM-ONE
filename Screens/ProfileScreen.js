@@ -74,6 +74,7 @@ const ProfileScreen = props => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>
                         <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
+
                             <View style = {{flexDirection: 'row', justifyContent: 'space-around', paddingTop: 5,}}>
                                 <View style = {style.photoFrame}>
                                     <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
@@ -99,14 +100,15 @@ const ProfileScreen = props => {
                                     Log Out
                                 </GradientButton>
                             </View>
-                            <View style = {{paddingLeft: 30}}>
+
+                            <View style = {{paddingLeft: 30, marginTop: 10}}>
                                 <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
                                 <Text style = {{fontSize: 20}}> Username: {data.username} </Text>
                                 <Text style = {{fontSize: 20}}> Email: {data.email}</Text>
                                 <Text style = {{fontSize: 20}}> DOB: {data.birthDate.toDate().toString().slice(4,15)}</Text>
                             </View>
 
-                            <GradientButton style={{width: "95%", height:"14%", marginTop: 20, marginLeft: 10}}
+                            <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => setHostGame(true)}
                                             textStyle = {{fontSize: 20}}>

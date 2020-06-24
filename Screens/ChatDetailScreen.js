@@ -1,4 +1,4 @@
-import React, {useState}from 'react';
+import React, {useState, useEffect}from 'react';
 import {
     StyleSheet,
     Text,
@@ -22,19 +22,34 @@ import firebaseDb from "../firebaseDb";
 const ChatDetailScreen = (props) => {
     const navigation = useNavigation()
     const userId = props.route.params.user.id
-    const filteredList =
-        [   {key: '0', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'1', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'2', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'3', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'4', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'5', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'6', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'7', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'8', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'9', username: props.route.params.user.username, uri: props.route.params.user.uri},
-            {key:'10', username: props.route.params.user.username, uri: props.route.params.user.uri}]
-    // const donkey = firebaseDb.shared
+    // const userData = firebaseDb.firestore().collection('users').doc('userId').data()
+    const messagesRef = firebaseDb.firestore().collection('messages')
+
+
+    const [chatList, setChatList] = useState([])
+
+
+    useEffect(() => {
+        messagesRef
+            // .where('idArray', 'array-contains', userId)
+            .orderBy('lastMessageTime', 'desc')
+            .limit(10)
+            .onSnapshot(
+                querySnapshot => {
+                    console.log('donkeyddd')
+                    const newChat= []
+                    querySnapshot.forEach(doc => {
+                        newChat.push({key: doc.id, value: doc.data()})
+                    });
+                    console.log(newChat.length)
+                    console.log(userId)
+                    setChatList(newChat)
+                },
+                error => {
+                    console.log(error)
+                }
+            )
+    }, [])
 
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <Background >
@@ -53,15 +68,15 @@ const ChatDetailScreen = (props) => {
                 </View>
                 <FlatList
                     contentContainerStyle={{justifyContent: "space-between", width: '100%', borderTopWidth: 1, borderColor: 'black', }}
-                    // keyExtractor={(item) => item.key.toString()}
-                    data={filteredList}
+                    keyExtractor={(item) => item.key.toString()}
+                    data={chatList}
                     renderItem={({item}) =>
                         <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 80, backgroundColor: 'rgb(241,240,240)', flexDirection: 'row', borderBottomWidth: 1, borderColor: 'black',}}
                                           activeOpacity = {0.85}
-                                          onPress={() => navigation.navigate('ChatScreen')}>
-                            <Image source = {{uri: item.uri}} style = {{width: 60, height: 60, borderRadius: 120, marginLeft: 25, borderWidth: 0.6, borderColor: 'black'}}/>
+                                          onPress={() => navigation.navigate('ChatScreen', {chat: item.value})}>
+                            <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}} style = {{width: 60, height: 60, borderRadius: 120, marginLeft: 25, borderWidth: 0.6, borderColor: 'black'}}/>
                             <Text style = {{fontSize: 20, marginLeft: 25, fontWeight: 'bold'}}>
-                                {item.username}
+                                {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
                             </Text>
                         </TouchableOpacity>}
                 />
