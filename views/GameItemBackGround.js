@@ -6,15 +6,15 @@ const GameItemBackGround = props => {
     let icon = require("../assets/other_games.png")
     let style = styles.imageBack
     if(props.iconName === "basketball"){
-        icon = require("../assets/basketball.png")
+        icon = require("../assets/basketball_coloured.png")
     } else if(props.iconName === 'badminton'){
-        icon = require("../assets/badminton.png")
+        icon = require("../assets/badminton_coloured.png")
     } else if(props.iconName === 'tennis'){
-        icon = require("../assets/tennis.png")
+        icon = require("../assets/tennis_coloured.png")
     } else if(props.iconName === 'floorball'){
-        icon = require("../assets/floorball.png")
+        icon = require("../assets/floorball_coloured.png")
     } else if(props.iconName === 'soccer'){
-        icon = require("../assets/soccer.png")
+        icon = require("../assets/soccer_coloured.png")
     }
     return (
 
