@@ -16,21 +16,23 @@ import ViewPlayerItem from "../Components/ViewPlayerItem"
 const UpcomingGameItem = props => {
 
     // LIST OF PLAYERS ================================================================================================
-    // const [playerList, setPlayerList] = useState([]);
-    //
-    // const userName = () => {
-    //     setPlayerList([]);
-    //     let playerlist = [];
-    //     props.gameDetails.players.map(uid => {
-    //         firebaseDb.firestore().collection('users')
-    //             .doc(uid)
-    //             .get()
-    //             .then(doc => {
-    //                 playerlist.push(doc.data().username);
-    //             });
-    //     })
-    //     setPlayerList(playerList);
-    // }
+    const [playerList, setPlayerList] = useState([]);
+
+    const userName = () => {
+        setPlayerList([]);
+        let playerlist = [];
+        props.gameDetails.players.map(uid => {
+            firebaseDb.firestore().collection('users').doc(uid)
+                .onSnapshot(doc => {
+                    playerlist.push(doc.data().username);
+                })
+        })
+        setPlayerList(playerList);
+    }
+
+    useEffect(() => {
+        userName();
+    }, [])
 
     //CONFIRM QUIT GAME ================================================================================================================
     const confirmQuitAlert = () =>{
@@ -47,7 +49,6 @@ const UpcomingGameItem = props => {
                     onPress:() => {
                         gameQuit();
                         setGameDetails(false);
-                        props.refresh();
                     },
                 }
             ]
@@ -86,10 +87,10 @@ const UpcomingGameItem = props => {
 
 
     return (<View>
-            {/*<ViewPlayerItem visible={playerDetails}*/}
-            {/*                closePlayer={() => setPlayerDetails(false)}*/}
-            {/*                username={playerList}*/}
-            {/*/>*/}
+            <ViewPlayerItem visible={playerDetails}
+                            closePlayer={() => setPlayerDetails(false)}
+                            username={playerList}
+            />
             <Modal visible = {gameDetails} animationType="slide">
                 <Background style={{top: 0,right:0, position:"absolute"}}/>
 
@@ -109,14 +110,12 @@ const UpcomingGameItem = props => {
                             <Text style={{fontSize:20}}>{props.gameDetails.notes}</Text>
                             <Text style={{fontSize:20}}>Slots Left: {props.gameDetails.availability}</Text>
 
-                            {/*<GradientButton style={{...Styles.buttonSize, height: '7%'}}*/}
-                            {/*                onPress={() => {*/}
-                            {/*                    userName();*/}
-                            {/*                    props.refresh();*/}
-                            {/*                    setPlayerDetails(true);}}*/}
-                            {/*                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>*/}
-                            {/*    <Text>View Players</Text>*/}
-                            {/*</GradientButton>*/}
+                            <GradientButton style={{...Styles.buttonSize, height: '7%'}}
+                                            onPress={() => {
+                                                setPlayerDetails(true);}}
+                                            colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
+                                <Text>View Players</Text>
+                            </GradientButton>
                             <View style = {{marginBottom: 10}} />
                         </ScrollView>
                     </View>

@@ -57,31 +57,38 @@ const GameScreen = (props) => {
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
     const allGames = () => {
-        gamesRef.get()
-            . then(snapshot => {
-                const someGame =[];
-                const now = new Date().getTime();
-                snapshot.forEach( doc => {
-                        const d = doc.data()
-                        //deletes gameitems that are overdue and
-                        //will not display game items that do not have slots left
-                        if (d.date.toMillis() < now) {
-                            doc.ref.delete().then(() => {
-                            })
-                        } else if (d.availability <= 0){
+        gamesRef
+            .orderBy("date", "asc")
+            .limit(15)
+            .onSnapshot(snapshot => {
+                    const someGame = [];
+                    const now = new Date().getTime();
+                    let num = 1;
+                    snapshot.forEach( doc => {
+                            const d = doc.data();
+                            console.log("nimama reloading " + num);
+                            num = num + 1;
+                            if(d.date.toMillis() < now){
+                                doc.ref.delete().then(()=>{});
+                            } else if(d.availability <= 0){}
+                            else {
+                                someGame.push({key:doc.id, value:doc.data()});
+                            }
 
-                        } else {
-                            someGame.push({key: doc.id, value: doc.data()});
                         }
-                    }
-                )
-                setGame(someGame)
-            })
 
-            .catch(err => {
-                Alert.alert("error", err);
-            });
+                    )
+                    setGame(someGame);
+                },
+                error => {
+                    Alert.alert("error", error)
+                })
     }
+    useEffect(() => {
+        allGames();
+
+    }, [])
+
 
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
@@ -106,21 +113,19 @@ const GameScreen = (props) => {
                     contentContainerStyle= {{justifyContent:"space-between"}}
                     keyExtractor={(item) => item.key.toString()}
                     data = {game}
-                    renderItem= {({item}) => <GameItem updateGames ={allGames} title={item.value} gameId={item.key} user={currentUser}/>}
+                    renderItem= {({item}) => <GameItem  title={item.value}
+                                                        // updateGames ={allGames}
+                                                        gameId={item.key} user={currentUser}/>}
                 >
 
                     </FlatList>
                     :
-                    <TouchableOpacity onPress={allGames} style = {{flex:1, justifyContent:"center", alignItems:"center"}}>
-                        <MaterialCommunityIcons name="refresh" size={250} style={{color:"black"}}/>
-                        <Text style={{color:"black", fontSize:15}}>Please refresh to load games!</Text>
+                    <TouchableOpacity style = {{flex:1, justifyContent:"center", alignItems:"center"}}>
+                        <Text style={{color:"black", fontSize:15}}>There are currently no games!</Text>
 
                     </TouchableOpacity>
 
                 }
-
-
-
 
             </Background>
         </TouchableWithoutFeedback>
