@@ -1,17 +1,19 @@
 import React, {useEffect, useState} from 'react';
 import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
+import {useNavigation} from "@react-navigation/native";
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
-// import BackgroundTrial from "../views/BackgroundTrial";
 import firebaseDb from "../firebaseDb";
+
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 
 const GameScreen = (props) => {
+    const navigation = useNavigation()
 
 
     // FOR SEARCH FUNCTION ================================================================================================
@@ -84,12 +86,11 @@ const GameScreen = (props) => {
                     Alert.alert("error", error)
                 })
     }
+
     useEffect(() => {
         allGames();
 
     }, [])
-
-
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <Background style = {styles.container}>

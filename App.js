@@ -4,6 +4,7 @@ import {View, YellowBox} from 'react-native';
 import LoginScreen from "./Screens/LoginScreen";
 import BottomTabs from "./Stack/BottomTabs";
 import SignupScreen from "./Screens/SignupScreen"
+import ResetPasswordScreen from "./Screens/ResetPasswordScreen";
 
 import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
@@ -64,6 +65,7 @@ export default function App() {
                   <>
                   <Stack.Screen name='LoginScreen' component={LoginScreen}/>
                   <Stack.Screen name='SignupScreen' component={SignupScreen}/>
+                  <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen}/>
                   </>
                 )
               }

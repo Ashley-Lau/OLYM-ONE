@@ -8,21 +8,24 @@ import {
     Keyboard,
     TouchableWithoutFeedback,
     Image,
-    FlatList
+    FlatList,
+    SafeAreaView
 } from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
 
-import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
-import RefereeItem from "../Components/RefereeItem";
 import firebaseDb from "../firebaseDb";
 
 
 const ChatDetailScreen = (props) => {
     const navigation = useNavigation()
     const userId = props.route.params.user.id
-    // const userData = firebaseDb.firestore().collection('users').doc('userId').data()
+    // const userData = firebaseDb.firestore().collection('users')
+    //     .doc('userId').get()
+    //     .then(doc => {return doc.data()})
+    //     .catch(error => console.log(error))
+    const userData = {username: 'donkey', uri: 'fker'}
     const messagesRef = firebaseDb.firestore().collection('messages')
 
 
@@ -30,57 +33,113 @@ const ChatDetailScreen = (props) => {
 
 
     useEffect(() => {
-        messagesRef
-            // .where('idArray', 'array-contains', userId)
-            .orderBy('lastMessageTime', 'desc')
-            .limit(10)
-            .onSnapshot(
-                querySnapshot => {
-                    console.log('donkeyddd')
-                    const newChat= []
-                    querySnapshot.forEach(doc => {
-                        newChat.push({key: doc.id, value: doc.data()})
-                    });
-                    console.log(newChat.length)
-                    console.log(userId)
-                    setChatList(newChat)
-                },
-                error => {
-                    console.log(error)
-                }
-            )
+        const unsubscribe = messagesRef
+                                .where('idArray', 'array-contains', userId)
+                                .orderBy('lastMessageTime', 'desc')
+                                .limit(10)
+                                .onSnapshot(
+                                    querySnapshot => {
+                                        const newChat= []
+                                        querySnapshot.forEach(doc => {
+                                            newChat.push({key: doc.id, value: doc.data(), oldUserInfo: {username: userData.username, uri: userData.uri}})
+                                        });
+                                        setChatList(newChat)
+                                    },
+                                    error => {
+                                        console.log(error)
+                                    }
+                                )
+        return () => unsubscribe()
     }, [])
 
+    // function to calculate the time to display in each flatlist / chat component
+    const displayTime = (timestamp) => {
+        const temp = new Date();
+        const sgTimestamp = temp.getTime() + (temp.getTimezoneOffset() * 60000) + (3600000*8)
+        const sgTime = new Date(sgTimestamp)
+        const timestampToDate = timestamp.toDate()
+        const timestampDiff = sgTimestamp / 1000  - timestamp.seconds
+        const dayDiff = sgTime.getDate() - timestampToDate.getDate()
+        if(timestampDiff < 172800 && (dayDiff === 0)) {
+            const time = timestampToDate.toString().slice(16, 21)
+            // 24 hours
+            const fullHours = parseInt(time.slice(0,2), 10)
+            // conversion to 12 hours
+            const hours = fullHours > 12 ? fullHours % 12 : fullHours
+            const suffix = (fullHours >= 12)? ' PM' : ' AM';
+            return hours + time.slice(2,5) + suffix
+        }
+        if(timestampDiff < 604800) {
+            return timestampToDate.toString().slice(0, 3)
+        }
+        return timestampToDate.toLocaleDateString()
+    }
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <Background >
-                <View style = {{alignItems: 'center', justifyContent: 'center',height: 60, width: '100%', backgroundColor: 'rgb(71,51,121)'}}>
+            {/*<Background>*/}
+                <SafeAreaView>
+                <View style = {{justifyContent: 'center',height: 50, width: '100%',}}>
                     <Text style = {style.text}> Chats</Text>
                 </View>
-                <View style={style.searchBar}>
-                    <TextInput style={style.searchInput}
+                <View style={{...style.searchBar, }}>
+                    <View style = {{left: 10, width: '5%'}}>
+                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {Keyboard.dismiss();}}/>
+                    </View>
+                    <TextInput style={{...style.searchInput, }}
                                placeholder= "Username, Group"
                                placeholderTextColor="#414141"
                                onChangeText={() => {}}
                                // value={}
                     />
-                    {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {Keyboard.dismiss();}}/>
                 </View>
                 <FlatList
-                    contentContainerStyle={{justifyContent: "space-between", width: '100%', borderTopWidth: 1, borderColor: 'black', }}
+                    contentContainerStyle={{width: '100%', borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
                     keyExtractor={(item) => item.key.toString()}
                     data={chatList}
                     renderItem={({item}) =>
-                        <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 80, backgroundColor: 'rgb(241,240,240)', flexDirection: 'row', borderBottomWidth: 1, borderColor: 'black',}}
+                        <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 75, backgroundColor: '#f4f4f4', flexDirection: 'row',}}
                                           activeOpacity = {0.85}
-                                          onPress={() => navigation.navigate('ChatScreen', {chat: item.value})}>
-                            <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}} style = {{width: 60, height: 60, borderRadius: 120, marginLeft: 25, borderWidth: 0.6, borderColor: 'black'}}/>
-                            <Text style = {{fontSize: 20, marginLeft: 25, fontWeight: 'bold'}}>
-                                {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
-                            </Text>
+                                          onPress={() => navigation.navigate('ChatScreen', {chat: item.value, userId: userId})}>
+                            {/*========================================image of the other user===========================================*/}
+                            <View style = {{width: '20%'}}>
+                                <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}}
+                                       style = {style.image}/>
+                            </View>
+
+                            <View style = {{alignItems: 'center', width: '80%', height: 75, flexDirection: 'row', borderBottomWidth: 0.3, borderColor: 'grey',justifyContent: 'space-between',}}>
+                                {/*=======================================Name and last message============================================*/}
+                                <View style = {{flexDirection: 'column',}}>
+                                    <Text style = {{fontSize: 20, fontWeight: 'bold'}}>
+                                        {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
+                                    </Text>
+                                    <Text style = {{fontSize: 15,}}>
+                                        {item.value.lastMessage.toString().length > 20
+                                            ? item.value.lastMessage.slice(0,19) + '...'
+                                            : item.value.lastMessage.toString().length === 0
+                                                ? ''
+                                                : item.value.lastMessage.slice(0,19)
+                                        }
+                                    </Text>
+                                </View>
+                                {/*======================================unread messages and time============================================*/}
+                                <View style = {{color: 'black', justifyContent: 'center', marginRight: 9, alignItems: 'flex-end'}}>
+                                    <Text style = {{fontSize: 16}}>{displayTime(item.value.lastMessageTime)}</Text>
+                                    {item.value.lastMessageFrom === userId || item.value.notificationStack === 0
+                                        ? <View>
+                                            <Text style = {{color: 'white', borderRadius: 60}}> </Text>
+                                            </View>
+                                        : <View style = {{borderRadius: 60, backgroundColor: '#1F45FC'}}>
+                                            <Text style = {{color: 'white', fontWeight: 'bold'}}>
+                                                  {'  ' + item.value.notificationStack + '  '}
+                                            </Text>
+                                            </View>
+                                    }
+                                </View>
+                            </View>
+
                         </TouchableOpacity>}
                 />
-            </Background>
+            </SafeAreaView>
+            {/*</Background>*/}
             </TouchableWithoutFeedback>
 }
 
@@ -91,28 +150,39 @@ const style = StyleSheet.create({
         flexDirection:"column"
     },
     text: {
-        color: 'white',
+        top: 10,
+        color: '#232323',
         justifyContent: 'center',
-        fontSize: 30,
+        fontSize: 27,
         fontWeight: "bold",
+        marginLeft: 4
     },
     searchBar:{
         flexDirection: "row",
         justifyContent:"space-between",
         alignItems:"center",
-        borderWidth:1,
         borderRadius:4,
         width:'96%',
+        height: 40,
         marginTop:10,
         marginBottom:10,
-        alignSelf: 'center'
+        alignSelf: 'center',
+        backgroundColor: '#E5E4E2',
     },
     searchInput:{
-        width:"85%",
+        width:"95%",
         height:45,
-        fontSize:20,
-        marginLeft: 7,
+        fontSize:17,
+        marginLeft: 13,
     },
+    image: {
+        width: 60,
+        height: 60,
+        borderRadius: 120,
+        marginLeft: 12,
+        borderWidth: 0.5,
+        borderColor: 'grey'
+    }
 })
 
 export default ChatDetailScreen;

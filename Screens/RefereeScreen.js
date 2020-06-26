@@ -5,7 +5,7 @@ import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import RefereeItem from "../Components/RefereeItem";
 
-const RefereeScreen = props => {
+const RefereeScreen = (props) => {
 
     const userId = props.route.params.user.id
     // to be replaced with the Firebase db
