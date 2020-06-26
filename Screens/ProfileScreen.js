@@ -28,7 +28,7 @@ const ProfileScreen = props => {
     // GETTING USER DATA ================================================================================================
     const user = props.route.params.user
     const [data, setData] = useState({
-        firstName:  user.firstName,
+        firstName: user.firstName,
         lastName: user.lastName,
         username: user.username,
         password: user.password,
@@ -56,15 +56,41 @@ const ProfileScreen = props => {
         data.upcoming_games.map(id => {
             firebaseDb.firestore().collection('game_details').doc(id)
                 .onSnapshot(doc => {
-                    gameList.push({key:id, value:doc.data()})
+                    gameList.push({key: id, value: doc.data()})
                 })
         })
-        setList([...upcomingGameList,...gameList])
+        setList([...upcomingGameList, ...gameList])
     }
 
     useEffect(() => {
         getUpcoming()
     }, [])
+
+    const updateUserNameOrUri = (values) => {
+        const messageRef = firebaseDb.firestore().collection('messages')
+        messageRef
+            .where('smallerId', 'array-contains', data.id)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = messageRef.doc(doc.id)
+                    batch.update(docRef, {smallerId: [data.id, values.username, values.uri]})
+                })
+                batch.commit().catch(error => console.log(error))
+            }).catch(error => console.log(error))
+        messageRef
+            .where('largerId', 'array-contains', data.id)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = messageRef.doc(doc.id)
+                    batch.update(docRef, {largerId: [data.id, values.username, values.uri]})
+                })
+                batch.commit().catch(error => console.log(error))
+            }).catch(error => console.log(error))
+    }
 
 
 
@@ -77,6 +103,30 @@ const ProfileScreen = props => {
             firebaseDb.auth().currentUser.updatePassword(values.password).then()
                 .catch(error => error)
         }
+
+        //need to update username of chats and hostgame items
+        if (values.username !== data.username) {
+            updateUserNameOrUri(values)
+            const gameRef = firebaseDb.firestore().collection('game_details')
+            gameRef
+                .where('hostId','==', data.id)
+                .get()
+                .then(response => {
+                    let batch = firebaseDb.firestore().batch()
+                    response.docs.forEach((doc) => {
+                        const docRef = gameRef.doc(doc.id)
+                        batch.update(docRef, {host: values.username})
+                    })
+                    batch.commit().catch(error => console.log(error))
+                })
+                .catch(error => console.log(error))
+        }
+
+        // update only the image uri of chats
+        if (values.username === data.username && data.uri !== values.uri) {
+            updateUserNameOrUri(values)
+        }
+
         firebaseDb.firestore().collection('users')
             .doc(data.id).update({
             firstName: values.firstName,
