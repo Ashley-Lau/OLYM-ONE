@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -41,19 +41,32 @@ const ProfileScreen = props => {
 
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([])
+
+    // const updateUpcoming = () => {
+    //     firebaseDb.firestore().collection('users').doc(data.id)
+    //         .onSnapshot(doc => {
+    //             setData({...data, upcoming_games: doc.data().upcoming_games}
+    //             )
+    //         })
+    //     console.log(data.upcoming_games)
+    // }
+
     const getUpcoming = () => {
         let gameList = [];
-        for(x of data.upcoming_games){
-            firebaseDb.firestore().collection('game_details').doc(x)
-                .get()
-                .then(doc => {
-                    gameList.push({key:x, value:doc.data()})
-                    setList([...upcomingGameList, ...gameList])
-                }
-                )
-        }
-
+        data.upcoming_games.map(id => {
+            firebaseDb.firestore().collection('game_details').doc(id)
+                .onSnapshot(doc => {
+                    gameList.push({key:id, value:doc.data()})
+                })
+        })
+        setList([...upcomingGameList,...gameList])
     }
+
+    useEffect(() => {
+        getUpcoming()
+    }, [])
+
+
 
     //MODAL STATES =======================================================================================================
     const[hostGame, setHostGame] = useState(false);
@@ -159,30 +172,28 @@ const ProfileScreen = props => {
                                 </View>
 
                                 :upcomingGameList.length > 0
-                                ?<ScrollView nestedScrollEnabled={true}>
-                                    {upcomingGameList.map(game =>
-                                        (
-                                            <UpcomingGameItem key={game.key}
-                                                              gameDetails={game.value}
-                                                              gameId={game.key}
-                                                              user={user.id}
-                                                              refresh={getUpcoming}
-                                            />
-                                        )
-                                    )}
-                                </ScrollView>
+                                    ?<ScrollView nestedScrollEnabled={true}>
+                                        {upcomingGameList.map(game =>
+                                            (
+                                                <UpcomingGameItem key={game.key}
+                                                                  gameDetails={game.value}
+                                                                  gameId={game.key}
+                                                                  user={user.id}
+                                                />
+                                            )
+                                        )}
+                                    </ScrollView>
 
-                                : <View style={{justifyContent:"center", alignItems:"center"}}>
-                                    <TouchableOpacity onPress={() => {
-                                        getUpcoming()
-                                        console.log(upcomingGameList);
+                                    : <View style={{justifyContent:"center", alignItems:"center"}}>
+                                        <TouchableOpacity onPress={() => {
+                                            getUpcoming()
 
-                                    }} >
-                                        <MaterialCommunityIcons name="refresh" size ={25}/>
-                                    </TouchableOpacity>
+                                        }} >
+                                            <MaterialCommunityIcons name="refresh" size ={25}/>
+                                        </TouchableOpacity>
 
-                                    <Text>Please Refresh!</Text>
-                                </View>
+                                        <Text>Please Refresh!</Text>
+                                    </View>
                             }
                         </View>
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>

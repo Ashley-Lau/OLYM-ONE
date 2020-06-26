@@ -24,13 +24,16 @@ const GameItem = props => {
         props.title.players.map(uid => {
             firebaseDb.firestore().collection('users')
                 .doc(uid)
-                .get()
-                .then(doc => {
+                .onSnapshot(doc => {
                     playerList.push(doc.data().username);
-                });
+            })
         })
         setPlayerUser(playerList);
     }
+
+    useEffect(() => {
+        username();
+    }, [])
     //GETTING USER UPCOMING_GAME ARRAY =================================================================================
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
@@ -104,8 +107,7 @@ const GameItem = props => {
 
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => {
-                                                username();
-                                                props.updateGames();
+                                                console.log(playerUser);
                                                 openPlayerDetails(true);}}
                                             colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                                 <Text>View Players</Text>
@@ -116,7 +118,6 @@ const GameItem = props => {
 
                     <View style={{...Styles.horizontalbuttonContainer}}>
                         <GradientButton onPress={() => {
-                            props.updateGames();
                             openGameDetails(false)
                         }}
                                         colors={["red", "maroon"]}
@@ -127,7 +128,6 @@ const GameItem = props => {
                         <GradientButton style={{...Styles.buttonSize}}
                                         onPress={() => {
                                             alreadyJoined();
-                                            props.updateGames();
                                             openGameDetails(false);
 
                                         }}
