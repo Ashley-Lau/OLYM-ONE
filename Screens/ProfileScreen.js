@@ -21,6 +21,7 @@ import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
+
 const ProfileScreen = props => {
     const navigation = useNavigation();
 
@@ -36,8 +37,8 @@ const ProfileScreen = props => {
         id: user.id,
         uri: user.uri,
         upcoming_games: user.upcoming_games
-
     })
+
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([])
     const getUpcoming = () => {
@@ -79,7 +80,10 @@ const ProfileScreen = props => {
                 uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
             })
-        }).catch(error => error)
+        }).catch(error => {
+            console.log(error)
+            alert(error)
+        })
     }
 
 
@@ -97,6 +101,7 @@ const ProfileScreen = props => {
             {cancelable: false}
         )
     }
+
     return <Background>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>

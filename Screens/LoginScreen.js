@@ -23,7 +23,8 @@ const LoginScreen = (props) => {
     const backSunset = require("../assets/sunset_running_newstyle.png");
     const logo = require("../assets/OLYMONE.png")
 
-    const alertMessage = () => Alert.alert("Invalid Email or Password",
+    const alertMessage = () => Alert.alert(
+        "Invalid Email or Password",
         "Please enter a valid email address and password.",
         [
             {text:"Confirm", onPress: () => {},  style:'cancel'}
@@ -48,6 +49,9 @@ const LoginScreen = (props) => {
                         if (!firestoreDocument.exists) {
                             alert("User does not exist anymore.")
                             return;
+                        }
+                        if(password !== firestoreDocument.data().password) {
+                            usersRef.doc(uid).update({password: password}).catch(error => console.log(error))
                         }
                     })
                     .catch(error => {
@@ -110,6 +114,9 @@ const LoginScreen = (props) => {
                                 Sign Up
                             </GradientButton>
                         </View>
+                        <Text style = {{fontSize: 20, fontWeight: 'bold', top: 10}}> Forgot password?
+                            <Text style = {{color: '#1F45FC'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
+                        </Text>
                     </View>
                 </ImageBackground>
             </TouchableWithoutFeedback>);
@@ -131,7 +138,7 @@ const style = StyleSheet.create({
         backgroundColor: '#ffffff99',
         marginTop: 20,
         width: 300,
-        height: 300,
+        height: 320,
         borderRadius: 10,
         textAlign: 'center',
         alignItems: 'center',

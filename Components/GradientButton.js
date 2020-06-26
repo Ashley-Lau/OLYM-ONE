@@ -14,6 +14,7 @@ const styles = StyleSheet.create({
     container: {
         borderRadius: 10,
         elevation: 5,
+        alignSelf: 'center'
     },
     text: {
         fontSize: 20,

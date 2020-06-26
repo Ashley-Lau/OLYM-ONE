@@ -100,9 +100,9 @@ const SignupScreen = props => {
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <ImageBackground source = {require('../assets/sunset_running_newstyle.png')} style={Styles.container}>
-                <View style = {style.empty}/>
+                <View style = {{flex: 1}}/>
                 <Animatable.View style = {style.popout} animation = "fadeInUpBig">
-                    <Text style = {{fontSize: 30, borderBottomWidth: 2, borderBottomColor: 'black'}}>
+                    <Text style = {{fontSize: 30, fontWeight: 'bold', borderBottomWidth: 4, borderBottomColor: 'black'}}>
                         Sign Up
                     </Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
@@ -192,8 +192,8 @@ const SignupScreen = props => {
 
                                     <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
                                         <GradientButton onPress={() => {
-                                            cancelledPress()
-                                            props.handleReset()}}
+                                                            cancelledPress()
+                                                            props.handleReset()}}
                                                         style={style.button}
                                                         colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
                                             Cancel
@@ -226,9 +226,6 @@ const style = StyleSheet.create({
         alignItems: 'center',
         opacity: 0.6,
     },
-    empty: {
-        flex: 1,
-    },
     dropDown: {
         marginTop: 18,
         justifyContent: 'center',
@@ -239,5 +236,6 @@ const style = StyleSheet.create({
     },
     button: {
         width: 100,
+        height: 45
     }
 })

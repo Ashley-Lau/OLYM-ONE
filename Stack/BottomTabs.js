@@ -71,6 +71,15 @@ const BottomTabs = (props) => {
                     <Ionicons name="ios-football" color={color} size={26} />
                 ),
             }}
+            // uncomment to play
+            // listeners={ ({navigation}) => ({
+            //     tabPress: event => {
+            //         // console.log(event)
+            //         // console.log(navigation)
+            //         event.preventDefault()
+            //         navigation.navigate('ProfileScreen')
+            //     }
+            // })}
         />
 
         <Tab.Screen
