@@ -21,19 +21,17 @@ import firebaseDb from "../firebaseDb";
 const ChatDetailScreen = (props) => {
     const navigation = useNavigation()
     const userId = props.route.params.user.id
-    // const userData = firebaseDb.firestore().collection('users')
-    //     .doc('userId').get()
-    //     .then(doc => {return doc.data()})
-    //     .catch(error => console.log(error))
     const userData = {username: 'donkey', uri: 'fker'}
     const messagesRef = firebaseDb.firestore().collection('messages')
 
 
     const [chatList, setChatList] = useState([])
 
-
+    console.log('nimama')
     useEffect(() => {
         const unsubscribe = messagesRef
+                                .where('messageCount', '==', 1)
+                                // .orderBy('messageCount')
                                 .where('idArray', 'array-contains', userId)
                                 .orderBy('lastMessageTime', 'desc')
                                 .limit(10)
@@ -54,6 +52,9 @@ const ChatDetailScreen = (props) => {
 
     // function to calculate the time to display in each flatlist / chat component
     const displayTime = (timestamp) => {
+        if (timestamp == '') {
+            return ''
+        }
         const temp = new Date();
         const sgTimestamp = temp.getTime() + (temp.getTimezoneOffset() * 60000) + (3600000*8)
         const sgTime = new Date(sgTimestamp)
