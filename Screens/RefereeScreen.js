@@ -1,22 +1,37 @@
-import React, {useState} from 'react';
-import {View, TextInput, StyleSheet, FlatList,} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import {View, TextInput, StyleSheet, FlatList,TouchableOpacity, Text} from 'react-native';
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import RefereeItem from "../Components/RefereeItem";
+import firebaseDb from '../firebaseDb';
 
 const RefereeScreen = (props) => {
 
+    // CURRENT USER ===========================================================================================
     const userId = props.route.params.user.id
-    // to be replaced with the Firebase db
-    const [refereeList, setRefereeList] = useState([
-        {key: 0, value: ["Soccer", "Ashley"]},
-        {key: 1, value: ["BasketBall", "Dennis"]},
-        {key: 2, value: ["Badminton", "Lum Jian Yang"]},
-        {key: 3, value: ["Floorball", "Kenny Seeeeeet"]},
-        {key: 4, value: ["Badminton", "JoeAlpharius"]},
-        {key: 5, value: ["Soccer", "KeaneChan"]}
-    ]);
+
+    // GETTING REFEREE DETAILS ======================================================================================
+    const [refereeList, setRefereeList] = useState([])
+    const getReferee = () => {
+        firebaseDb.firestore().collection("users")
+            .limit(15)
+            .onSnapshot(snapshot => {
+                let refList = [];
+                snapshot.forEach(doc => {
+                    if(doc.data().id === userId){}
+                    else if(doc.data().referee[0]){
+                        refList.push({key:doc.data().id, value:doc.data()});
+                    }
+                })
+                setRefereeList(refList)
+            })
+    }
+    useEffect(() => {
+        getReferee();
+    }, [])
+
+    //SEARCH AND FILTER INCOMPLETE ==============================================================================
 
     const [filteredList, findFilteredList] = useState([...refereeList]);
     const [searching, findSearching] = useState("");
@@ -66,9 +81,9 @@ const RefereeScreen = (props) => {
             <View style={{justifyContent: "space-around", marginTop:10}}>
                 <FlatList
                     contentContainerStyle={{justifyContent: "space-between"}}
-                    keyExtractor={(item) => item.key.toString()}
-                    data={filteredList}
-                    renderItem={({item}) => <RefereeItem title={item.value}/>}
+                    keyExtractor={(item) => item.key}
+                    data={refereeList}
+                    renderItem={({item}) => <RefereeItem refereeId ={item.key} referee={item.value}/>}
                 />
             </View>
         </Background>

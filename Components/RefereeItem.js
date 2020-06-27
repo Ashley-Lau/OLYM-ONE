@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -6,30 +6,70 @@ import {
     Modal,
     ScrollView,
     TouchableOpacity,
+    ImageBackground
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import * as firebase from 'firebase';
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
+import firebaseDb from "../firebaseDb";
+import GameItemBackGround from "../views/GameItemBackGround";
 
 
 const RefereeItem = props => {
 
+    //PROFILE CARD BACKGROUND ============================================================================================================================================
+    let profileBack = require("../assets/other_games.png");
+    if(props.referee.referee[1].toLowerCase() === "basketball"){
+        profileBack = require("../assets/basketball_coloured.png")
+    } else if(props.referee.referee[1].toLowerCase()=== 'badminton'){
+        profileBack = require("../assets/badminton_coloured.png")
+    } else if(props.referee.referee[1].toLowerCase() === 'tennis'){
+        profileBack = require("../assets/tennis_coloured.png")
+    } else if(props.referee.referee[1].toLowerCase() === 'floorball'){
+        profileBack = require("../assets/floorball_coloured.png")
+    } else if(props.referee.referee[1].toLowerCase() === 'soccer'){
+        profileBack = require("../assets/soccer_coloured.png")
+    }
+
+    //MODAL TOGGLE FOR REFEREE ITEM========================================================================================================================
     const[openItem ,setOpenItem] = useState(false);
+
+    //GETTING REFEREE UPCOMING GAMES============================================================================================================================================
+    const [refGames, setRefGames] = useState([]);
+    const getUpcoming = () => {
+        let gameList = []
+        props.referee.upcoming_games.map((id) => {
+            firebaseDb.firestore().collection('game_details').doc(id)
+                .onSnapshot(doc => {
+                    gameList.push({key:id, value:doc.data()})
+
+                })
+
+        });
+        setRefGames(gameList);
+
+    }
+
+    useEffect(() => {
+        getUpcoming();
+    },[])
+
 
     const refereeItem = <Modal visible={openItem}>
         <Background>
             <ScrollView showsVerticalScrollIndicator={false}>
                 <View style = {{alignItems: 'center', paddingBottom: 30,}}>
-                    <View style = {{...styles.elevatedComponent, height: 200, justifyContent: 'space-evenly'}}>
+                    <ImageBackground source={profileBack} style = {{...styles.elevatedComponent, height: 200, justifyContent: 'space-evenly'}}>
                         <View style = {{flexDirection: 'column', justifyContent: 'space-around', paddingTop: 5,}}>
                             <View style={{flexDirection:"row", alignItems:"center", justifyContent:"flex-start", marginLeft:20}}>
                                 <View style = {styles.photoFrame}>
                                     <MaterialCommunityIcons name='account' size={50}/>
                                 </View>
-                                <View style = {{alignItems: 'center'}}>
-                                    <Text style = {{fontSize: 20}}> Name: {props.title[1]} </Text>
-                                    <Text style = {{fontSize: 20}}> Sport: {props.title[0]} </Text>
+                                <View style = {{alignItems: 'flex-start', marginLeft:10}}>
+                                    <Text style = {{fontSize: 20}}>Name: {props.referee.username} </Text>
+                                    <Text style = {{fontSize:20}}>Sport: {props.referee.referee[1]}</Text>
                                 </View>
                             </View>
 
@@ -49,12 +89,40 @@ const RefereeItem = props => {
                             </View>
                         </View>
 
-                    </View>
+                    </ImageBackground>
                     <View style = {{...styles.elevatedComponent, marginTop: 20, height: 400}}>
                         <View style = {styles.titleBackground} >
                             <Text style ={styles.titleText}>
                                 Upcoming Games
                             </Text>
+                        </View>
+                        <View>
+                            {refGames.length > 0
+                            ?
+                                <ScrollView nestedScrollEnabled={true}>
+                                    {
+                                        refGames.map(game => (
+                                            <View key={game.value.id}
+                                                style={styles.refGames}
+                                            >
+                                                <View style ={{flexDirection:"row", justifyContent:'space-between', alignItems:"center"}}>
+                                                    <GameItemBackGround iconName={game.value.sport.toLowerCase()}>
+                                                        <Text style={{fontSize:18, color:"black"}}>{game.value.sport}</Text>
+                                                    </GameItemBackGround>
+                                                    <Text style={{fontSize:18, color:"black"}}>Date: {game.value.date.toDate().toString().slice(4,16)} </Text>
+                                                </View>
+                                            </View>
+                                            )
+                                        )
+                                    }
+
+                                </ScrollView>
+                            :
+                                <View>
+                                    <Text>There are no upcoming games!</Text>
+                                </View>
+                            }
+
                         </View>
                     </View>
 
@@ -68,12 +136,15 @@ const RefereeItem = props => {
         <View>
             {refereeItem}
             <TouchableOpacity style={styles.games}
-                              onPress={() => {setOpenItem(true);}}>
+                              onPress={() => {
+                                  console.log(refGames);
+                                  setOpenItem(true);
+                              }}>
                 {/*to replace icon with the profile picture of the referee*/}
                 <MaterialCommunityIcons name="account" size={35}/>
                 <View style={{flexDirection:"column", marginLeft:15}}>
-                    <Text style={{fontSize:18}}> Name: {props.title[1]}</Text>
-                    <Text style={{fontSize:18, color: "black"}}> {props.title[0]} </Text>
+                    <Text style={{fontSize:18}}> Name: {props.referee.username}</Text>
+                    <Text style={{fontSize:18, color: "black"}}> Refereeing Sport: {props.referee.referee[1]} </Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -140,6 +211,17 @@ const styles = StyleSheet.create({
         alignItems:"center",
         backgroundColor:"transparent",
     },
+    refGames:{
+        flexDirection:"row",
+        borderBottomWidth:0.7,
+        borderColor:"grey",
+        width:"100%",
+        height:65,
+        padding:5,
+        justifyContent:"space-between",
+        alignItems:"center",
+        backgroundColor:"transparent",
+    }
 
 })
 

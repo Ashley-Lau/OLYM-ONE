@@ -73,6 +73,7 @@ const GameScreen = (props) => {
                             if(d.date.toMillis() < now){
                                 doc.ref.delete().then(()=>{});
                             } else if(d.availability <= 0){}
+                            else if(d.hostId === currentUser){}
                             else {
                                 someGame.push({key:doc.id, value:doc.data()});
                             }

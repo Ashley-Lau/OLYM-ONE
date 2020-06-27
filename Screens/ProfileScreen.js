@@ -36,36 +36,42 @@ const ProfileScreen = props => {
         email: user.email,
         id: user.id,
         uri: user.uri,
-        upcoming_games: user.upcoming_games
+        upcoming_games: user.upcoming_games,
+        referee: user.referee
     })
 
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([])
+    const gameRef = firebaseDb.firestore().collection('game_details')
 
-    // const updateUpcoming = () => {
-    //     firebaseDb.firestore().collection('users').doc(data.id)
-    //         .onSnapshot(doc => {
-    //             setData({...data, upcoming_games: doc.data().upcoming_games}
-    //             )
+    // const getGames = () => {
+    //     let gameList = [];
+    //     gameRef.get()
+    //         .then(snapshot => {
+    //             snapshot.forEach(doc => {
+    //                 if (doc.data().players.includes(data.id)) {
+    //                     gameList.push({key: doc.id, value: doc.data()})
+    //                 }
+    //             })
+    //             setList(gameList);
     //         })
-    //     console.log(data.upcoming_games)
     // }
 
-    const getUpcoming = () => {
-        let gameList = [];
-        data.upcoming_games.map(id => {
-            firebaseDb.firestore().collection('game_details').doc(id)
-                .onSnapshot(doc => {
-                    gameList.push({key:id, value:doc.data()})
-                })
-        })
-        setList([...upcomingGameList,...gameList])
-    }
 
     useEffect(() => {
-        getUpcoming()
-    }, [])
+        // getGames();
+        let gameList = [];
+        gameRef.where("players", "array-contains", data.id)
+            .onSnapshot(
+                snapshot => {
+                    snapshot.forEach(doc => {
+                        gameList.push({key:doc.id, value:doc.data()});
+                    })
+                    setList(gameList)
+                }
+            )
 
+    },[])
 
 
     //MODAL STATES =======================================================================================================
@@ -166,35 +172,36 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {data.upcoming_games.length < 0
-                                ? <View>
-                                    <Text>No Upcoming Games!</Text>
-                                </View>
+                            {/*{data.upcoming_games.length < 0*/}
+                            {/*    ? <View>*/}
+                            {/*        <Text>No Upcoming Games!</Text>*/}
+                            {/*    </View>*/}
 
-                                :upcomingGameList.length > 0
-                                    ?<ScrollView nestedScrollEnabled={true}>
-                                        {upcomingGameList.map(game =>
-                                            (
-                                                <UpcomingGameItem key={game.key}
-                                                                  gameDetails={game.value}
-                                                                  gameId={game.key}
-                                                                  user={user.id}
-                                                />
-                                            )
-                                        )}
-                                    </ScrollView>
+                            {/*    :upcomingGameList.length > 0*/}
+                            {/*        ?*/}
+                            <ScrollView nestedScrollEnabled={true}>
+                                {upcomingGameList.map(game =>
+                                    (
+                                        <UpcomingGameItem key={game.key}
+                                                          gameDetails={game.value}
+                                                          gameId={game.key}
+                                                          user={user.id}
+                                        />
+                                    )
+                                )}
+                            </ScrollView>
 
-                                    : <View style={{justifyContent:"center", alignItems:"center"}}>
-                                        <TouchableOpacity onPress={() => {
-                                            getUpcoming()
+                            {/*        : <View style={{justifyContent:"center", alignItems:"center"}}>*/}
+                            {/*            <TouchableOpacity onPress={() => {*/}
+                            {/*                console.log(upcomingGameList)*/}
 
-                                        }} >
-                                            <MaterialCommunityIcons name="refresh" size ={25}/>
-                                        </TouchableOpacity>
+                            {/*            }} >*/}
+                            {/*                <MaterialCommunityIcons name="refresh" size ={25}/>*/}
+                            {/*            </TouchableOpacity>*/}
 
-                                        <Text>Please Refresh!</Text>
-                                    </View>
-                            }
+                            {/*            <Text>Please Refresh!</Text>*/}
+                            {/*        </View>*/}
+                            {/*}*/}
                         </View>
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                             <View style = {style.titleBackground}>
@@ -203,13 +210,18 @@ const ProfileScreen = props => {
                                 </Text>
                             </View>
                         </View>
-                        <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
-                            <View style = {style.titleBackground}>
-                                <Text style ={style.titleText}>
-                                    Upcoming Refereeing Games
-                                </Text>
+
+                        {data.referee[0]
+                            ? <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
+                                <View style = {style.titleBackground}>
+                                    <Text style ={style.titleText}>
+                                        Upcoming Refereeing Games
+                                    </Text>
+                                </View>
                             </View>
-                        </View>
+                            : <View/>
+                        }
+
                     </View>
                 </ScrollView>
             </Background>
