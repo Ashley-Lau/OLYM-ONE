@@ -68,7 +68,7 @@ const GameScreen = (props) => {
                     let num = 1;
                     snapshot.forEach( doc => {
                             const d = doc.data();
-                            console.log("nimama reloading " + num);
+                            // console.log("nimama reloading " + num);
                             num = num + 1;
                             if(d.date.toMillis() < now){
                                 doc.ref.delete().then(()=>{});

@@ -88,7 +88,6 @@ const GameItem = props => {
         const smallerId = hostId < currentUserId ? hostId : currentUserId
         const largerId = hostId < currentUserId ? currentUserId : hostId
         const chatId = smallerId + '_' + largerId
-        console.log(chatId)
         const chatRef = firebaseDb
             .firestore()
             .collection('messages')
@@ -100,35 +99,53 @@ const GameItem = props => {
             .get()
             .then(doc => {
                 if(!doc.exists) {
-                    const smallerIdData = firebaseDb.firestore().collection('users').doc(smallerId).get().data()
-                    const largerIdData = firebaseDb.firestore().collection('users').doc(largerId).get().data()
-                    const data = {
-                        id: chatId,
-                        idArray: [smallerId, largerId],
-                        largerId: [largerId, largerIdData.username, largerIdData.uri],
-                        smallerId: [largerId, smallerIdData.username, smallerIdData.uri],
-                        lastMessage: '',
-                        lastMessageFrom: null,
-                        lastMessageTime: '',
-                        message: [],
-                        notificationStack: 0,
-                    }
-                    chatRef
-                        .doc(chatId)
-                        .set(data)
-                        .then(() => {
-                            openGameDetails(false)
-                            navigation.navigate('ChatScreen', {
-                                chat: data,
-                                userId: currentUserId
-                            })
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+                                            openGameDetails(false)
+                                            navigation.navigate('ChatStack', {
+                                                screen: 'ChatScreen',
+                                                params : {
+                                                    chat: data,
+                                                    userId: currentUserId
+                                                }
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
                         })
                         .catch(error => console.log(error))
                 } else {
                     openGameDetails(false)
-                    navigation.navigate('ChatScreen', {
-                        chat: doc.data(),
-                        userId: currentUserId
+                    navigation.navigate('ChatStack', {
+                        screen: 'ChatScreen',
+                        params : {
+                            chat: doc.data(),
+                            userId: currentUserId
+                        }
                     })
                 }
             })

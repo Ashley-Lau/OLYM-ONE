@@ -71,7 +71,8 @@ const SignupScreen = props => {
                 password: values.password,
                 birthDate: values.birthDate,
                 uri: 'https://i.dlpng.com/static/png/6542357_preview.png',
-
+                upcoming_games: [],
+                referee: false,
             };
             const usersRef = firebaseDb.firestore().collection('users')
             usersRef
@@ -186,7 +187,7 @@ const SignupScreen = props => {
                                                                  display="spinner"
                                                                  onChange={(event, selectedDate) => {
                                                                      const currentDate = selectedDate || props.values.birthDate;
-                                                                     props.setFieldValue('showTime',Platform.OS !== 'android');
+                                                                     props.setFieldValue('showTime',Platform.OS !== 'andriod');
                                                                      props.setFieldValue('birthDate', currentDate);
                                                                      props.setFieldTouched('birthDate');}}/>}
 

@@ -32,6 +32,7 @@ const ChatScreen = props => {
     const [data, setData]  = useState({
         messages: chatInformation.message,
         lastMessageFrom: chatInformation.lastMessageFrom,
+        messageCount: chatInformation.messageCount,
         notificationStack: 0,
     })
 
@@ -72,13 +73,13 @@ const ChatScreen = props => {
         const messageTime = new Date()
         const updatedMessage = [{...messages[0], createdAt: messageTime.toString()}]
         const newMessageArray = GiftedChat.append(data.messages,updatedMessage)
-        console.log(messages)
         chatRef.update({
             message: newMessageArray,
             lastMessage: messages[0].text,
             lastMessageFrom: userId,
             lastMessageTime: messageTime,
-            notificationStack: data.lastMessageFrom === userId ? data.notificationStack + 1 : 1
+            notificationStack: data.lastMessageFrom === userId ? data.notificationStack + 1 : 1,
+            messageCount: 1,
         }).catch(error => console.log(error))
     }
 
@@ -88,7 +89,7 @@ const ChatScreen = props => {
 
                     {/*==================================================back button==========================================*/}
                     <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
-                                      onPress = {() => navigation.goBack()}
+                                      onPress = {() => navigation.navigate('ChatDetailScreen')}
                                       activeOpacity= {0.8}>
                         <Ionicons name="ios-arrow-back" color={'white'} size={30} />
                         <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
