@@ -28,6 +28,14 @@ const reviewSchema = yup.object({
 
 const HostGameItem = props => {
 
+    //FUNCTION TO CONVERT TIME TO SINGAPORE TIME ==============================================================================================
+    const sgTime = (date) => {
+        const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
+        const sgTime = new Date(utc + (3600000*8));
+        return sgTime;
+    }
+
+
     //ARRAY FOR PICKER ==============================================================================================================
 
     const sgLocations = ["Select","Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
@@ -45,7 +53,7 @@ const HostGameItem = props => {
                 location: values.location,
                 notes: values.notes,
                 availability : values.slots,
-                date: values.date,
+                date: sgTime(values.date),
                 host: props.username,
                 price: values.price,
                 players: [props.uid],
@@ -98,6 +106,7 @@ const HostGameItem = props => {
                                             props.setFieldTouched('location')
                                         }}
                                     >
+
                                         {sgLocations.map(locations => (
                                             <Picker.Item key={locations} label={locations} value={locations}/>
                                         ))}
@@ -122,6 +131,7 @@ const HostGameItem = props => {
                                             props.setFieldTouched('sport')
                                         }}
                                     >
+
                                         {sports.map(game => (
                                             <Picker.Item key={game} label={game} value={game}/>
                                         ))}

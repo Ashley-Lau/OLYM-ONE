@@ -20,7 +20,7 @@ const RefereeScreen = (props) => {
                 let refList = [];
                 snapshot.forEach(doc => {
                     if(doc.data().id === userId){}
-                    else if(doc.data().referee[0]){
+                    else if(doc.data().referee[0] === "Yes"){
                         refList.push({key:doc.data().id, value:doc.data()});
                     }
                 })

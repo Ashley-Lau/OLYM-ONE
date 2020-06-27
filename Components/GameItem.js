@@ -17,6 +17,9 @@ import GameItemBackGround from "../views/GameItemBackGround";
 const GameItem = props => {
     const navigation = useNavigation()
 
+
+
+
     // LIST OF PLAYERS ================================================================================================
     const [playerUser, setPlayerUser] = useState([]);
 
@@ -78,8 +81,8 @@ const GameItem = props => {
     let gameDate = props.title.date
     let gameTime = props.title.date
     if(props.title.date){
-        gameDate = props.title.date.toDate().toString().slice(4,15);
-        gameTime = props.title.date.toDate().toString().slice(16,21);
+        gameDate = gameDate.toDate().toString().slice(4,15);
+        gameTime = gameTime.toDate().toString().slice(16,21);
     }
 
     const chatWithHost = () => {
