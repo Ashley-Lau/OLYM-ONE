@@ -17,6 +17,22 @@ import GameItemBackGround from "../views/GameItemBackGround";
 const GameItem = props => {
     const navigation = useNavigation()
 
+    //IMAGE LOADING ==================================================================================================
+    let location = require("../assets/tampines.jpg");
+    if(props.title.location.toLowerCase() === "tampines"){
+        location = require("../assets/tampines.jpg");
+    } else if (props.title.location.toLowerCase() === "pasir ris"){
+        location = require("../assets/pasirris.jpg");
+    } else if (props.title.location.toLowerCase() === "seng kang"){
+        location = require("../assets/sengkang.jpg");
+    } else if (props.title.location.toLowerCase() === "punggol"){
+        location = require("../assets/punggol.jpg");
+    } else if (props.title.location.toLowerCase() === "clementi"){
+        location = require("../assets/clementi.jpg");
+    } else if (props.title.location.toLowerCase() === "hougang"){
+        location = require("../assets/hougang_sports_hall.jpg");
+    }
+
 
 
 
@@ -170,7 +186,7 @@ const GameItem = props => {
                     <View style={styles.scrollBox}>
 
                         <ScrollView style={{flex:1}}>
-                            <Image source={require("../assets/hougang_sports_hall.jpg")} style={{flexWrap:"wrap"}}/>
+                            <Image source={location} style={{flexWrap:"wrap"}}/>
                             <View style = {{alignItems: 'center'}}>
                                 <View>
                                     <Text style={{fontSize:35}}>{props.title.sport.toUpperCase()}</Text>
