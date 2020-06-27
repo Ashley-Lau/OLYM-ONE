@@ -60,7 +60,7 @@ const ChatDetailScreen = (props) => {
         const timestampToDate = timestamp.toDate()
         const timestampDiff = sgTimestamp / 1000  - timestamp.seconds
         const dayDiff = sgTime.getDate() - timestampToDate.getDate()
-        if(timestampDiff < 172800 && (dayDiff === 0)) {
+        if(dayDiff === 0) {
             const time = timestampToDate.toString().slice(16, 21)
             // 24 hours
             const fullHours = parseInt(time.slice(0,2), 10)
@@ -68,6 +68,9 @@ const ChatDetailScreen = (props) => {
             const hours = fullHours > 12 ? fullHours % 12 : fullHours
             const suffix = (fullHours >= 12)? ' PM' : ' AM';
             return hours + time.slice(2,5) + suffix
+        }
+        if(dayDiff === 1 || ((sgTime.getMonth() - timestampToDate.getMonth() === 1) && timestampDiff < 172800)) {
+            return "Yesterday"
         }
         if(timestampDiff < 604800) {
             return timestampToDate.toString().slice(0, 3)

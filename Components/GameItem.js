@@ -3,6 +3,8 @@ import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Aler
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
 
+import { useNavigation } from '@react-navigation/native';
+
 
 import GradientButton from "./GradientButton";
 import Styles from "../../OLYM-ONE/styling/Styles";
@@ -13,7 +15,7 @@ import GameItemBackGround from "../views/GameItemBackGround";
 
 
 const GameItem = props => {
-
+    const navigation = useNavigation()
 
     // LIST OF PLAYERS ================================================================================================
     const [playerUser, setPlayerUser] = useState([]);
@@ -34,6 +36,7 @@ const GameItem = props => {
     useEffect(() => {
         username();
     }, [])
+
     //GETTING USER UPCOMING_GAME ARRAY =================================================================================
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
@@ -79,6 +82,59 @@ const GameItem = props => {
         gameTime = props.title.date.toDate().toString().slice(16,21);
     }
 
+    const chatWithHost = () => {
+        const hostId = props.title.hostId
+        const currentUserId = props.user
+        const smallerId = hostId < currentUserId ? hostId : currentUserId
+        const largerId = hostId < currentUserId ? currentUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        console.log(chatId)
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === currentUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+        }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    const smallerIdData = firebaseDb.firestore().collection('users').doc(smallerId).get().data()
+                    const largerIdData = firebaseDb.firestore().collection('users').doc(largerId).get().data()
+                    const data = {
+                        id: chatId,
+                        idArray: [smallerId, largerId],
+                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                        smallerId: [largerId, smallerIdData.username, smallerIdData.uri],
+                        lastMessage: '',
+                        lastMessageFrom: null,
+                        lastMessageTime: '',
+                        message: [],
+                        notificationStack: 0,
+                    }
+                    chatRef
+                        .doc(chatId)
+                        .set(data)
+                        .then(() => {
+                            openGameDetails(false)
+                            navigation.navigate('ChatScreen', {
+                                chat: data,
+                                userId: currentUserId
+                            })
+                        })
+                        .catch(error => console.log(error))
+                } else {
+                    openGameDetails(false)
+                    navigation.navigate('ChatScreen', {
+                        chat: doc.data(),
+                        userId: currentUserId
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
+
 
     return (
         <View>
@@ -95,24 +151,34 @@ const GameItem = props => {
 
                         <ScrollView style={{flex:1}}>
                             <Image source={require("../assets/hougang_sports_hall.jpg")} style={{flexWrap:"wrap"}}/>
-                            <Text style={{fontSize:35}}>{props.title.sport.toUpperCase()}</Text>
-                            <Text style={{fontSize:20}}>Location: {props.title.location}</Text>
-                            <Text style={{fontSize:20}}>Host : {props.title.host}</Text>
-                            <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
-                            <Text style={{fontSize:20}}>Time : {gameTime}</Text>
-                            <Text style={{fontSize:20}}>Price : {props.title.price}</Text>
-                            <Text style={{fontSize:20}}>To Take Note: </Text>
-                            <Text style={{fontSize:20}}>{props.title.notes}</Text>
-                            <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
-
-                            <GradientButton style={{...Styles.buttonSize, height: '7%'}}
-                                            onPress={() => {
-                                                console.log(playerUser);
-                                                openPlayerDetails(true);}}
-                                            colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-                                <Text>View Players</Text>
-                            </GradientButton>
-                            <View style = {{marginBottom: 10}} />
+                            <View style = {{alignItems: 'center'}}>
+                                <View>
+                                    <Text style={{fontSize:35}}>{props.title.sport.toUpperCase()}</Text>
+                                    <Text style={{fontSize:20}}>Location: {props.title.location}</Text>
+                                    <Text style={{fontSize:20}}>Host : {props.title.host}</Text>
+                                    <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
+                                    <Text style={{fontSize:20}}>Time : {gameTime}</Text>
+                                    <Text style={{fontSize:20}}>Price : {props.title.price}</Text>
+                                    <Text style={{fontSize:20}}>To Take Note: </Text>
+                                    <Text style={{fontSize:20}}>{props.title.notes}</Text>
+                                    <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
+                                </View>
+                            </View>
+                            <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
+                                <GradientButton style={{width: '25%', marginLeft: 20}}
+                                                onPress={chatWithHost}
+                                                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                    Chat with host
+                                </GradientButton>
+                                <GradientButton style={{width: '25%', marginRight: 20}}
+                                                onPress={() => {
+                                                    console.log(playerUser);
+                                                    openPlayerDetails(true);}}
+                                                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
+                                    View Players
+                                </GradientButton>
+                            </View>
+                            <View style = {{marginBottom: 20}} />
                         </ScrollView>
                     </View>
 

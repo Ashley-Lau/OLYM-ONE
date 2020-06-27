@@ -108,7 +108,7 @@ const ChatScreen = props => {
                     <GiftedChat messages = {data.messages}
                                 onSend = {messages => onSend(messages)}
                                 user={{_id: userInformation[0], name: userInformation[1], avatar: null}}
-                                renderUsernameOnMessage={true}
+                                // renderUsernameOnMessage={true}
                                 renderAvatar={() => {return null}}
 
                     />

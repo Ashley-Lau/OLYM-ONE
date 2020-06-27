@@ -13,3 +13,6 @@
 # refined the app
 # Update details screen and profile screen connected to fb
 # Did up the ui for chat screen 
+# did up forget password screen
+# did up chat screen
+# connected updated username and profile pic to chat and game_details 
