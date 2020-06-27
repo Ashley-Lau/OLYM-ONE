@@ -25,6 +25,10 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 const ProfileScreen = props => {
     const navigation = useNavigation();
 
+    //SORT FUNCTION FOR UPCOMING GAMES================================================================================================================================
+
+
+
     // GETTING USER DATA ================================================================================================
     const user = props.route.params.user
     const [data, setData] = useState({
@@ -59,16 +63,20 @@ const ProfileScreen = props => {
 
     useEffect(() => {
         // getGames();
-        let gameList = [];
-        gameRef.where("players", "array-contains", data.id)
+        gameRef
+            .where("players", "array-contains", data.id)
             .onSnapshot(
                 snapshot => {
+                    let gameList = [];
                     snapshot.forEach(doc => {
+                        console.log("upcoming loaded")
                         gameList.push({key:doc.id, value:doc.data()});
                     })
                     setList(gameList)
-                }
-            )
+                }, error => {
+                    console.log("Upcoming Games " + error.message)
+                })
+
     },[])
 
     const updateUserNameOrUri = (values) => {
@@ -82,8 +90,8 @@ const ProfileScreen = props => {
                     const docRef = messageRef.doc(doc.id)
                     batch.update(docRef, {smallerId: [data.id, values.username, values.uri]})
                 })
-                batch.commit().catch(error => console.log(error))
-            }).catch(error => console.log(error))
+                batch.commit().catch(error => console.log(error.message))
+            }).catch(error => console.log(error.message))
         messageRef
             .where('largerId', 'array-contains', data.id)
             .get()
@@ -93,8 +101,8 @@ const ProfileScreen = props => {
                     const docRef = messageRef.doc(doc.id)
                     batch.update(docRef, {largerId: [data.id, values.username, values.uri]})
                 })
-                batch.commit().catch(error => console.log(error))
-            }).catch(error => console.log(error))
+                batch.commit().catch(error => console.log(error.message))
+            }).catch(error => console.log(error.message))
     }
 
 
@@ -221,36 +229,25 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {/*{data.upcoming_games.length < 0*/}
-                            {/*    ? <View>*/}
-                            {/*        <Text>No Upcoming Games!</Text>*/}
-                            {/*    </View>*/}
+                            {data.upcoming_games.length < 0
+                                ? <View>
+                                    <Text>No Upcoming Games!</Text>
+                                </View>
 
-                            {/*    :upcomingGameList.length > 0*/}
-                            {/*        ?*/}
-                            <ScrollView nestedScrollEnabled={true}>
-                                {upcomingGameList.map(game =>
-                                    (
-                                        <UpcomingGameItem key={game.key}
-                                                          gameDetails={game.value}
-                                                          gameId={game.key}
-                                                          user={user.id}
-                                        />
-                                    )
-                                )}
-                            </ScrollView>
+                                :
+                                    <ScrollView nestedScrollEnabled={true}>
+                                        {upcomingGameList.map(game =>
+                                            (
+                                                <UpcomingGameItem key={game.key}
+                                                                  gameDetails={game.value}
+                                                                  gameId={game.key}
+                                                                  user={user.id}
+                                                />
+                                            )
+                                        )}
+                                    </ScrollView>
+                            }
 
-                            {/*        : <View style={{justifyContent:"center", alignItems:"center"}}>*/}
-                            {/*            <TouchableOpacity onPress={() => {*/}
-                            {/*                console.log(upcomingGameList)*/}
-
-                            {/*            }} >*/}
-                            {/*                <MaterialCommunityIcons name="refresh" size ={25}/>*/}
-                            {/*            </TouchableOpacity>*/}
-
-                            {/*            <Text>Please Refresh!</Text>*/}
-                            {/*        </View>*/}
-                            {/*}*/}
                         </View>
                         <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                             <View style = {style.titleBackground}>
@@ -260,7 +257,7 @@ const ProfileScreen = props => {
                             </View>
                         </View>
 
-                        {data.referee[0]
+                        {data.referee[0] === "Yes"
                             ? <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
                                 <View style = {style.titleBackground}>
                                     <Text style ={style.titleText}>

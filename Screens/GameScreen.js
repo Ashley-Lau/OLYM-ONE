@@ -68,23 +68,21 @@ const GameScreen = (props) => {
                     let num = 1;
                     snapshot.forEach( doc => {
                             const d = doc.data();
-                            // console.log("nimama reloading " + num);
+                            console.log("num reloads :" + num);
                             num = num + 1;
                             if(d.date.toMillis() < now){
                                 doc.ref.delete().then(()=>{});
-                            } else if(d.availability <= 0){}
-                            else if(d.hostId === currentUser){}
+                            } else if(d.hostId === currentUser){}
+                            else if( parseInt(d.availability) <= 0){}
                             else {
                                 someGame.push({key:doc.id, value:doc.data()});
                             }
-
                         }
-
                     )
                     setGame(someGame);
                 },
                 error => {
-                    Alert.alert("error", error)
+                    console.log("Game Screen " + error.message)
                 })
     }
 

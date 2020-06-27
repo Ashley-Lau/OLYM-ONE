@@ -9,6 +9,7 @@ import {
     Alert,
     Image,
     TouchableOpacity,
+    Picker, TextInput
 } from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
@@ -41,6 +42,9 @@ const reviewSchema = (password) => yup.object({
 })
 
 const UpdateDetailScreen = (props) => {
+    //ARRAY FOR SPORTS ==========================================================================================
+    const sports = ["Select","Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+    //===================================================================================================
     const navigation = useNavigation()
 
     const registeredPress = () => {
@@ -63,7 +67,9 @@ const UpdateDetailScreen = (props) => {
                                 username: props.route.params.data.username,
                                 currentPassword: '',
                                 newPassword: '',
-                                confirmPassword: '',}}
+                                confirmPassword: '',
+                                referee:["No"]
+                            }}
                             validationSchema = {reviewSchema(props.route.params.data.password)}
                             onSubmit={(values, actions) => {
                                 props.route.params.handler({
@@ -72,6 +78,7 @@ const UpdateDetailScreen = (props) => {
                                     username: values.username,
                                     password: values.confirmPassword,
                                     uri: values.uri,
+                                    referee: values.referee
                                 })
                                 actions.resetForm()
                                 registeredPress()
@@ -164,13 +171,62 @@ const UpdateDetailScreen = (props) => {
                                                      value = {props.values.confirmPassword}
                                                      onBlur = {props.handleBlur('confirmPassword')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 100}}>
+                                    <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section if you want to receive offers to referee games(Optional).</Text>
+                                    <View style = {{marginTop: 10, width: 300,}}>
+                                        <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Receive Offers?</Text>
+                                        <View style ={style.dropDown}>
+                                            <Picker
+                                                mode="dropdown"
+                                                selectedValue={props.values.referee[0]}
+                                                style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
+                                                onValueChange={(itemValue, itemIndex) => {
+                                                    props.setFieldValue('referee[0]', itemValue)
+                                                    props.setFieldTouched('referee[0]')
+                                                }}
+                                            >
+
+                                                <Picker.Item  label="No" value= "No"/>
+                                                <Picker.Item  label="Yes" value= "Yes"/>
+
+                                            </Picker>
+                                        </View>
+                                    </View>
+                                    {props.values.referee[0] === "Yes"
+                                    ?
+                                        <View style = {{marginTop: 10, width: 300,}}>
+                                            <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Select Refereeing Sport:</Text>
+                                            <View style ={style.dropDown}>
+                                                <Picker
+                                                    mode="dropdown"
+                                                    selectedValue={props.values.referee[1]}
+                                                    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
+                                                    onValueChange={(itemValue, itemIndex) => {
+                                                        props.setFieldValue('referee[1]', itemValue)
+                                                        props.setFieldTouched('referee[1]')
+                                                    }}
+                                                >
+
+                                                    {sports.map(game => (
+                                                        <Picker.Item key={game} label={game} value={game}/>
+                                                        )
+                                                    )}
+
+                                                </Picker>
+                                            </View>
+                                        </View>
+                                    :
+                                        <View></View>
+                                    }
+                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: 100}}>
                                         <GradientButton onPress={() => { registeredPress(); props.handleReset();}}
                                                         style={style.button}
                                                         colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
                                             Cancel
                                         </GradientButton>
-                                        <GradientButton onPress={props.handleSubmit}
+                                        <GradientButton onPress={() => {
+                                            console.log(props.values.referee)
+                                            props.handleSubmit()
+                                        }}
                                                         style={style.button}
                                                         colors={['#1bb479','#026c45']}>
                                             Update
@@ -206,6 +262,17 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'white',
         alignSelf: 'center'
+    },
+    dropDown: {
+        flexDirection: "row",
+        marginTop: 5,
+        justifyContent: 'center',
+        alignItems: "center",
+        backgroundColor: 'transparent',
+        height: 40,
+        borderWidth: 1,
+        borderRadius: 4,
+        width: "95%",
     }
 })
 
