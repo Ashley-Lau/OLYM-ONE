@@ -64,8 +64,12 @@ const UpcomingGameItem = props => {
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
     const gameQuit = () => {
-        const slots = parseInt(props.gameDetails.availability) + 1
-        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
+        if(props.gameDetails.players.length === 1){
+            gameRef.delete().then(() => {})
+        } else {
+            const slots = parseInt(props.gameDetails.availability) + 1
+            gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
+        }
         userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayRemove(props.gameId)}).then(() => {});
     }
 
@@ -151,8 +155,8 @@ const UpcomingGameItem = props => {
 
 
                 <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"black"}}> Date: {gameDate} </Text>
-                    <Text style={{fontSize:18, color:"black"}}> Slots Left: {props.gameDetails.availability} </Text>
+                    <Text style={{fontSize:18, color:"black"}}>Date: {gameDate}</Text>
+                    <Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>
                 </View>
             </TouchableOpacity>
     </View>
