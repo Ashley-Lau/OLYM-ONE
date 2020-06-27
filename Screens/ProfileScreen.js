@@ -63,7 +63,7 @@ const ProfileScreen = props => {
 
     useEffect(() => {
         // getGames();
-        gameRef
+        const unsubscribe = gameRef
             .where("players", "array-contains", data.id)
             .onSnapshot(
                 snapshot => {
@@ -76,6 +76,7 @@ const ProfileScreen = props => {
                 }, error => {
                     console.log("Upcoming Games " + error.message)
                 })
+        return () => unsubscribe()
 
     },[])
 
