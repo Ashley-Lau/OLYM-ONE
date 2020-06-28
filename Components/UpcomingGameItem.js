@@ -2,6 +2,8 @@ import React,{useState, useEffect} from 'react';
 import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
+import { useNavigation } from '@react-navigation/native';
+
 
 
 import GradientButton from "./GradientButton";
@@ -14,6 +16,7 @@ import ViewPlayerItem from "../Components/ViewPlayerItem"
 
 
 const UpcomingGameItem = props => {
+    const navigation = useNavigation()
 
     //IMAGE LOCATION ==================================================================================================
     let location = require("../assets/tampines.jpg");
@@ -34,7 +37,7 @@ const UpcomingGameItem = props => {
     // LIST OF PLAYERS ================================================================================================
     const [playerList, setPlayerList] = useState([]);
 
-    const userName = () => {
+    useEffect(() => {
         setPlayerList([]);
         let playerlist = [];
         props.gameDetails.players.map(uid => {
@@ -43,11 +46,7 @@ const UpcomingGameItem = props => {
                     playerlist.push(doc.data().username);
                 })
         })
-        setPlayerList(playerList);
-    }
-
-    useEffect(() => {
-        userName();
+        setPlayerList(playerlist);
     }, [])
 
     //CONFIRM QUIT GAME ================================================================================================================
@@ -116,6 +115,77 @@ const UpcomingGameItem = props => {
         gameTime = props.gameDetails.date.toDate().toString().slice(16,21);
     }
 
+    // chatting with host function ====================================================================================
+    const chatWithHost = () => {
+        const hostId = props.gameDetails.hostId
+        const currentUserId = props.user
+        const smallerId = hostId < currentUserId ? hostId : currentUserId
+        const largerId = hostId < currentUserId ? currentUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === currentUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+        }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+                                            setGameDetails(false)
+                                            navigation.navigate('ChatStack', {
+                                                screen: 'ChatScreen',
+                                                params : {
+                                                    chat: data,
+                                                    userId: currentUserId
+                                                }
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
+                        })
+                        .catch(error => console.log(error))
+                } else {
+                    setGameDetails(false)
+                    navigation.navigate('ChatStack', {
+                        screen: 'ChatScreen',
+                        params : {
+                            chat: doc.data(),
+                            userId: currentUserId
+                        }
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
+
 
 
 
@@ -148,15 +218,20 @@ const UpcomingGameItem = props => {
                                     <Text style={{fontSize:20}}>Slots Left: {props.gameDetails.availability}</Text>
                                 </View>
                             </View>
-
-
-                            <GradientButton style={{...Styles.buttonSize, height: '7%'}}
-                                            onPress={() => {
-                                                setPlayerDetails(true);}}
-                                            colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-                                <Text>View Players</Text>
-                            </GradientButton>
-                            <View style = {{marginBottom: 10}} />
+                            <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
+                                <GradientButton style={{width: '25%', marginLeft: 20}}
+                                                onPress={chatWithHost}
+                                                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                    Chat with host
+                                </GradientButton>
+                                <GradientButton style={{width: '25%', marginRight: 20}}
+                                                onPress={() => {
+                                                    setPlayerDetails(true);}}
+                                                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
+                                    View Players
+                                </GradientButton>
+                            </View>
+                            <View style = {{marginBottom: 20}} />
                         </ScrollView>
                     </View>
 

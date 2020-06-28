@@ -48,21 +48,7 @@ const ProfileScreen = props => {
     const [upcomingGameList, setList] = useState([])
     const gameRef = firebaseDb.firestore().collection('game_details')
 
-    // const getGames = () => {
-    //     let gameList = [];
-    //     gameRef.get()
-    //         .then(snapshot => {
-    //             snapshot.forEach(doc => {
-    //                 if (doc.data().players.includes(data.id)) {
-    //                     gameList.push({key: doc.id, value: doc.data()})
-    //                 }
-    //             })
-    //             setList(gameList);
-    //         })
-    // }
-
     useEffect(() => {
-        // getGames();
         const unsubscribe = gameRef
             .where("players", "array-contains", data.id)
             .onSnapshot(
@@ -230,8 +216,8 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {data.upcoming_games.length < 0
-                                ? <View>
+                            {data.upcoming_games.length <= 0
+                                ?<View>
                                     <Text>No Upcoming Games!</Text>
                                 </View>
 

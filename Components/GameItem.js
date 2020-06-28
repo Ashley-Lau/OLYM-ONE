@@ -208,7 +208,6 @@ const GameItem = props => {
                                 </GradientButton>
                                 <GradientButton style={{width: '25%', marginRight: 20}}
                                                 onPress={() => {
-                                                    console.log(playerUser);
                                                     openPlayerDetails(true);}}
                                                 colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
                                     View Players
