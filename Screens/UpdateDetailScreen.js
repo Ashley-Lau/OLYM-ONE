@@ -24,6 +24,7 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import SignUpComponent from "../Components/SignUpComponent";
 import {setFormikInitialValue} from "react-native-formik";
+import { Select, SelectItem } from '@ui-kitten/components';
 
 
 const reviewSchema = (password) => yup.object({
@@ -43,7 +44,10 @@ const reviewSchema = (password) => yup.object({
 
 const UpdateDetailScreen = (props) => {
     //ARRAY FOR SPORTS ==========================================================================================
-    const sports = ["Select","Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
+    const refereeOption = ["Yes", "No"];
+    const [refereeIndex, setIndex] = useState();
+    const [sportIndex, setSportIndex] = useState();
     //===================================================================================================
     const navigation = useNavigation()
 
@@ -174,44 +178,55 @@ const UpdateDetailScreen = (props) => {
                                     <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section if you want to receive offers to referee games(Optional).</Text>
                                     <View style = {{marginTop: 10, width: 300,}}>
                                         <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Receive Offers?</Text>
-                                        <View style ={style.dropDown}>
-                                            <Picker
-                                                mode="dropdown"
-                                                selectedValue={props.values.referee[0]}
-                                                style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                                                onValueChange={(itemValue, itemIndex) => {
-                                                    props.setFieldValue('referee[0]', itemValue)
-                                                    props.setFieldTouched('referee[0]')
+                                        <View style ={style.dropDownCopy}>
+                                            <Select
+                                                style = {{width: "98%", justifyContent:"space-between"}}
+                                                placeholder= ' '
+                                                value ={refereeOption[refereeIndex - 1]}
+                                                onSelect={index => {
+                                                    setIndex(index)
+                                                    props.setFieldValue('referee[0]', refereeOption[index.row])
                                                 }}
-                                            >
+                                                selectedIndex={refereeIndex}>
+                                                <SelectItem title='No'/>
+                                                <SelectItem title='Yes'/>
 
-                                                <Picker.Item  label="No" value= "No"/>
-                                                <Picker.Item  label="Yes" value= "Yes"/>
-
-                                            </Picker>
+                                            </Select>
                                         </View>
                                     </View>
                                     {props.values.referee[0] === "Yes"
                                     ?
                                         <View style = {{marginTop: 10, width: 300,}}>
                                             <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Select Refereeing Sport:</Text>
-                                            <View style ={style.dropDown}>
-                                                <Picker
-                                                    mode="dropdown"
-                                                    selectedValue={props.values.referee[1]}
-                                                    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                                                    onValueChange={(itemValue, itemIndex) => {
-                                                        props.setFieldValue('referee[1]', itemValue)
-                                                        props.setFieldTouched('referee[1]')
+                                            <View style ={style.dropDownCopy}>
+                                                <Select
+                                                    style = {{width: "98%", justifyContent:"space-between"}}
+                                                    placeholder= 'Sport'
+                                                    value ={sports[sportIndex - 1]}
+                                                    onSelect={index => {
+                                                        setSportIndex(index)
+                                                        props.setFieldValue('referee[1]', sports[index.row])
                                                     }}
+                                                    selectedIndex={sportIndex}
                                                 >
-
                                                     {sports.map(game => (
-                                                        <Picker.Item key={game} label={game} value={game}/>
+                                                            <SelectItem key={game} title={game}/>
                                                         )
                                                     )}
+                                                </Select>
+                                                {/*<Picker*/}
+                                                {/*    mode="dropdown"*/}
+                                                {/*    selectedValue={props.values.referee[1]}*/}
+                                                {/*    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}*/}
+                                                {/*    onValueChange={(itemValue, itemIndex) => {*/}
+                                                {/*        props.setFieldValue('referee[1]', itemValue)*/}
+                                                {/*        props.setFieldTouched('referee[1]')*/}
+                                                {/*    }}*/}
+                                                {/*>*/}
 
-                                                </Picker>
+
+
+                                                {/*</Picker>*/}
                                             </View>
                                         </View>
                                     :
@@ -262,6 +277,12 @@ const style = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: 'white',
         alignSelf: 'center'
+    },
+    dropDownCopy:{
+        flexDirection:"row",
+        marginTop: 5,
+        alignItems:"center",
+        width: "97%",
     },
     dropDown: {
         flexDirection: "row",

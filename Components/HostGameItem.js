@@ -1,11 +1,14 @@
 import React,{useState} from 'react';
 import {Text,TextInput, StyleSheet, Picker, Modal, View, ScrollView} from 'react-native';
 
+import {useNavigation} from "@react-navigation/native";
 import GradientButton from "./GradientButton";
 import Background from "../views/Background";
 import Styles from "../styling/Styles";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
+import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
+import * as Animatable from 'react-native-animatable';
 import * as yup from 'yup'
 import CustButton from "./CustButton";
 import firebaseDb from "../firebaseDb";
@@ -14,8 +17,8 @@ import { Select, SelectItem } from '@ui-kitten/components';
 
 
 const reviewSchema = yup.object({
-    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location != 'Select'),
-    sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != 'Select'),
+    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location != ''),
+    sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != ''),
     date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > Date.now()),
     time: yup.date().label('Time'),
     price: yup.string().label('Price')
@@ -29,8 +32,20 @@ const reviewSchema = yup.object({
 
 const HostGameItem = props => {
 
+    //NAVIGATION ===================================================================================================
+    const navigation = useNavigation()
+
+    const registeredPress = () => {
+        navigation.navigate('ProfileScreen');
+    }
+
     //CHECKS FOR IOS PLATFORM ========================================================================================================================
     const isIos = Platform.OS === 'ios'
+
+    const [selectedIndex, setSelectedIndex] = useState();
+
+    const genderData = ['Male', 'Female']
+
 
     //FUNCTION TO CONVERT TIME TO SINGAPORE TIME ==============================================================================================
     const sgTime = (date) => {
@@ -48,8 +63,6 @@ const HostGameItem = props => {
     const [locationIndex, setLocationIndex] = useState();
     const [sportsIndex, setSportsIndex] = useState()
     //CLOSING HOST GAME ITEM ==============================================================================================================
-    const closeHost = () => {props.closeHost()}
-
 
     // UPDATING THE GAMEITEM AND DETAIL ==============================================================================================================
     const handleCreateGame = values => {
@@ -66,13 +79,13 @@ const HostGameItem = props => {
                 players: [props.uid],
                 hostId: props.uid
             })
-            .then(() => {closeHost()})
+            .then(() => {registeredPress()})
             .catch(err => console.error(err))
 
     }
 
     return(
-        <Modal visible={props.visible}>
+        <View>
             <Background style={{position:"absolute", right:0, top:0}}/>
 
             <View style={styles.header}>
@@ -103,6 +116,7 @@ const HostGameItem = props => {
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
                                 <View style={styles.dropDownCopy}>
+
                                     <Select
                                         style = {{width: "100%", justifyContent:"space-between"}}
                                         placeholder='Location'
@@ -110,61 +124,43 @@ const HostGameItem = props => {
                                         onSelect={index => {
                                             setLocationIndex(index)
                                             props.setFieldValue('location', sgLocations[index.row])
-                                            // props.setFieldTouched('location')
                                         }}
                                         selectedIndex={locationIndex}>
-                                        <SelectItem title='Tampines'/>
-                                        <SelectItem title='Hougang'/>
-                                        {/*{*/}
-                                        {/*    sgLocations.map(location => (*/}
-                                        {/*            <SelectItem key={location} title={location}/>*/}
-                                        {/*            ))*/}
-                                        {/*}*/}
+                                        {sgLocations.map(locations => (
+                                            <SelectItem key={locations} title={locations}/>
+                                        ))}
+
                                     </Select>
-                                    {/*<Picker*/}
-                                    {/*    mode="dropdown"*/}
-                                    {/*    selectedValue={props.values.location}*/}
-                                    {/*    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}*/}
-                                    {/*    onValueChange={(itemValue, itemIndex) => {*/}
-                                    {/*        console.log(props.values.location)*/}
-                                    {/*        props.setFieldValue('location', itemValue)*/}
-                                    {/*        props.setFieldTouched('location')*/}
-                                    {/*    }}*/}
-                                    {/*>*/}
-
-                                    {/*    {sgLocations.map(locations => (*/}
-                                    {/*        <Picker.Item key={locations} label={locations} value={locations}/>*/}
-                                    {/*    ))}*/}
-                                    {/*</Picker>*/}
-
 
                                 </View>
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
 
+
                             {/*// SPORT ------------------------------------------------------------------------*/}
-
                             <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>SPORT :</Text>
-                                <View style={styles.dropDown}>
-                                    <Picker
-                                        mode="dropdown"
-                                        selectedValue={props.values.sport}
-                                        style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                                        onValueChange={(itemValue, itemIndex) => {
-                                            props.setFieldValue('sport', itemValue)
-                                            props.setFieldTouched('sport')
-                                        }}
-                                    >
+                                <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
+                                <View style={styles.dropDownCopy}>
 
-                                        {sports.map(game => (
-                                            <Picker.Item key={game} label={game} value={game}/>
+                                    <Select
+                                        style = {{width: "100%", justifyContent:"space-between"}}
+                                        placeholder='Sports'
+                                        value ={sports[sportsIndex - 1]}
+                                        onSelect={index => {
+                                            setSportsIndex(index)
+                                            props.setFieldValue('sport', sgLocations[index.row])
+                                        }}
+                                        selectedIndex={sportsIndex}>
+                                        {sports.map(sport => (
+                                            <SelectItem key={sport} title={sport}/>
                                         ))}
-                                    </Picker>
+
+                                    </Select>
 
                                 </View>
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.sport && props.errors.sport}</Text>
                             </View>
+
 
                             {/*// DATE AND TIME ------------------------------------------------------------------------*/}
 
@@ -176,7 +172,52 @@ const HostGameItem = props => {
                                 </CustButton>
                                 <Text style={{fontSize: 15, color: 'red'}}>{ props.touched.date && props.errors.date}</Text>
                             </View>
-                            {props.values.showDate && (<RNDateTimePicker  value={props.values.date}
+                            {props.values.showDate &&
+                            (isIos
+                                ?
+                                (
+                                    <Modal visible={props.values.showDate} animationType="slide"
+                                           transparent={true}>
+                                        <View style={{
+                                            flex: 1,
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}>
+                                            <View style={{
+                                                borderRadius: 10,
+                                                borderWidth: '1',
+                                                width: 300,
+                                                height: 300,
+                                                backgroundColor: 'white'}}>
+                                                <DateTimePicker value={props.values.date}
+                                                                mode={'date'}
+                                                                display="spinner"
+                                                                onChange={(event, selectedDate) => {
+                                                                    const currentDate = selectedDate || props.values.date;
+                                                                    props.setFieldValue('date', currentDate);
+                                                                    props.setFieldTouched('date');}}/>
+                                                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
+                                                    <GradientButton onPress={() => props.setFieldValue('showDate',false)}
+                                                                    style={style.button}
+                                                                    colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
+                                                        Cancel
+                                                    </GradientButton>
+                                                    <GradientButton onPress={() => props.setFieldValue('showDate',false)}
+                                                                    style={style.button}
+                                                                    colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                                        Confirm
+                                                    </GradientButton>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </Modal>
+                                )
+
+
+
+                                :
+                                <RNDateTimePicker  value={props.values.date}
                                                                           display="spinner"
                                                                           mode="date"
                                                                           onChange={(event, selectedDate) => {
@@ -184,7 +225,8 @@ const HostGameItem = props => {
                                                                               props.setFieldValue('showDate',Platform.OS !== 'android');
                                                                               props.setFieldValue('date', currentDate);
                                                                               props.setFieldTouched('date');}}
-                            />)}
+                            />)
+                            }
 
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>TIME :</Text>
@@ -195,7 +237,50 @@ const HostGameItem = props => {
 
                             </View>
 
-                            {props.values.showTime && (<RNDateTimePicker  value={props.values.date} display="spinner"
+                            {props.values.showTime &&
+                            (isIos
+                                ?
+                                (<Modal visible={props.values.showTime} animationType="slide"
+                                           transparent={true}>
+                                        <View style={{
+                                            flex: 1,
+                                            flexDirection: 'column',
+                                            justifyContent: 'center',
+                                            alignItems: 'center',
+                                        }}>
+                                            <View style={{
+                                                borderRadius: 10,
+                                                borderWidth: '1',
+                                                width: 300,
+                                                height: 300,
+                                                backgroundColor: 'white'}}>
+                                                <DateTimePicker value={props.values.date}
+                                                                mode={'date'}
+                                                                display="spinner"
+                                                                onChange={(event, selectedDate) => {
+                                                                    const currentDate = selectedDate || props.values.date;
+                                                                    props.setFieldValue('date', currentDate);
+                                                                    props.setFieldTouched('date');}}/>
+                                                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
+                                                    <GradientButton onPress={() => props.setFieldValue('showTime',false)}
+                                                                    style={style.button}
+                                                                    colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
+                                                        Cancel
+                                                    </GradientButton>
+                                                    <GradientButton onPress={() => props.setFieldValue('showTime',false)}
+                                                                    style={style.button}
+                                                                    colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                                        Confirm
+                                                    </GradientButton>
+                                                </View>
+                                            </View>
+                                        </View>
+                                    </Modal>
+                                )
+
+                                :
+
+                                <RNDateTimePicker  value={props.values.date} display="spinner"
                                                                           mode="time"
                                                                           onChange={(event, selectedDate) => {
                                                                               const currentDate = selectedDate || props.values.date;
@@ -259,7 +344,7 @@ const HostGameItem = props => {
                             <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
                                 <GradientButton style={{...Styles.buttonSize, marginRight:75}}
                                                 onPress={() => {props.handleReset();
-                                                    closeHost();}}
+                                                    registeredPress();}}
                                                 colors={["red", "maroon"]}>
                                     <Text>Cancel</Text>
                                 </GradientButton>
@@ -270,6 +355,8 @@ const HostGameItem = props => {
                                     <Text>Host</Text>
                                 </GradientButton>
                             </View>
+                            <View style={{backgroundColor:"transparent", height:50}}>
+                            </View>
 
                         </View>
 
@@ -277,13 +364,9 @@ const HostGameItem = props => {
 
                 </Formik>
 
-
-
             </ScrollView>
 
-
-
-        </Modal>
+        </View>
     )
 }
 
@@ -299,9 +382,7 @@ const styles = StyleSheet.create({
     dropDownCopy:{
         flexDirection:"row",
         marginTop: 5,
-        // justifyContent: 'center',
         alignItems:"center",
-        // height: 40,
         width: "97%",
     },
     dropDown: {
@@ -313,6 +394,7 @@ const styles = StyleSheet.create({
         height: 40,
         borderWidth: 1,
         borderRadius:4,
+        borderColor:"rgba(106,120,146,0.98)",
         width: "97%",
     },
     dropDownText: {
@@ -321,6 +403,7 @@ const styles = StyleSheet.create({
         alignItems:"center",
         height: 40,
         width: "97%",
+        borderColor:"rgba(106,120,146,0.98)",
     },
     dropDownNotesText: {
         flexDirection:"row",
@@ -330,7 +413,8 @@ const styles = StyleSheet.create({
         textAlignVertical: 'top',
         fontSize:16,
         height:200,
-        marginTop:5
+        marginTop:5,
+        borderColor:"rgba(106,120,146,0.98)",
     },
     dropDownNotes: {
         flexDirection:"row",
@@ -342,6 +426,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius:4,
         width: '97%',
+        borderColor:"rgba(106,120,146,0.98)",
 
     },
     selectionItem:{
