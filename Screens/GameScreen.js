@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
         width:"85%",
         height:45,
         fontSize:20,
-
+        left: 10
     },
     searchSpace:{
         justifyContent:"center",

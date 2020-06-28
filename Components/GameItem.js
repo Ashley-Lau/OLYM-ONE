@@ -112,6 +112,7 @@ const GameItem = props => {
             .collection('messages')
         if (hostId === currentUserId) {
             Alert.alert('You are The host!', 'Cannot talk to yourself')
+            return
         }
         chatRef
             .doc(chatId)
@@ -203,12 +204,12 @@ const GameItem = props => {
                                 </View>
                             </View>
                             <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
-                                <GradientButton style={{width: '25%', marginLeft: 20}}
+                                <GradientButton style={{width: '27%', marginLeft: 20}}
                                                 onPress={chatWithHost}
                                                 colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
                                     Chat with host
                                 </GradientButton>
-                                <GradientButton style={{width: '25%', marginRight: 20}}
+                                <GradientButton style={{width: '27%', marginRight: 20}}
                                                 onPress={() => {
                                                     openPlayerDetails(true);}}
                                                 colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
