@@ -48,19 +48,6 @@ const ProfileScreen = props => {
     const [upcomingGameList, setList] = useState([])
     const gameRef = firebaseDb.firestore().collection('game_details')
 
-    // const getGames = () => {
-    //     let gameList = [];
-    //     gameRef.get()
-    //         .then(snapshot => {
-    //             snapshot.forEach(doc => {
-    //                 if (doc.data().players.includes(data.id)) {
-    //                     gameList.push({key: doc.id, value: doc.data()})
-    //                 }
-    //             })
-    //             setList(gameList);
-    //         })
-    // }
-
     useEffect(() => {
         // getGames();
         const unsubscribe = gameRef
@@ -148,6 +135,7 @@ const ProfileScreen = props => {
             username: values.username,
             uri: values.uri,
             password: values.password !== '' ? values.password : data.password,
+            referee: values.referee,
         }).then(() => {
             setData({
                 ...data,
@@ -156,6 +144,7 @@ const ProfileScreen = props => {
                 username: values.username,
                 uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
+                referee: values.referee,
             })
         }).catch(error => {
             console.log(error)

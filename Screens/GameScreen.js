@@ -87,7 +87,9 @@ const GameScreen = (props) => {
     }
 
     useEffect(() => {
-        allGames();
+        const unsubscribe = allGames();
+
+        return () => unsubscribe;
 
     }, [])
 

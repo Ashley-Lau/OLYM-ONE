@@ -35,19 +35,21 @@ const UpcomingGameItem = props => {
     const [playerList, setPlayerList] = useState([]);
 
     const userName = () => {
-        setPlayerList([]);
-        let playerlist = [];
-        props.gameDetails.players.map(uid => {
-            firebaseDb.firestore().collection('users').doc(uid)
-                .onSnapshot(doc => {
-                    playerlist.push(doc.data().username);
-                })
-        })
-        setPlayerList(playerList);
+
     }
 
     useEffect(() => {
-        userName();
+        const unsubscribe = setPlayerList([]);
+        let players = [];
+        props.gameDetails.players.map(uid => {
+            firebaseDb.firestore().collection('users').doc(uid)
+                .onSnapshot(doc => {
+                    players.push(doc.data().username);
+                })
+        })
+        setPlayerList(players);
+
+
     }, [])
 
     //CONFIRM QUIT GAME ================================================================================================================
