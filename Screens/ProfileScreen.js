@@ -17,6 +17,7 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
 import UpcomingGameItem from "../Components/UpcomingGameItem";
+import RefereeApplicationItem from "../Components/RefereeApplicationItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -41,9 +42,14 @@ const ProfileScreen = props => {
         referee: user.referee
     })
 
+    //GETTING REFEREE APPLICATIONS ========================================================================================
+    const [appList, setAppList] = useState([]);
+    const appRef = firebaseDb.firestore().collection('application_details')
+
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([])
     const gameRef = firebaseDb.firestore().collection('game_details')
+
 
     useEffect(() => {
         const unsubscribe = gameRef
@@ -60,7 +66,23 @@ const ProfileScreen = props => {
                     console.log("Upcoming Games " + error.message)
                 })
 
-        return () => unsubscribe()
+        const unsubscribe2 = appRef
+            .where("hostId", "==", data.id)
+            .onSnapshot(
+                snapshot => {
+                    let apps = [];
+                    snapshot.forEach(doc => {
+                        apps.push({key:doc.id, value:doc.data()});
+                    })
+                    setAppList(apps);
+                },error => {
+                    console.log("Upcoming Games " + error.message)
+                })
+
+        return () => {
+            unsubscribe();
+            unsubscribe2();
+        }
 
     },[])
 
@@ -199,10 +221,17 @@ const ProfileScreen = props => {
 
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
-                                            onPress={() => navigation.navigate('HostGameItem',
-                                                {uid: data.id, username: data.username, upcoming: data.upcoming_games}
-                                                // {item:[data.id, data.username, data.upcoming_games]}
-                                                )}
+                                            onPress={() => {
+                                                console.log(appList);
+                                                navigation.navigate('HostGameItem',
+                                                    {
+                                                        uid: data.id,
+                                                        username: data.username,
+                                                        upcoming: data.upcoming_games
+                                                    }
+
+
+                                                )}}
                                             textStyle = {{fontSize: 20}}>
                                 Host Game
                             </GradientButton>
@@ -238,6 +267,27 @@ const ProfileScreen = props => {
                                 <Text style ={style.titleText}>
                                     Referee applications
                                 </Text>
+                            </View>
+                            <View>
+                                {appList.length <= 0
+                                    ?<View>
+                                        <Text>No Applications!</Text>
+                                    </View>
+
+                                    :
+                                    <ScrollView nestedScrollEnabled={true}>
+                                        {appList.map(app =>
+                                            (
+                                                <RefereeApplicationItem
+                                                                  key={app.key}
+                                                                  gameDetails={app.value}
+                                                                  gameId={app.key}
+                                                                  user={user.id}
+                                                />
+                                            )
+                                        )}
+                                    </ScrollView>
+                                }
                             </View>
                         </View>
 

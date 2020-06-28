@@ -30,6 +30,7 @@ const RefereeScreen = (props) => {
                 err => {
                 console.log(err.message);
                 })
+
         return () => unsubscribe()
     }, [])
 
@@ -53,7 +54,7 @@ const RefereeScreen = (props) => {
                     contentContainerStyle={{justifyContent: "space-between"}}
                     keyExtractor={(item) => item.key}
                     data={refereeList}
-                    renderItem={({item}) => <RefereeItem refereeId ={userId} gameId={item.key} game_details={item.value}/>}
+                    renderItem={({item}) => <RefereeItem refereeId ={props.route.params.user} gameId={item.key} game_details={item.value}/>}
                 />
             </View>
         </Background>
