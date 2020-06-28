@@ -25,9 +25,6 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 const ProfileScreen = props => {
     const navigation = useNavigation();
 
-    //SORT FUNCTION FOR UPCOMING GAMES================================================================================================================================
-
-
 
     // GETTING USER DATA ================================================================================================
     const user = props.route.params.user
@@ -178,12 +175,6 @@ const ProfileScreen = props => {
                                         uri: data.uri
                                     }}/>
                                 </View>
-                                <HostGameItem visible={hostGame}
-                                              closeHost={() =>setHostGame(false)}
-                                              uid ={data.id}
-                                              username = {data.username}
-                                              upcoming = {data.upcoming_games}
-                                />
                                 <GradientButton style={{width: 120, height:37, marginTop: 20,}}
                                                 colors = {['#1bb479','#026c45']}
                                                 textStyle = {{fontSize: 15}}
@@ -207,7 +198,8 @@ const ProfileScreen = props => {
 
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
-                                            onPress={() => setHostGame(true)}
+                                            onPress={() => navigation.navigate('HostGameItem',
+                                                {uid: data.id, username: data.username, upcoming: data.upcoming_games})}
                                             textStyle = {{fontSize: 20}}>
                                 Host Game
                             </GradientButton>

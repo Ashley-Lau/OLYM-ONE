@@ -46,7 +46,7 @@ const UpcomingGameItem = props => {
                     players.push(doc.data().username);
                 })
         })
-        setPlayerList(playerlist);
+        setPlayerList(players);
     }, [])
 
     //CONFIRM QUIT GAME ================================================================================================================
