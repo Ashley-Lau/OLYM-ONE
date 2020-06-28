@@ -15,17 +15,17 @@ const RefereeScreen = (props) => {
     const [refereeList, setRefereeList] = useState([])
 
     useEffect(() => {
-        const unsubscribe = firebaseDb.firestore().collection("users")
+        const unsubscribe = firebaseDb.firestore().collection("game_details")
             .limit(15)
             .onSnapshot(snapshot => {
-                let refList = [];
+                let gameList = [];
                 snapshot.forEach(doc => {
-                    if(doc.data().id === userId){}
+                    if(doc.data().hostId === userId){}
                     else if(doc.data().referee[0] === "Yes"){
-                        refList.push({key:doc.data().id, value:doc.data()});
+                        gameList.push({key:doc.id, value:doc.data()});
                     }
                 })
-                setRefereeList(refList)
+                setRefereeList(gameList)
             },
                 err => {
                 console.log(err.message);
@@ -33,38 +33,6 @@ const RefereeScreen = (props) => {
         return () => unsubscribe()
     }, [])
 
-    //SEARCH AND FILTER INCOMPLETE ==============================================================================
-
-    const [filteredList, findFilteredList] = useState([...refereeList]);
-    const [searching, findSearching] = useState("");
-
-    const filteredGames = (searchItem) => {
-        findFilteredList([...filteredList, searchItem]);
-    }
-
-    //need to refine search method
-    const filterList = () => {
-        //not sure why resetting onPress doesnt work
-        findFilteredList([]);
-
-        let filtering = refereeList.map(a => a.value);
-        for (var i = 0; i < filtering.length; i++) {
-            for (var j = 0; j < filtering[i].length; j++) {
-                if(typeof filtering[i][j] === "string"){
-                    if (searching.toLowerCase() == filtering[i][j].toLowerCase()) {
-                        filteredGames(refereeList[i]);
-                        break;
-                    };
-                };
-            };
-        };
-
-    }
-
-    const searchHandler = (enteredSearch) => {
-        findSearching(enteredSearch);
-        findFilteredList([]);
-    }
 
     return (<Background style = {styles.container}>
             <View style={styles.searchSpace}>
@@ -72,10 +40,10 @@ const RefereeScreen = (props) => {
                     <TextInput style={styles.searchInput}
                                placeholder=" Keywords, Referee Name, Sport"
                                placeholderTextColor="#B9B9B9"
-                               onChangeText={searchHandler}
-                               value={searching}
+                               // onChangeText={searchHandler}
+                               // value={searching}
                     />
-                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={filterList}/>
+                    <SearchButtons style={{flex: 1, elevation: 5}} />
                 </View>
 
             </View>
@@ -85,7 +53,7 @@ const RefereeScreen = (props) => {
                     contentContainerStyle={{justifyContent: "space-between"}}
                     keyExtractor={(item) => item.key}
                     data={refereeList}
-                    renderItem={({item}) => <RefereeItem refereeId ={item.key} referee={item.value}/>}
+                    renderItem={({item}) => <RefereeItem refereeId ={userId} gameId={item.key} game_details={item.value}/>}
                 />
             </View>
         </Background>
