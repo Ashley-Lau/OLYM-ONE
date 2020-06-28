@@ -59,6 +59,7 @@ const ProfileScreen = props => {
                 }, error => {
                     console.log("Upcoming Games " + error.message)
                 })
+
         return () => unsubscribe()
 
     },[])
@@ -199,7 +200,9 @@ const ProfileScreen = props => {
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => navigation.navigate('HostGameItem',
-                                                {uid: data.id, username: data.username, upcoming: data.upcoming_games})}
+                                                {uid: data.id, username: data.username, upcoming: data.upcoming_games}
+                                                // {item:[data.id, data.username, data.upcoming_games]}
+                                                )}
                                             textStyle = {{fontSize: 20}}>
                                 Host Game
                             </GradientButton>
@@ -238,16 +241,14 @@ const ProfileScreen = props => {
                             </View>
                         </View>
 
-                        {data.referee[0] === "Yes"
-                            ? <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
-                                <View style = {style.titleBackground}>
-                                    <Text style ={style.titleText}>
-                                        Upcoming Refereeing Games
-                                    </Text>
-                                </View>
+
+                        <View style = {{...style.elevatedComponent, marginTop:20, height: 200}}>
+                            <View style = {style.titleBackground}>
+                                <Text style ={style.titleText}>
+                                    Upcoming Refereeing Games
+                                </Text>
                             </View>
-                            : <View/>
-                        }
+                        </View>
 
                     </View>
                 </ScrollView>

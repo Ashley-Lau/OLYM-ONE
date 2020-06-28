@@ -8,7 +8,6 @@ import Styles from "../styling/Styles";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
-import * as Animatable from 'react-native-animatable';
 import * as yup from 'yup'
 import CustButton from "./CustButton";
 import firebaseDb from "../firebaseDb";
@@ -42,11 +41,6 @@ const HostGameItem = props => {
     //CHECKS FOR IOS PLATFORM ========================================================================================================================
     const isIos = Platform.OS === 'ios'
 
-    const [selectedIndex, setSelectedIndex] = useState();
-
-    const genderData = ['Male', 'Female']
-
-
     //FUNCTION TO CONVERT TIME TO SINGAPORE TIME ==============================================================================================
     const sgTime = (date) => {
         const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
@@ -59,12 +53,13 @@ const HostGameItem = props => {
 
     const sgLocations = ["Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+    const referee =["No", "Yes"]
 
     const [locationIndex, setLocationIndex] = useState();
-    const [sportsIndex, setSportsIndex] = useState()
-    //CLOSING HOST GAME ITEM ==============================================================================================================
+    const [sportsIndex, setSportsIndex] = useState();
+    const [refIndex, setRefIndex] = useState();
 
-    // UPDATING THE GAMEITEM AND DETAIL ==============================================================================================================
+    // UPDATING THE GAME ITEM AND DETAIL ==============================================================================================================
     const handleCreateGame = values => {
         firebaseDb.firestore()
             .collection('game_details')
@@ -74,10 +69,11 @@ const HostGameItem = props => {
                 notes: values.notes,
                 availability : values.slots,
                 date: sgTime(values.date),
-                host: props.username,
+                host: props.route.params.username,
                 price: values.price,
-                players: [props.uid],
-                hostId: props.uid
+                players: [props.route.params.uid],
+                hostId: props.route.params.uid,
+                referee: values.referee
             })
             .then(() => {registeredPress()})
             .catch(err => console.error(err))
@@ -101,7 +97,9 @@ const HostGameItem = props => {
                     date:new Date(),
                     notes:'',
                     showDate: false,
-                    showTime: false}}
+                    showTime: false,
+                    referee:["No"]
+                }}
                         validationSchema={reviewSchema}
                         onSubmit={(values, actions) => {
                             handleCreateGame(values);
@@ -139,7 +137,7 @@ const HostGameItem = props => {
 
                             {/*// SPORT ------------------------------------------------------------------------*/}
                             <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
+                                <Text style={{fontSize:15, marginLeft:8}}>SPORT :</Text>
                                 <View style={styles.dropDownCopy}>
 
                                     <Select
@@ -148,7 +146,7 @@ const HostGameItem = props => {
                                         value ={sports[sportsIndex - 1]}
                                         onSelect={index => {
                                             setSportsIndex(index)
-                                            props.setFieldValue('sport', sgLocations[index.row])
+                                            props.setFieldValue('sport', sports[index.row])
                                         }}
                                         selectedIndex={sportsIndex}>
                                         {sports.map(sport => (
@@ -338,12 +336,38 @@ const HostGameItem = props => {
 
                             </View>
 
+                            {/*REFEREE OPTION =========================================================================*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>DO YOU NEED A REFEREE:</Text>
+                                <View style={styles.dropDownCopy}>
+
+                                    <Select
+                                        style = {{width: "100%", justifyContent:"space-between"}}
+                                        placeholder='No'
+                                        value ={referee[refIndex - 1]}
+                                        onSelect={index => {
+                                            setRefIndex(index)
+                                            props.setFieldValue('referee', [referee[index.row]])
+                                        }}
+                                        selectedIndex={refIndex}>
+                                        {referee.map(opt => (
+                                            <SelectItem key={opt} title={opt}/>
+                                        ))}
+
+                                    </Select>
+
+                                </View>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
+                            </View>
+
 
                             {/*//BUTTONS at the Bottom------------------------------------------------------------------------*/}
 
                             <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
                                 <GradientButton style={{...Styles.buttonSize, marginRight:75}}
-                                                onPress={() => {props.handleReset();
+                                                onPress={() => {
+                                                    props.handleReset();
                                                     registeredPress();}}
                                                 colors={["red", "maroon"]}>
                                     <Text>Cancel</Text>

@@ -175,63 +175,7 @@ const UpdateDetailScreen = (props) => {
                                                      value = {props.values.confirmPassword}
                                                      onBlur = {props.handleBlur('confirmPassword')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
-                                    <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section if you want to receive offers to referee games(Optional).</Text>
-                                    <View style = {{marginTop: 10, width: 300,}}>
-                                        <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Receive Offers?</Text>
-                                        <View style ={style.dropDownCopy}>
-                                            <Select
-                                                style = {{width: "98%", justifyContent:"space-between"}}
-                                                placeholder= ' '
-                                                value ={refereeOption[refereeIndex - 1]}
-                                                onSelect={index => {
-                                                    setIndex(index)
-                                                    props.setFieldValue('referee[0]', refereeOption[index.row])
-                                                }}
-                                                selectedIndex={refereeIndex}>
-                                                <SelectItem title='No'/>
-                                                <SelectItem title='Yes'/>
 
-                                            </Select>
-                                        </View>
-                                    </View>
-                                    {props.values.referee[0] === "Yes"
-                                    ?
-                                        <View style = {{marginTop: 10, width: 300,}}>
-                                            <Text style = {{fontSize: 15, fontWeight: 'bold'}}>Select Refereeing Sport:</Text>
-                                            <View style ={style.dropDownCopy}>
-                                                <Select
-                                                    style = {{width: "98%", justifyContent:"space-between"}}
-                                                    placeholder= 'Sport'
-                                                    value ={sports[sportIndex - 1]}
-                                                    onSelect={index => {
-                                                        setSportIndex(index)
-                                                        props.setFieldValue('referee[1]', sports[index.row])
-                                                    }}
-                                                    selectedIndex={sportIndex}
-                                                >
-                                                    {sports.map(game => (
-                                                            <SelectItem key={game} title={game}/>
-                                                        )
-                                                    )}
-                                                </Select>
-                                                {/*<Picker*/}
-                                                {/*    mode="dropdown"*/}
-                                                {/*    selectedValue={props.values.referee[1]}*/}
-                                                {/*    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}*/}
-                                                {/*    onValueChange={(itemValue, itemIndex) => {*/}
-                                                {/*        props.setFieldValue('referee[1]', itemValue)*/}
-                                                {/*        props.setFieldTouched('referee[1]')*/}
-                                                {/*    }}*/}
-                                                {/*>*/}
-
-
-
-                                                {/*</Picker>*/}
-                                            </View>
-                                        </View>
-                                    :
-                                        <View></View>
-                                    }
                                     <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: 100}}>
                                         <GradientButton onPress={() => { registeredPress(); props.handleReset();}}
                                                         style={style.button}

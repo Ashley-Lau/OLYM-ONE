@@ -6,7 +6,7 @@ import {
     Modal,
     ScrollView,
     TouchableOpacity,
-    ImageBackground
+    ImageBackground, Image
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
@@ -15,136 +15,138 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
 import GameItemBackGround from "../views/GameItemBackGround";
+import Styles from "../styling/Styles";
 
 
 const RefereeItem = props => {
 
-    //PROFILE CARD BACKGROUND ============================================================================================================================================
-    let profileBack = require("../assets/other_games.png");
-    if(props.referee.referee[1].toLowerCase() === "basketball"){
-        profileBack = require("../assets/basketball_coloured.png")
-    } else if(props.referee.referee[1].toLowerCase()=== 'badminton'){
-        profileBack = require("../assets/badminton_coloured.png")
-    } else if(props.referee.referee[1].toLowerCase() === 'tennis'){
-        profileBack = require("../assets/tennis_coloured.png")
-    } else if(props.referee.referee[1].toLowerCase() === 'floorball'){
-        profileBack = require("../assets/floorball_coloured.png")
-    } else if(props.referee.referee[1].toLowerCase() === 'soccer'){
-        profileBack = require("../assets/soccer_coloured.png")
+    //REQUEST FUNCTION ===============================================================================================
+    const appRef = firebaseDb.firestore().collection('application_details')
+    const requestApp = () => {
+        appRef.add({
+            date:props.game_details.date,
+            gameId:props.gameId,
+            hostId:props.game_details.hostId,
+            refereeId: props.refereeId,
+            sport:props.game_details.sport
+        })
+            .then(() => {})
+            .catch(err => console.error(err))
+    }
+
+    //IMAGE LOCATION ==================================================================================================
+    let location = require("../assets/tampines.jpg");
+    if(props.game_details.location.toLowerCase() === "tampines"){
+        location = require("../assets/tampines.jpg");
+    } else if (props.game_details.location.toLowerCase() === "pasir ris"){
+        location = require("../assets/pasirris.jpg");
+    } else if (props.game_details.location.toLowerCase() === "seng kang"){
+        location = require("../assets/sengkang.jpg");
+    } else if (props.game_details.location.toLowerCase() === "punggol"){
+        location = require("../assets/punggol.jpg");
+    } else if (props.game_details.location.toLowerCase() === "clementi"){
+        location = require("../assets/clementi.jpg");
+    } else if (props.game_details.location.toLowerCase() === "hougang"){
+        location = require("../assets/hougang_sports_hall.jpg");
     }
 
     //MODAL TOGGLE FOR REFEREE ITEM========================================================================================================================
     const[openItem ,setOpenItem] = useState(false);
 
-    //GETTING REFEREE UPCOMING GAMES============================================================================================================================================
-    const [refGames, setRefGames] = useState([]);
-    const getUpcoming = () => {
-        let gameList = []
-        props.referee.upcoming_games.map((id) => {
-            firebaseDb.firestore().collection('game_details').doc(id)
-                .onSnapshot(doc => {
-                    gameList.push({key:id, value:doc.data()})
+    //SPORT ICON ================================================================================================================================
+    let gameColor = "rgba(47,47,47,0.32)";
+    let sportIcon = props.game_details.sport.toLowerCase()
 
-                })
-
-        });
-        setRefGames(gameList);
-
+    //DATE AND TIME STRING ================================================================================================
+    let gameDate = props.game_details.date
+    let gameTime = props.game_details.date
+    if(props.game_details.date){
+        gameDate = props.game_details.date.toDate().toString().slice(4,15);
+        gameTime = props.game_details.date.toDate().toString().slice(16,21);
     }
 
-    useEffect(() => {
-        getUpcoming();
-    },[])
+    const refereeGame =<Modal visible = {openItem} animationType="slide">
+        <Background style={{top: 0,right:0, position:"absolute"}}/>
 
+        <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
 
-    const refereeItem = <Modal visible={openItem}>
-        <Background>
-            <ScrollView showsVerticalScrollIndicator={false}>
-                <View style = {{alignItems: 'center', paddingBottom: 30,}}>
-                    <ImageBackground source={profileBack} style = {{...styles.elevatedComponent, height: 200, justifyContent: 'space-evenly'}}>
-                        <View style = {{flexDirection: 'column', justifyContent: 'space-around', paddingTop: 5,}}>
-                            <View style={{flexDirection:"row", alignItems:"center", justifyContent:"flex-start", marginLeft:20}}>
-                                <View style = {styles.photoFrame}>
-                                    <MaterialCommunityIcons name='account' size={50}/>
-                                </View>
-                                <View style = {{alignItems: 'flex-start', marginLeft:10}}>
-                                    <Text style = {{fontSize: 20}}>Name: {props.referee.username} </Text>
-                                    <Text style = {{fontSize:20}}>Sport: {props.referee.referee[1]}</Text>
-                                </View>
-                            </View>
+            <View style={styles.scrollBox}>
 
-                            <View style={{flexDirection:"row", justifyContent:"space-around"}}>
-                                <GradientButton style={{width: 120, height:37, marginTop: 20,}}
-                                                colors = {["red", "maroon"]}
-                                                textStyle = {{fontSize: 15}}
-                                                onPress={() => setOpenItem(false)}>
-                                    CANCEL
-                                </GradientButton>
-                                <GradientButton style={{width: 120, height:37, marginTop: 20,}}
-                                                colors = {['#1bb479','#026c45']}
-                                                onPress = {() => setOpenItem(false)}
-                                                textStyle = {{fontSize: 15}}>
-                                    HIRE
-                                </GradientButton>
-                            </View>
-                        </View>
-
-                    </ImageBackground>
-                    <View style = {{...styles.elevatedComponent, marginTop: 20, height: 400}}>
-                        <View style = {styles.titleBackground} >
-                            <Text style ={styles.titleText}>
-                                Upcoming Games
-                            </Text>
-                        </View>
+                <ScrollView style={{flex:1}}>
+                    <ScrollView nestedScrollEnabled={true} horizontal={true}>
+                        <Image source={location} style={{flexWrap:"wrap"}}/>
+                    </ScrollView>
+                    <View style = {{alignItems: 'center'}}>
                         <View>
-                            {refGames.length > 0
-                            ?
-                                <ScrollView nestedScrollEnabled={true}>
-                                    {
-                                        refGames.map(game => (
-                                            <View key={game.value.id}
-                                                style={styles.refGames}
-                                            >
-                                                <View style ={{flexDirection:"row", justifyContent:'space-between', alignItems:"center"}}>
-                                                    <GameItemBackGround iconName={game.value.sport.toLowerCase()}>
-                                                        <Text style={{fontSize:18, color:"black"}}>{game.value.sport}</Text>
-                                                    </GameItemBackGround>
-                                                    <Text style={{fontSize:18, color:"black"}}>Date: {game.value.date.toDate().toString().slice(4,16)} </Text>
-                                                </View>
-                                            </View>
-                                            )
-                                        )
-                                    }
-
-                                </ScrollView>
-                            :
-                                <View>
-                                    <Text>There are no upcoming games!</Text>
-                                </View>
-                            }
-
+                            <Text style={{fontSize:35}}>{props.game_details.sport.toUpperCase()}</Text>
+                            <Text style={{fontSize:20}}>Location: {props.game_details.location}</Text>
+                            <Text style={{fontSize:20}}>Host : {props.game_details.host}</Text>
+                            <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
+                            <Text style={{fontSize:20}}>Time : {gameTime}</Text>
+                            <Text style={{fontSize:20}}>Price : {props.game_details.price}</Text>
+                            {/*<Text style={{fontSize:20}}>To Take Note: </Text>*/}
+                            {/*<Text style={{fontSize:20}}>{props.game_details.notes}</Text>*/}
+                            {/*<Text style={{fontSize:20}}>Slots Left: {props.game_details.availability}</Text>*/}
                         </View>
                     </View>
+                    <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
+                        <GradientButton style={{width: '27%', marginLeft: 20}}
+                                        // onPress={chatWithHost}
+                                        colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                            Chat with host
+                        </GradientButton>
+                        {/*<GradientButton style={{width: '27%', marginRight: 20}}*/}
+                        {/*                onPress={() => {*/}
+                        {/*                    setOpenItem(true);}}*/}
+                        {/*                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>*/}
+                        {/*    View Players*/}
+                        {/*</GradientButton>*/}
+                    </View>
+                    <View style = {{marginBottom: 20}} />
+                </ScrollView>
+            </View>
 
-                </View>
-            </ScrollView>
-        </Background>
+            <View style={{...Styles.horizontalbuttonContainer}}>
+                <GradientButton onPress={() => {
+                    setOpenItem(false);
+                }}
+                                colors={["red", "maroon"]}
+                                style={{...Styles.buttonSize, marginRight:75}}>
+                    <Text>Cancel</Text>
+                </GradientButton>
+
+                <GradientButton style={{...Styles.buttonSize, height:65}}
+                                onPress={() => {
+                                    requestApp();
+                                    setOpenItem(false);
+
+                                }}
+                                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
+                    <Text>Request Referee</Text>
+                </GradientButton>
+            </View>
+        </View>
 
     </Modal>
 
+
+
     return(
         <View>
-            {refereeItem}
+            {refereeGame}
             <TouchableOpacity style={styles.games}
                               onPress={() => {
-                                  console.log(refGames);
                                   setOpenItem(true);
                               }}>
-                {/*to replace icon with the profile picture of the referee*/}
-                <MaterialCommunityIcons name="account" size={35}/>
-                <View style={{flexDirection:"column", marginLeft:15}}>
-                    <Text style={{fontSize:18}}> Name: {props.referee.username}</Text>
-                    <Text style={{fontSize:18, color: "black"}}> Refereeing Sport: {props.referee.referee[1]} </Text>
+
+                <GameItemBackGround iconName={sportIcon} color={gameColor}>
+                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.game_details.sport} </Text>
+                </GameItemBackGround>
+
+
+                <View style={{flexDirection:"column"}}>
+                    <Text style={{fontSize:18, color:"black"}}>Date: {gameDate}</Text>
+                    <Text style={{fontSize:18, color:"black"}}>Slots Left: {props.game_details.availability} </Text>
                 </View>
             </TouchableOpacity>
         </View>
@@ -206,7 +208,7 @@ const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
         borderBottomWidth:1,
-        padding:5,
+        // padding:5,
         justifyContent:"flex-start",
         alignItems:"center",
         backgroundColor:"transparent",
@@ -221,6 +223,14 @@ const styles = StyleSheet.create({
         justifyContent:"space-between",
         alignItems:"center",
         backgroundColor:"transparent",
+    },
+    scrollBox:{
+        flex:1,
+        borderWidth: 1,
+        borderBottomEndRadius:10,
+        borderBottomStartRadius:10,
+        backgroundColor: "rgba(200,200,200,0.2)",
+        width:"100%"
     }
 
 })
