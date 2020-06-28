@@ -31,7 +31,6 @@ const ChatDetailScreen = (props) => {
     useEffect(() => {
         const unsubscribe = messagesRef
                                 .where('messageCount', '==', 1)
-                                // .orderBy('messageCount')
                                 .where('idArray', 'array-contains', userId)
                                 .orderBy('lastMessageTime', 'desc')
                                 .limit(10)
@@ -79,9 +78,8 @@ const ChatDetailScreen = (props) => {
         return timestampToDate.toLocaleDateString()
     }
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            {/*<Background>*/}
-                <SafeAreaView>
-                <View style = {{justifyContent: 'center',height: 50, width: '100%',}}>
+                <SafeAreaView style = {{backgroundColor: '#fafafa'}}>
+                <View style = {{justifyContent: 'center',height: 50, width: '100%', backgroundColor: '#fafafa'}}>
                     <Text style = {style.text}> Chats</Text>
                 </View>
                 <View style={{...style.searchBar, }}>
@@ -96,11 +94,11 @@ const ChatDetailScreen = (props) => {
                     />
                 </View>
                 <FlatList
-                    contentContainerStyle={{width: '100%', borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
+                    contentContainerStyle={{width: '100%', height: '100%',borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
                     keyExtractor={(item) => item.key.toString()}
                     data={chatList}
                     renderItem={({item}) =>
-                        <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 75, backgroundColor: '#f4f4f4', flexDirection: 'row',}}
+                        <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 75, flexDirection: 'row',}}
                                           activeOpacity = {0.85}
                                           onPress={() => navigation.navigate('ChatScreen', {chat: item.value, userId: userId})}>
                             {/*========================================image of the other user===========================================*/}
@@ -143,7 +141,6 @@ const ChatDetailScreen = (props) => {
                         </TouchableOpacity>}
                 />
             </SafeAreaView>
-            {/*</Background>*/}
             </TouchableWithoutFeedback>
 }
 
