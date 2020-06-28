@@ -51,7 +51,9 @@ const GameItem = props => {
     }
 
     useEffect(() => {
-        username();
+        const unsubscribe = username();
+
+        return () => unsubscribe;
     }, [])
 
     //GETTING USER UPCOMING_GAME ARRAY =================================================================================

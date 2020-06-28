@@ -134,6 +134,7 @@ const ProfileScreen = props => {
             username: values.username,
             uri: values.uri,
             password: values.password !== '' ? values.password : data.password,
+            referee: values.referee,
         }).then(() => {
             setData({
                 ...data,
@@ -142,6 +143,7 @@ const ProfileScreen = props => {
                 username: values.username,
                 uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
+                referee: values.referee,
             })
         }).catch(error => {
             console.log(error)

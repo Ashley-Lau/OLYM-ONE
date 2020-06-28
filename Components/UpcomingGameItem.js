@@ -38,12 +38,12 @@ const UpcomingGameItem = props => {
     const [playerList, setPlayerList] = useState([]);
 
     useEffect(() => {
-        setPlayerList([]);
-        let playerlist = [];
+        const unsubscribe = setPlayerList([]);
+        let players = [];
         props.gameDetails.players.map(uid => {
             firebaseDb.firestore().collection('users').doc(uid)
                 .onSnapshot(doc => {
-                    playerlist.push(doc.data().username);
+                    players.push(doc.data().username);
                 })
         })
         setPlayerList(playerlist);

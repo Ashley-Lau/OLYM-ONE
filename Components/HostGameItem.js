@@ -9,6 +9,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup'
 import CustButton from "./CustButton";
 import firebaseDb from "../firebaseDb";
+import { Select, SelectItem } from '@ui-kitten/components';
 
 
 
@@ -28,6 +29,9 @@ const reviewSchema = yup.object({
 
 const HostGameItem = props => {
 
+    //CHECKS FOR IOS PLATFORM ========================================================================================================================
+    const isIos = Platform.OS === 'ios'
+
     //FUNCTION TO CONVERT TIME TO SINGAPORE TIME ==============================================================================================
     const sgTime = (date) => {
         const utc = date.getTime() + (date.getTimezoneOffset() * 60000);
@@ -38,8 +42,11 @@ const HostGameItem = props => {
 
     //ARRAY FOR PICKER ==============================================================================================================
 
-    const sgLocations = ["Select","Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
-    const sports = ["Select", "Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+    const sgLocations = ["Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
+
+    const [locationIndex, setLocationIndex] = useState();
+    const [sportsIndex, setSportsIndex] = useState()
     //CLOSING HOST GAME ITEM ==============================================================================================================
     const closeHost = () => {props.closeHost()}
 
@@ -95,22 +102,40 @@ const HostGameItem = props => {
                         <View>
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
-                                <View style={styles.dropDown}>
-                                    <Picker
-                                        mode="dropdown"
-                                        selectedValue={props.values.location}
-                                        style={{ height: "100%", width: "100%", justifyContent:"space-between"}}
-                                        onValueChange={(itemValue, itemIndex) => {
-                                            console.log(props.values.location)
-                                            props.setFieldValue('location', itemValue)
-                                            props.setFieldTouched('location')
+                                <View style={styles.dropDownCopy}>
+                                    <Select
+                                        style = {{width: "100%", justifyContent:"space-between"}}
+                                        placeholder='Location'
+                                        value ={sgLocations[locationIndex - 1]}
+                                        onSelect={index => {
+                                            setLocationIndex(index)
+                                            props.setFieldValue('location', sgLocations[index.row])
+                                            // props.setFieldTouched('location')
                                         }}
-                                    >
+                                        selectedIndex={locationIndex}>
+                                        <SelectItem title='Tampines'/>
+                                        <SelectItem title='Hougang'/>
+                                        {/*{*/}
+                                        {/*    sgLocations.map(location => (*/}
+                                        {/*            <SelectItem key={location} title={location}/>*/}
+                                        {/*            ))*/}
+                                        {/*}*/}
+                                    </Select>
+                                    {/*<Picker*/}
+                                    {/*    mode="dropdown"*/}
+                                    {/*    selectedValue={props.values.location}*/}
+                                    {/*    style={{ height: "100%", width: "100%", justifyContent:"space-between"}}*/}
+                                    {/*    onValueChange={(itemValue, itemIndex) => {*/}
+                                    {/*        console.log(props.values.location)*/}
+                                    {/*        props.setFieldValue('location', itemValue)*/}
+                                    {/*        props.setFieldTouched('location')*/}
+                                    {/*    }}*/}
+                                    {/*>*/}
 
-                                        {sgLocations.map(locations => (
-                                            <Picker.Item key={locations} label={locations} value={locations}/>
-                                        ))}
-                                    </Picker>
+                                    {/*    {sgLocations.map(locations => (*/}
+                                    {/*        <Picker.Item key={locations} label={locations} value={locations}/>*/}
+                                    {/*    ))}*/}
+                                    {/*</Picker>*/}
 
 
                                 </View>
@@ -270,6 +295,14 @@ const styles = StyleSheet.create({
         justifyContent:"flex-end",
         alignItems:"flex-start",
         elevation: 5
+    },
+    dropDownCopy:{
+        flexDirection:"row",
+        marginTop: 5,
+        // justifyContent: 'center',
+        alignItems:"center",
+        // height: 40,
+        width: "97%",
     },
     dropDown: {
         flexDirection:"row",

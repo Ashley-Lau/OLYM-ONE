@@ -13,8 +13,9 @@ const RefereeScreen = (props) => {
 
     // GETTING REFEREE DETAILS ======================================================================================
     const [refereeList, setRefereeList] = useState([])
-    const getReferee = () => {
-        firebaseDb.firestore().collection("users")
+
+    useEffect(() => {
+        const unsubscribe = firebaseDb.firestore().collection("users")
             .limit(15)
             .onSnapshot(snapshot => {
                 let refList = [];
@@ -25,10 +26,11 @@ const RefereeScreen = (props) => {
                     }
                 })
                 setRefereeList(refList)
-            })
-    }
-    useEffect(() => {
-        getReferee();
+            },
+                err => {
+                console.log(err.message);
+                })
+        return () => unsubscribe()
     }, [])
 
     //SEARCH AND FILTER INCOMPLETE ==============================================================================
