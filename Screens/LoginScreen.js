@@ -78,7 +78,7 @@ const LoginScreen = (props) => {
                              autoCorrect = {false}
                              style = {style.textContainer}
                              labelHeight = {24}
-                             inputWidth = {50}
+                             inputWidth = {40}
                              inputPadding = {16}
                              labelStyle = {style.labelStyle}
                              inputStyle = {style.textStyle}
@@ -94,7 +94,7 @@ const LoginScreen = (props) => {
                              autoCorrect = {false}
                              style = {style.textContainer}
                              labelHeight = {24}
-                             inputWidth = {50}
+                             inputWidth = {40}
                              inputPadding = {16}
                              labelStyle = {style.labelStyle}
                              inputStyle = {style.textStyle}
@@ -153,7 +153,7 @@ const style = StyleSheet.create({
 
     },
     textStyle: {
-        fontSize: 30,
+        fontSize: 16,
         color: 'black',
     },
     button: {
