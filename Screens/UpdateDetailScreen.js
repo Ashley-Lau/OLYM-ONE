@@ -68,7 +68,7 @@ const UpdateDetailScreen = (props) => {
                                 currentPassword: '',
                                 newPassword: '',
                                 confirmPassword: '',
-                                referee:["No"]
+                                referee:props.route.params.data.referee
                             }}
                             validationSchema = {reviewSchema(props.route.params.data.password)}
                             onSubmit={(values, actions) => {
