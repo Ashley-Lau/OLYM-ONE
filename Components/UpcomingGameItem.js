@@ -15,6 +15,22 @@ import ViewPlayerItem from "../Components/ViewPlayerItem"
 
 const UpcomingGameItem = props => {
 
+    //IMAGE LOCATION ==================================================================================================
+    let location = require("../assets/tampines.jpg");
+    if(props.gameDetails.location.toLowerCase() === "tampines"){
+        location = require("../assets/tampines.jpg");
+    } else if (props.gameDetails.location.toLowerCase() === "pasir ris"){
+        location = require("../assets/pasirris.jpg");
+    } else if (props.gameDetails.location.toLowerCase() === "seng kang"){
+        location = require("../assets/sengkang.jpg");
+    } else if (props.gameDetails.location.toLowerCase() === "punggol"){
+        location = require("../assets/punggol.jpg");
+    } else if (props.gameDetails.location.toLowerCase() === "clementi"){
+        location = require("../assets/clementi.jpg");
+    } else if (props.gameDetails.location.toLowerCase() === "hougang"){
+        location = require("../assets/hougang_sports_hall.jpg");
+    }
+
     // LIST OF PLAYERS ================================================================================================
     const [playerList, setPlayerList] = useState([]);
 
@@ -63,12 +79,24 @@ const UpcomingGameItem = props => {
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
+    const [newHost, setHost] = useState('');
+    const getNewHost = () => {
+        firebaseDb.firestore().collection('users').doc(props.gameDetails.players[1])
+            .get()
+            .then(doc => {
+                setHost(doc.data().username);
+                const slots = parseInt(props.gameDetails.availability) + 1
+                gameRef.update({hostId:props.gameDetails.players[1], host: newHost}).then(()=>{})
+                gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
+            })
+    }
+
     const gameQuit = () => {
         if(props.gameDetails.players.length === 1){
             gameRef.delete().then(() => {})
         } else {
-            const slots = parseInt(props.gameDetails.availability) + 1
-            gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
+            getNewHost();
+
         }
         userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayRemove(props.gameId)}).then(() => {});
     }
@@ -103,16 +131,23 @@ const UpcomingGameItem = props => {
                     <View style={styles.scrollBox}>
 
                         <ScrollView style={{flex:1}}>
-                            <Image source={require("../assets/hougang_sports_hall.jpg")} style={{flexWrap:"wrap"}}/>
-                            <Text style={{fontSize:35}}>{props.gameDetails.sport.toUpperCase()}</Text>
-                            <Text style={{fontSize:20}}>Location: {props.gameDetails.location}</Text>
-                            <Text style={{fontSize:20}}>Host : {props.gameDetails.host}</Text>
-                            <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
-                            <Text style={{fontSize:20}}>Time : {gameTime}</Text>
-                            <Text style={{fontSize:20}}>Price : {props.gameDetails.price}</Text>
-                            <Text style={{fontSize:20}}>To Take Note: </Text>
-                            <Text style={{fontSize:20}}>{props.gameDetails.notes}</Text>
-                            <Text style={{fontSize:20}}>Slots Left: {props.gameDetails.availability}</Text>
+                            <ScrollView nestedScrollEnabled={true} horizontal={true}>
+                                <Image source={location} style={{flexWrap:"wrap"}}/>
+                            </ScrollView>
+                            <View style={{alignItems:"center"}}>
+                                <View>
+                                    <Text style={{fontSize:35}}>{props.gameDetails.sport.toUpperCase()}</Text>
+                                    <Text style={{fontSize:20}}>Location: {props.gameDetails.location}</Text>
+                                    <Text style={{fontSize:20}}>Host : {props.gameDetails.host}</Text>
+                                    <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
+                                    <Text style={{fontSize:20}}>Time : {gameTime}</Text>
+                                    <Text style={{fontSize:20}}>Price : {props.gameDetails.price}</Text>
+                                    <Text style={{fontSize:20}}>To Take Note: </Text>
+                                    <Text style={{fontSize:20}}>{props.gameDetails.notes}</Text>
+                                    <Text style={{fontSize:20}}>Slots Left: {props.gameDetails.availability}</Text>
+                                </View>
+                            </View>
+
 
                             <GradientButton style={{...Styles.buttonSize, height: '7%'}}
                                             onPress={() => {
