@@ -20,6 +20,7 @@ import Styles from "../styling/Styles";
 
 const RefereeItem = props => {
 
+
     //REQUEST FUNCTION ===============================================================================================
     const appRef = firebaseDb.firestore().collection('application_details')
     const requestApp = () => {
@@ -27,8 +28,10 @@ const RefereeItem = props => {
             date:props.game_details.date,
             gameId:props.gameId,
             hostId:props.game_details.hostId,
-            refereeId: props.refereeId,
-            sport:props.game_details.sport
+            refereeId: props.refereeId.id,
+            sport:props.game_details.sport,
+            refereeEmail:props.refereeId.email,
+            refereeName:props.refereeId.username
         })
             .then(() => {})
             .catch(err => console.error(err))
