@@ -79,24 +79,25 @@ const UpcomingGameItem = props => {
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
     const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
-    const [newHost, setHost] = useState('');
+    let host = '';
     const getNewHost = () => {
         firebaseDb.firestore().collection('users').doc(props.gameDetails.players[1])
             .get()
             .then(doc => {
-                setHost(doc.data().username);
-                const slots = parseInt(props.gameDetails.availability) + 1
-                gameRef.update({hostId:props.gameDetails.players[1], host: newHost}).then(()=>{})
-                gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
+                host = doc.data().username;
             })
     }
 
     const gameQuit = () => {
         if(props.gameDetails.players.length === 1){
             gameRef.delete().then(() => {})
+        } else if(props.gameDetails.hostId === props.user){
+            const slots = parseInt(props.gameDetails.availability) + 1
+            gameRef.update({hostId:props.gameDetails.players[1], host: host}).then(()=>{})
+            gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
         } else {
-            getNewHost();
-
+            const slots = parseInt(props.gameDetails.availability) + 1
+            gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user)}).then(() => {})
         }
         userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayRemove(props.gameId)}).then(() => {});
     }
@@ -161,7 +162,9 @@ const UpcomingGameItem = props => {
 
                     <View style={{...Styles.horizontalbuttonContainer}}>
                         <GradientButton onPress={() => {
-                            confirmQuitAlert()
+                            getNewHost();
+                            confirmQuitAlert();
+
                         }}
                                         colors={["red", "maroon"]}
                                         style={{...Styles.buttonSize, marginRight:75}}>
@@ -194,7 +197,7 @@ const UpcomingGameItem = props => {
                     <Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>
                 </View>
             </TouchableOpacity>
-    </View>
+        </View>
 
 
 
