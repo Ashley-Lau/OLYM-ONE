@@ -15,4 +15,5 @@
 # Did up the ui for chat screen 
 # did up forget password screen
 # did up chat screen
-# connected updated username and profile pic to chat and game_details 
+# connected updated username and profile pic to chat and game_details
+# added support for ios in signupscreen 
