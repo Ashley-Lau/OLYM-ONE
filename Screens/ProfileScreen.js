@@ -49,7 +49,6 @@ const ProfileScreen = props => {
     const gameRef = firebaseDb.firestore().collection('game_details')
 
     useEffect(() => {
-        // getGames();
         const unsubscribe = gameRef
             .where("players", "array-contains", data.id)
             .onSnapshot(
@@ -219,8 +218,8 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {data.upcoming_games.length < 0
-                                ? <View>
+                            {data.upcoming_games.length <= 0
+                                ?<View>
                                     <Text>No Upcoming Games!</Text>
                                 </View>
 
