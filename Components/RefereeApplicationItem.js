@@ -171,7 +171,7 @@ const RefereeApplicationItem = props => {
 
                 <View >
                     <GradientButton style={{width: 200, height:45}}
-                                    colors = {['red','maroon']}
+                                    colors = {['#1bb479','#026c45']}
                                     textStyle = {{fontSize: 20}}
                                     onPress = {() => {setOpen(false)}}
                     >
