@@ -1,15 +1,15 @@
 import React,{useState} from 'react';
-import {Text,TextInput, StyleSheet, Picker, Modal, View, ScrollView} from 'react-native';
+import {Text,TextInput, StyleSheet, SafeAreaView, Modal, View, ScrollView} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
-import GradientButton from "./GradientButton";
+import GradientButton from "../Components/GradientButton";
 import Background from "../views/Background";
 import Styles from "../styling/Styles";
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
 import * as yup from 'yup'
-import CustButton from "./CustButton";
+import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
 import { Select, SelectItem } from '@ui-kitten/components';
 
@@ -29,7 +29,7 @@ const reviewSchema = yup.object({
 })
 
 
-const HostGameItem = props => {
+const HostGameScreen = props => {
 
     //NAVIGATION ===================================================================================================
     const navigation = useNavigation()
@@ -83,10 +83,11 @@ const HostGameItem = props => {
     return(
         <View>
             <Background style={{position:"absolute", right:0, top:0}}/>
-
+            <SafeAreaView>
             <View style={styles.header}>
-                <Text style={{fontSize:22, color:"white"}}>GAME DETAILS</Text>
+                <Text style={{fontSize:22, color:"white", alignSelf: 'center'}}>GAME DETAILS</Text>
             </View>
+            </SafeAreaView>
 
             <ScrollView>
                 <Formik initialValues={{
@@ -197,13 +198,13 @@ const HostGameItem = props => {
                                                                     props.setFieldTouched('date');}}/>
                                                 <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
                                                     <GradientButton onPress={() => props.setFieldValue('showDate',false)}
-                                                                    style={style.button}
+                                                                    style={styles.button}
                                                                     colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
                                                         Cancel
                                                     </GradientButton>
                                                     <GradientButton onPress={() => props.setFieldValue('showDate',false)}
-                                                                    style={style.button}
-                                                                    colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                                                    style={styles.button}
+                                                                    colors={['#1bb479','#026c45']}>
                                                         Confirm
                                                     </GradientButton>
                                                 </View>
@@ -216,14 +217,14 @@ const HostGameItem = props => {
 
                                 :
                                 <RNDateTimePicker  value={props.values.date}
-                                                                          display="spinner"
-                                                                          mode="date"
-                                                                          onChange={(event, selectedDate) => {
-                                                                              const currentDate = selectedDate || props.values.date;
-                                                                              props.setFieldValue('showDate',Platform.OS !== 'android');
-                                                                              props.setFieldValue('date', currentDate);
-                                                                              props.setFieldTouched('date');}}
-                            />)
+                                                   display="spinner"
+                                                   mode="date"
+                                                   onChange={(event, selectedDate) => {
+                                                       const currentDate = selectedDate || props.values.date;
+                                                       props.setFieldValue('showDate',Platform.OS !== 'android');
+                                                       props.setFieldValue('date', currentDate);
+                                                       props.setFieldTouched('date');}}
+                                />)
                             }
 
                             <View style={styles.selectionItem}>
@@ -239,7 +240,7 @@ const HostGameItem = props => {
                             (isIos
                                 ?
                                 (<Modal visible={props.values.showTime} animationType="slide"
-                                           transparent={true}>
+                                        transparent={true}>
                                         <View style={{
                                             flex: 1,
                                             flexDirection: 'column',
@@ -253,7 +254,7 @@ const HostGameItem = props => {
                                                 height: 300,
                                                 backgroundColor: 'white'}}>
                                                 <DateTimePicker value={props.values.date}
-                                                                mode={'date'}
+                                                                mode={'time'}
                                                                 display="spinner"
                                                                 onChange={(event, selectedDate) => {
                                                                     const currentDate = selectedDate || props.values.date;
@@ -261,12 +262,12 @@ const HostGameItem = props => {
                                                                     props.setFieldTouched('date');}}/>
                                                 <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
                                                     <GradientButton onPress={() => props.setFieldValue('showTime',false)}
-                                                                    style={style.button}
+                                                                    style={styles.button}
                                                                     colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
                                                         Cancel
                                                     </GradientButton>
                                                     <GradientButton onPress={() => props.setFieldValue('showTime',false)}
-                                                                    style={style.button}
+                                                                    style={styles.button}
                                                                     colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
                                                         Confirm
                                                     </GradientButton>
@@ -279,13 +280,13 @@ const HostGameItem = props => {
                                 :
 
                                 <RNDateTimePicker  value={props.values.date} display="spinner"
-                                                                          mode="time"
-                                                                          onChange={(event, selectedDate) => {
-                                                                              const currentDate = selectedDate || props.values.date;
-                                                                              props.setFieldValue('showTime',Platform.OS !== 'android');
-                                                                              props.setFieldValue('date', currentDate);
-                                                                              props.setFieldTouched('date');}}
-                            />)}
+                                                   mode="time"
+                                                   onChange={(event, selectedDate) => {
+                                                       const currentDate = selectedDate || props.values.date;
+                                                       props.setFieldValue('showTime',Platform.OS !== 'android');
+                                                       props.setFieldValue('date', currentDate);
+                                                       props.setFieldTouched('date');}}
+                                />)}
 
                             {/*// PRICE ------------------------------------------------------------------------*/}
 
@@ -374,7 +375,7 @@ const HostGameItem = props => {
                                 </GradientButton>
 
                                 <GradientButton onPress={props.handleSubmit}
-                                                colors={['#30cfd0','#330867']}
+                                                colors={['#1bb479','#026c45']}
                                                 style={{...Styles.buttonSize}}>
                                     <Text>Host</Text>
                                 </GradientButton>
@@ -397,10 +398,9 @@ const HostGameItem = props => {
 const styles = StyleSheet.create({
     header:{
         width:"100%",
-        height:"10%",
-        backgroundColor:"rgba(78,121,255,0.85)",
-        justifyContent:"flex-end",
-        alignItems:"flex-start",
+        height:50,
+        backgroundColor:'#026c45',
+        justifyContent: 'center',
         elevation: 5
     },
     dropDownCopy:{
@@ -459,7 +459,11 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         marginLeft:8,
         marginTop:10
+    },
+    button: {
+        width: 100,
+        height: 45
     }
 })
 
-export default HostGameItem;
+export default HostGameScreen;
