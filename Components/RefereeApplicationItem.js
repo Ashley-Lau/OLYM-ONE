@@ -6,7 +6,9 @@ import {
     Modal,
     ScrollView,
     TouchableOpacity,
-    ImageBackground, Image
+    ImageBackground,
+    Image,
+    Alert
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
@@ -21,6 +23,74 @@ import Styles from "../styling/Styles";
 
 
 const RefereeApplicationItem = props => {
+    //ACCEPT AND DECLINE FUNCTION ========================================================================================
+    const applRef = firebaseDb.firestore().collection("application_details").doc(props.appId)
+    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.refDetails.gameId)
+
+    const deleteReq = () => {
+        applRef.delete().then(()=>{})
+    }
+
+    const acceptReq = () => {
+        gameRef.update({referee: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
+            .then(()=>{deleteReq()});
+    }
+
+    const confirmDecline = () => {
+        Alert.alert("Confirmation",
+            "Are you sure you want to decline this request?" +
+            [
+                {
+                    text:'Cancel',
+                    onPress:() => {},
+                    style:'cancel'
+                },
+                {
+                    text:'Confirm',
+                    onPress:() => {
+                        deleteReq();
+                        setOpen(false);
+                    },
+                }
+            ])
+    }
+
+    const confirmAccept = () => {
+        Alert.alert("Confirmation",
+            "Do you want to accept this request?",
+            [
+                {
+                    text:'Cancel',
+                    onPress:() => {},
+                    style:'cancel'
+                },
+                {
+                    text:'Confirm',
+                    onPress:() => {
+                        acceptReq();
+                        setOpen(false);
+                    },
+                }
+            ]
+            )
+    }
+
+
+
+    // PROFILE CARD BACKGROUND ===========================================================================================
+    let profileBack = require("../assets/tennis_coloured.png")
+    if(props.refDetails.sport.toLowerCase() === "tennis"){
+        profileBack = require("../assets/tennis_coloured.png");
+    } else if(props.refDetails.sport.toLowerCase() === "floorball"){
+        profileBack = require("../assets/floorball_coloured.png");
+    } else if(props.refDetails.sport.toLowerCase() === "basketball"){
+        profileBack = require("../assets/basketball_coloured.png");
+    } else if(props.refDetails.sport.toLowerCase() === "soccer"){
+        profileBack = require("../assets/soccer_coloured.png");
+    } else if(props.refDetails.sport.toLowerCase() === "badminton"){
+        profileBack = require("../assets/badminton_coloured.png");
+    }
+
 
     //DATE AND TIME STRING ================================================================================================
     let gameDate = props.refDetails.date
@@ -34,33 +104,38 @@ const RefereeApplicationItem = props => {
     const [openDetails, setOpen] = useState(false);
 
     const refItem = <Modal visible={openDetails}>
-        <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
-            <View style = {{...styles.elevatedComponent, height: 225, paddingTop:10}}>
-                <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-                    <View style = {styles.photoFrame}>
-                        <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
-                            uri: props.refDetails.refereeUri
-                        }}/>
-                    </View>
+        <Background>
+            <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
+                <View style = {{...styles.elevatedComponent, height: 225}}>
+                    <ImageBackground source={profileBack} style ={{width:"100%",height:"100%"}}>
+                        <View style = {{marginTop:10}}>
+                            <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+                                <View style = {styles.photoFrame}>
+                                    <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                        uri: props.refDetails.refereeUri
+                                    }}/>
+                                </View>
 
-                    <View style = {{paddingLeft: 30, marginTop: 10}}>
-                        <Text style = {{fontSize: 20}}> Name: {props.refDetails.refereeName}</Text>
-                        <Text style = {{fontSize: 20}}> Username: {props.refDetails.refereeUserName} </Text>
-                        <Text style = {{fontSize: 20}}> Email: {props.refDetails.refereeEmail}</Text>
+                                <View style = {{paddingLeft: 30, marginTop: 10}}>
+                                    <Text style = {{fontSize: 20}}> Name: {props.refDetails.refereeName}</Text>
+                                    <Text style = {{fontSize: 20}}> Username: {props.refDetails.refereeUserName} </Text>
+                                    <Text style = {{fontSize: 20}}> Email: {props.refDetails.refereeEmail}</Text>
 
-                    </View>
+                                </View>
+                            </View>
+                        </View>
+                    </ImageBackground>
                 </View>
-            </View>
 
-            <View style = {{...styles.elevatedComponent, height: 225}}>
-                    <View style={{justifyContent:"center", backgroundColor:"blue", height:"20%"}}>
-                        <Text style={{fontSize:25}}> REQUESTS TO REFEREE </Text>
+                <View style = {{...styles.elevatedComponent, height: 100}}>
+                    <View style={styles.requestTitle}>
+                        <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
                     </View>
 
                     <View style={styles.games}
-                                      onPress={() => {
-                                          setOpen(true);
-                                      }}>
+                          onPress={() => {
+                              setOpen(true);
+                          }}>
 
                         <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()}>
                             <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.refDetails.sport} </Text>
@@ -73,32 +148,38 @@ const RefereeApplicationItem = props => {
                         </View>
                     </View>
 
+                </View>
+
+                <View style ={{...Styles.horizontalbuttonContainer}}>
+                    <GradientButton style={{width: 120, height:37, marginRight: 75,}}
+                                    colors = {["red", "maroon"]}
+                                    onPress = {confirmDecline}
+                                    textStyle = {{fontSize: 15}}>
+                        DECLINE
+                    </GradientButton>
+
+
+
+                    <GradientButton style={{width: 120, height:37,}}
+                                    colors = {['#1bb479','#026c45']}
+                                    textStyle = {{fontSize: 15}}
+                                    onPress = {confirmAccept}
+                    >
+                        ACCEPT
+                    </GradientButton>
+                </View>
+
+                <View >
+                    <GradientButton style={{width: 200, height:45}}
+                                    colors = {['red','maroon']}
+                                    textStyle = {{fontSize: 20}}
+                                    onPress = {() => {setOpen(false)}}
+                    >
+                        Back
+                    </GradientButton>
+                </View>
             </View>
-
-
-
-                <GradientButton style={{width: 120, height:37, marginTop: 20,}}
-                                colors = {['#1bb479','#026c45']}
-                                textStyle = {{fontSize: 15}}
-                    onPress = {() => setOpen(false)}
-                >
-                    Decline
-                </GradientButton>
-                {/*<GradientButton style={{width: 120, height:37, marginTop: 20,}}*/}
-                {/*                colors = {["red", "maroon"]}*/}
-                {/*    // onPress = {logout}*/}
-                {/*                textStyle = {{fontSize: 15}}>*/}
-                {/*    Accept*/}
-                {/*</GradientButton>*/}
-
-
-
-
-
-        </View>
-
-
-
+        </Background>
     </Modal>
 
 
@@ -106,7 +187,7 @@ const RefereeApplicationItem = props => {
     return (
         <View>
             {refItem}
-            <TouchableOpacity style={styles.games}
+            <TouchableOpacity style={{...styles.games, borderBottomWidth:0.7}}
                               onPress={() => {
                                   setOpen(true);
                               }}>
@@ -141,7 +222,7 @@ const styles = StyleSheet.create({
     },
     games:{
         flexDirection:"row",
-        borderBottomWidth:0.7,
+        // borderBottomWidth:0.7,
         borderColor:"grey",
         width:"100%",
         height:65,
@@ -164,6 +245,14 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0.34,
         shadowRadius: 6.27,
+    },
+    requestTitle :{
+        borderTopRightRadius: 10,
+        borderTopLeftRadius: 10,
+        justifyContent:"center",
+        alignItems:"center",
+        backgroundColor:"rgba(66,231,147,0.49)",
+        height:35
     }
 })
 
