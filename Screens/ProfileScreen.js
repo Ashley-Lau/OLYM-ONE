@@ -52,6 +52,22 @@ const ProfileScreen = props => {
 
 
     useEffect(() => {
+
+        const unsubscribe2 = appRef
+            .where("hostId", "==", data.id)
+            .onSnapshot( snapshot => {
+                    let apps = [];
+                    snapshot.forEach(doc => {
+                        console.log(doc.id);
+                        console.log(doc.data());
+                        apps.push({key:doc.id, value:doc.data()});
+                    })
+                    setAppList(apps);
+                },error => {
+                    console.log("Upcoming Games " + error.message)
+                })
+
+
         const unsubscribe = gameRef
             .where("players", "array-contains", data.id)
             .onSnapshot(
@@ -66,22 +82,11 @@ const ProfileScreen = props => {
                     console.log("Upcoming Games " + error.message)
                 })
 
-        const unsubscribe2 = appRef
-            .where("hostId", "==", data.id)
-            .onSnapshot(
-                snapshot => {
-                    let apps = [];
-                    snapshot.forEach(doc => {
-                        apps.push({key:doc.id, value:doc.data()});
-                    })
-                    setAppList(apps);
-                },error => {
-                    console.log("Upcoming Games " + error.message)
-                })
+
 
         return () => {
-            unsubscribe();
             unsubscribe2();
+            unsubscribe();
         }
 
     },[])
@@ -276,12 +281,12 @@ const ProfileScreen = props => {
 
                                     :
                                     <ScrollView nestedScrollEnabled={true}>
-                                        {appList.map(app =>
+                                        {appList.map(appl =>
                                             (
                                                 <RefereeApplicationItem
-                                                                  key={app.key}
-                                                                  gameDetails={app.value}
-                                                                  gameId={app.key}
+                                                                  key={appl.key}
+                                                                  refDetails={appl.value}
+                                                                  appId={appl.key}
                                                                   user={user.id}
                                                 />
                                             )

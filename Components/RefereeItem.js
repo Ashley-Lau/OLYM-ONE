@@ -31,7 +31,9 @@ const RefereeItem = props => {
             refereeId: props.refereeId.id,
             sport:props.game_details.sport,
             refereeEmail:props.refereeId.email,
-            refereeName:props.refereeId.username
+            refereeUserName:props.refereeId.username,
+            refereeName: props.refereeId.firstName + " " + props.refereeId.lastName,
+            refereeUri:props.refereeId.uri
         })
             .then(() => {})
             .catch(err => console.error(err))
