@@ -6,7 +6,8 @@ import {
     Modal,
     ScrollView,
     TouchableOpacity,
-    ImageBackground, Image
+    Image,
+    Alert
 } from 'react-native';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
@@ -16,10 +17,13 @@ import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
 import GameItemBackGround from "../views/GameItemBackGround";
 import Styles from "../styling/Styles";
+import {keywordsMaker} from "./SearchBarFunctions";
+import {useNavigation} from "@react-navigation/native";
 
 
 const RefereeItem = props => {
 
+    const navigation = useNavigation()
 
     //REQUEST FUNCTION ===============================================================================================
     const appRef = firebaseDb.firestore().collection('application_details')
@@ -70,6 +74,82 @@ const RefereeItem = props => {
         gameTime = props.game_details.date.toDate().toString().slice(16,21);
     }
 
+    // CHATTING WITH HOST FUNCTION==============================================================
+    const chatWithHost = () => {
+        const hostId = props.game_details.hostId
+        const currentUserId = props.refereeId.id
+        const smallerId = hostId < currentUserId ? hostId : currentUserId
+        const largerId = hostId < currentUserId ? currentUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === currentUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+            return
+        }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                        keywords: keywords,
+                                        smallId: smallerId,
+                                        largeId: largerId,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+                                            setOpenItem(false)
+                                            navigation.navigate('ChatStack', {
+                                                screen: 'ChatScreen',
+                                                params : {
+                                                    chat: data,
+                                                    userId: currentUserId
+                                                }
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
+                        })
+                        .catch(error => console.log(error))
+                } else {
+                    setOpenItem(false)
+                    navigation.navigate('ChatStack', {
+                        screen: 'ChatScreen',
+                        params : {
+                            chat: doc.data(),
+                            userId: currentUserId
+                        }
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
+
     const refereeGame =<Modal visible = {openItem} animationType="slide">
         <Background style={{top: 0,right:0, position:"absolute"}}/>
 
@@ -96,7 +176,7 @@ const RefereeItem = props => {
                     </View>
                     <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
                         <GradientButton style={{width: '27%', marginLeft: 20}}
-                                        // onPress={chatWithHost}
+                                        onPress={chatWithHost}
                                         colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
                             Chat with host
                         </GradientButton>
@@ -213,7 +293,7 @@ const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
         borderBottomWidth:1,
-        // padding:5,
+        borderColor: 'white',
         justifyContent:"flex-start",
         alignItems:"center",
         backgroundColor:"transparent",

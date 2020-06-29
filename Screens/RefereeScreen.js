@@ -49,14 +49,12 @@ const RefereeScreen = (props) => {
 
             </View>
 
-            <View style={{justifyContent: "space-around", marginTop:10}}>
                 <FlatList
                     contentContainerStyle={{justifyContent: "space-between"}}
                     keyExtractor={(item) => item.key}
                     data={refereeList}
                     renderItem={({item}) => <RefereeItem refereeId ={props.route.params.user} gameId={item.key} game_details={item.value}/>}
                 />
-            </View>
         </Background>
     )
 }
@@ -89,7 +87,8 @@ const styles = StyleSheet.create({
         justifyContent:"center",
         alignItems:"center",
         borderBottomWidth:1,
-        borderBottomColor:"rgba(177,177,177,0.78)"
+        borderBottomColor:"rgba(177,177,177,0.78)",
+        marginBottom: 10,
     }
 
 })

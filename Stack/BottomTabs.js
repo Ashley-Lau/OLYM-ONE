@@ -12,7 +12,7 @@ import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
 import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
 import ChatDetailScreen from "../Screens/ChatDetailScreen";
-import HostGameItem from "../Components/HostGameItem";
+import HostGameScreen from "../Screens/HostGameScreen";
 import firebaseDb from "../firebaseDb";
 
 
@@ -24,7 +24,7 @@ const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
                 <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
-                <Stack.Screen name = "HostGameItem" component = {HostGameItem}/>
+                <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
             </Stack.Navigator>
 }
 
