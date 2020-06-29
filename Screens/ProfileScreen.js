@@ -18,6 +18,7 @@ import GradientButton from "../Components/GradientButton";
 import HostGameItem from "../Components/HostGameItem";
 import UpcomingGameItem from "../Components/UpcomingGameItem";
 import RefereeApplicationItem from "../Components/RefereeApplicationItem";
+import UpcomingRefereeItem from "../Components/UpcomingRefereeItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import {keywordsMaker} from "../Components/SearchBarFunctions";
@@ -47,7 +48,8 @@ const ProfileScreen = props => {
     const appRef = firebaseDb.firestore().collection('application_details')
 
     //GETTING UPCOMING GAMES =========================================================================================================
-    const [upcomingGameList, setList] = useState([])
+    const [upcomingGameList, setList] = useState([]);
+    const [upcomingRefList, setRefList] = useState([]);
     const gameRef = firebaseDb.firestore().collection('game_details')
 
 
@@ -58,8 +60,7 @@ const ProfileScreen = props => {
             .onSnapshot( snapshot => {
                     let apps = [];
                     snapshot.forEach(doc => {
-                        console.log(doc.id);
-                        console.log(doc.data());
+                        console.log("application loaded")
                         apps.push({key:doc.id, value:doc.data()});
                     })
                     setAppList(apps);
@@ -82,11 +83,26 @@ const ProfileScreen = props => {
                     console.log("Upcoming Games " + error.message)
                 })
 
+        const unsubscribe3 = gameRef
+            .where("referee", "array-contains", data.id)
+            .onSnapshot(
+                snapshot => {
+                    let refList = [];
+                    snapshot.forEach( doc => {
+                        console.log("ref loaded")
+                        refList.push({key:doc.id, value:doc.data()});
+                    })
+                    setRefList(refList);
+                }, error => {
+            console.log("Refereeing Games " + error.message)
+                })
+
 
 
         return () => {
             unsubscribe2();
             unsubscribe();
+            unsubscribe3();
         }
 
     },[])
@@ -124,8 +140,6 @@ const ProfileScreen = props => {
 
 
 
-    //MODAL STATES =======================================================================================================
-    const[hostGame, setHostGame] = useState(false);
 
     //UPDATING USER DATA ================================================================================================
     const handleData = values => {
@@ -307,6 +321,27 @@ const ProfileScreen = props => {
                                 <Text style ={style.titleText}>
                                     Upcoming Refereeing Games
                                 </Text>
+                            </View>
+                            <View>
+                                {upcomingRefList.length <= 0
+                                    ?<View>
+                                        <Text>No Upcoming Refereeing!</Text>
+                                    </View>
+
+                                    :
+                                    <ScrollView nestedScrollEnabled={true}>
+                                        {upcomingRefList.map(upcoming =>
+                                            (
+                                                <UpcomingRefereeItem
+                                                    key={upcoming.key}
+                                                    gameDetails={upcoming.value}
+                                                    gameId={upcoming.key}
+                                                    user={user.id}
+                                                />
+                                            )
+                                        )}
+                                    </ScrollView>
+                                }
                             </View>
                         </View>
 
