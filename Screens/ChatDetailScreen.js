@@ -68,7 +68,7 @@ const ChatDetailScreen = (props) => {
             const fullHours = parseInt(time.slice(0,2), 10)
             // conversion to 12 hours
             const hours = fullHours > 12 ? fullHours % 12 : fullHours
-            const nicerHours = hours < 10 ? '0' + hours : hours
+            const nicerHours = hours === 0 ? '0' + hours : hours
             const suffix = (fullHours >= 12)? ' PM' : ' AM';
             return nicerHours + time.slice(2,5) + suffix
         }
