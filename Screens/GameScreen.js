@@ -2,6 +2,7 @@ import React, {useEffect, useState} from 'react';
 import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
+import {Select, SelectItem, SelectItem0} from "@ui-kitten/components";
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
@@ -15,39 +16,35 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 const GameScreen = (props) => {
     const navigation = useNavigation()
 
+    // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
+    const [sportsIndex, setSportsIndex] = useState();
+    const [sportValue, setSportValue] = useState();
 
-    // FOR SEARCH FUNCTION ================================================================================================
-    const [filteredList, findFilteredList] = useState(game);
-    const [searching, findSearching] = useState("");
-
-    //need to refine search method
-    const filterList = () => {
-        findFilteredList([])
-
-        let filtering = game.map(a => a.value);
-        if (searching.length !== 0) {
-            let temp = []
-            for (let i = 0; i < filtering.length; i++) {
-                for (let j = 0; j < 3; j++) {
-                    if (typeof filtering[i][j] === "string") {
-                        if (filtering[i][j].toLowerCase().includes(searching.toLowerCase())) {
-                            temp.push(game[i])
-                            break
-                        }
+    // SEARCH BAR FUNCTION =============================================================================================
+    const searchSport = () => {
+        console.log(sportValue)
+        let searched = [];
+        const now = new Date().getTime();
+        gamesRef.where('sport', '==', sportValue)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    const d = doc.data();
+                    if(d.date.toMillis() < now){
+                        doc.ref.delete().then(()=>{});
+                    } else if(d.hostId === currentUser){}
+                    else if(parseInt(d.availability) <= 0){}
+                    else {
+                        searched.push({key:doc.id, value:doc.data()});
                     }
-                }
-            }
-            findFilteredList(temp)
-        } else {
-            findFilteredList(game);
-        }
+                })
+                setGame(searched);
+            })
     }
 
-    const searchHandler = (enteredSearch) => {
-        findSearching(enteredSearch)
-        filterList()
-    }
 
+    // MODAL FUNCTION ==============================================================================================
     const [game, setGame] = useState ([]);
     const[uid, setUid] = useState('')
 
@@ -97,14 +94,21 @@ const GameScreen = (props) => {
             <Background style = {styles.container}>
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
-                        <TextInput style={styles.searchInput}
-                                   placeholder=" Keywords, Location, HostName"
-                                   placeholderTextColor="#B9B9B9"
-                                   onChangeText={searchHandler}
-                                   value={searching}
-                        />
-                        {/*<SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {filterList(); console.log(filteredList); Keyboard.dismiss();}}/>*/}
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {console.log(uid);Keyboard.dismiss();}}/>
+                        <Select
+                            style = {{width: "90%", justifyContent:"space-between"}}
+                            placeholder='Select Sport'
+                            value ={sports[sportsIndex - 1]}
+                            onSelect={index => {
+                                setSportsIndex(index)
+                                setSportValue(sports[index.row])
+                            }}
+                            selectedIndex={sportsIndex}>
+                            {sports.map(sport => (
+                                <SelectItem key={sport} title={sport}/>
+                            ))}
+
+                        </Select>
+                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
                     </View>
                 </View>
 

@@ -5,8 +5,32 @@ import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import RefereeItem from "../Components/RefereeItem";
 import firebaseDb from '../firebaseDb';
+import {Select, SelectItem} from "@ui-kitten/components";
 
 const RefereeScreen = (props) => {
+
+    // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
+    const [sportsIndex, setSportsIndex] = useState();
+    const [sportValue, setSportValue] = useState();
+
+    // SEARCH BAR FUNCTION =============================================================================================
+
+    const gamesRef = firebaseDb.firestore().collection("game_details")
+    const searchSport = () => {
+        let searched = [];
+        gamesRef.where('sport', '==', sportValue)
+            .get()
+            .then(snapshot => {
+                snapshot.forEach(doc => {
+                    if(doc.data().hostId === userId){}
+                    else if(doc.data().referee[0] === "Yes") {
+                        searched.push({key:doc.id, value:doc.data()})
+                    }
+                })
+                setRefereeList(searched);
+            })
+    }
 
     // CURRENT USER ===========================================================================================
     const userId = props.route.params.user.id
@@ -15,7 +39,7 @@ const RefereeScreen = (props) => {
     const [refereeList, setRefereeList] = useState([])
 
     useEffect(() => {
-        const unsubscribe = firebaseDb.firestore().collection("game_details")
+        const unsubscribe = gamesRef
             .limit(15)
             .onSnapshot(snapshot => {
                 let gameList = [];
@@ -38,13 +62,21 @@ const RefereeScreen = (props) => {
     return (<Background style = {styles.container}>
             <View style={styles.searchSpace}>
                 <View style={styles.searchBar}>
-                    <TextInput style={styles.searchInput}
-                               placeholder=" Keywords, Referee Name, Sport"
-                               placeholderTextColor="#B9B9B9"
-                               // onChangeText={searchHandler}
-                               // value={searching}
-                    />
-                    <SearchButtons style={{flex: 1, elevation: 5}} />
+                    <Select
+                        style = {{width: "90%", justifyContent:"space-between"}}
+                        placeholder='Select Sport'
+                        value ={sports[sportsIndex - 1]}
+                        onSelect={index => {
+                            setSportsIndex(index)
+                            setSportValue(sports[index.row])
+                        }}
+                        selectedIndex={sportsIndex}>
+                        {sports.map(sport => (
+                            <SelectItem key={sport} title={sport}/>
+                        ))}
+
+                    </Select>
+                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
                 </View>
 
             </View>
