@@ -20,7 +20,7 @@ import UpcomingGameItem from "../Components/UpcomingGameItem";
 import RefereeApplicationItem from "../Components/RefereeApplicationItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import {keywordsMaker} from "../Components/SearchBarFunctions";
 
 
 const ProfileScreen = props => {
@@ -91,16 +91,19 @@ const ProfileScreen = props => {
 
     },[])
 
-    const updateUserNameOrUri = (values) => {
+    const updateUsernameOrUri = (values) => {
         const messageRef = firebaseDb.firestore().collection('messages')
         messageRef
             .where('smallerId', 'array-contains', data.id)
             .get()
             .then(response => {
+
                 let batch = firebaseDb.firestore().batch()
                 response.docs.forEach((doc) => {
+                    const otherUsername = doc.data().largerId[1]
+                    const newKeywords = keywordsMaker([values.username, otherUsername])
                     const docRef = messageRef.doc(doc.id)
-                    batch.update(docRef, {smallerId: [data.id, values.username, values.uri]})
+                    batch.update(docRef, {smallerId: [data.id, values.username, values.uri], keywords: newKeywords})
                 })
                 batch.commit().catch(error => console.log(error.message))
             }).catch(error => console.log(error.message))
@@ -110,8 +113,10 @@ const ProfileScreen = props => {
             .then(response => {
                 let batch = firebaseDb.firestore().batch()
                 response.docs.forEach((doc) => {
+                    const otherUsername = doc.data().smallerId[1]
+                    const newKeywords = keywordsMaker([otherUsername, values.username])
                     const docRef = messageRef.doc(doc.id)
-                    batch.update(docRef, {largerId: [data.id, values.username, values.uri]})
+                    batch.update(docRef, {largerId: [data.id, values.username, values.uri], keywords: newKeywords})
                 })
                 batch.commit().catch(error => console.log(error.message))
             }).catch(error => console.log(error.message))
@@ -131,7 +136,7 @@ const ProfileScreen = props => {
 
         //need to update username of chats and hostgame items
         if (values.username !== data.username) {
-            updateUserNameOrUri(values)
+            updateUsernameOrUri(values)
             const gameRef = firebaseDb.firestore().collection('game_details')
             gameRef
                 .where('hostId','==', data.id)
@@ -149,7 +154,7 @@ const ProfileScreen = props => {
 
         // update only the image uri of chats
         if (values.username === data.username && data.uri !== values.uri) {
-            updateUserNameOrUri(values)
+            updateUsernameOrUri(values)
         }
 
         firebaseDb.firestore().collection('users')
