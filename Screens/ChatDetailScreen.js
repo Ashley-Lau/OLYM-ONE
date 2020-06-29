@@ -16,7 +16,7 @@ import {useNavigation} from "@react-navigation/native";
 
 import SearchButtons from "../Components/SearchButtons";
 import firebaseDb from "../firebaseDb";
-
+import {messageSorter} from "../Components/SearchBarFunctions";
 
 const ChatDetailScreen = (props) => {
     const navigation = useNavigation()
@@ -26,8 +26,9 @@ const ChatDetailScreen = (props) => {
 
 
     const [chatList, setChatList] = useState([])
+    const [tempChatList, setTempChatList] = useState([])
+    const [keywords, setKeywords] = useState('')
 
-    console.log('nimama')
     useEffect(() => {
         const unsubscribe = messagesRef
                                 .where('messageCount', '==', 1)
@@ -38,9 +39,10 @@ const ChatDetailScreen = (props) => {
                                     querySnapshot => {
                                         const newChat= []
                                         querySnapshot.forEach(doc => {
-                                            newChat.push({key: doc.id, value: doc.data(), oldUserInfo: {username: userData.username, uri: userData.uri}})
+                                            newChat.push({key: doc.id, value: doc.data(),})
                                         });
                                         setChatList(newChat)
+                                        setTempChatList(newChat)
                                     },
                                     error => {
                                         console.log(error)
@@ -51,7 +53,7 @@ const ChatDetailScreen = (props) => {
 
     // function to calculate the time to display in each flatlist / chat component
     const displayTime = (timestamp) => {
-        if (timestamp == '') {
+        if (timestamp === '') {
             return ''
         }
         const temp = new Date();
@@ -77,6 +79,42 @@ const ChatDetailScreen = (props) => {
         }
         return timestampToDate.toLocaleDateString()
     }
+
+    //function to get the keywords pertaining to the items from firebase in order of the lastest message time
+    const getKeywordsChatList = () => {
+        if (keywords === '' ) {
+            setChatList(tempChatList)
+            return;
+        }
+
+        messagesRef
+            .where('smallId', '==', userId)
+            .where('keywords', 'array-contains', keywords)
+            .orderBy('lastMessageTime', 'desc')
+            .get()
+            .then(
+                documents => {
+                    const newChat= []
+                    documents.forEach(doc => {
+                        newChat.push({key: doc.id, value: doc.data()})
+                    });
+                    messagesRef
+                        .where('largeId', '==', userId)
+                        .where('keywords', 'array-contains', keywords)
+                        .orderBy('lastMessageTime', 'desc')
+                        .get()
+                        .then(
+                            documents => {
+                                const newChat2 = []
+                                documents.forEach(doc => {
+                                    newChat2.push({key: doc.id, value: doc.data()})
+                                });
+                                setChatList(messageSorter(newChat, newChat2))
+                            })
+                        .catch(error => console.log(error))
+                })
+            .catch(error => console.log(error))
+    }
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
                 <SafeAreaView style = {{backgroundColor: '#fafafa'}}>
                 <View style = {{justifyContent: 'center',height: 50, width: '100%', backgroundColor: '#fafafa'}}>
@@ -84,13 +122,17 @@ const ChatDetailScreen = (props) => {
                 </View>
                 <View style={{...style.searchBar, }}>
                     <View style = {{left: 10, width: '5%'}}>
-                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={() => {Keyboard.dismiss();}}/>
+                    <SearchButtons style={{flex: 1, elevation: 5}}
+                                   searchMe={() => {
+                                       Keyboard.dismiss()
+                                       getKeywordsChatList()
+                                   }}/>
                     </View>
                     <TextInput style={{...style.searchInput, }}
                                placeholder= "Username, Group"
                                placeholderTextColor="#414141"
-                               onChangeText={() => {}}
-                               // value={}
+                               onChangeText={(value) => {setKeywords(value.toLowerCase())}}
+                               value={keywords}
                     />
                 </View>
                 <FlatList

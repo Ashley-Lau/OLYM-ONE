@@ -12,7 +12,7 @@ import Background from "../views/Background";
 import firebaseDb from "../firebaseDb"
 import ViewPlayerItem from "../Components/ViewPlayerItem"
 import GameItemBackGround from "../views/GameItemBackGround";
-
+import {keywordsMaker} from '../Components/SearchBarFunctions'
 
 const GameItem = props => {
     const navigation = useNavigation()
@@ -128,6 +128,7 @@ const GameItem = props => {
                             firebaseDb.firestore().collection('users').doc(largerId).get()
                                 .then(doc2 => {
                                     largerIdData = doc2.data()
+                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
                                     const data = {
                                         id: chatId,
                                         idArray: [smallerId, largerId],
@@ -139,6 +140,9 @@ const GameItem = props => {
                                         message: [],
                                         notificationStack: 0,
                                         messageCount: 0,
+                                        keywords: keywords,
+                                        smallId: smallerId,
+                                        largeId: largerId,
                                     }
                                     chatRef
                                         .doc(chatId)
