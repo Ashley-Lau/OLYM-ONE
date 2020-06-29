@@ -45,7 +45,9 @@ const GameItem = props => {
                 .doc(uid)
                 .onSnapshot(doc => {
                     playerList.push(doc.data().username);
-            })
+            }, error => {
+                    console.log(error.message);
+                    })
         })
         setPlayerUser(playerList);
     }

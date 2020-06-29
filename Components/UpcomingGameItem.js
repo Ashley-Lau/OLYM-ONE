@@ -81,13 +81,16 @@ const UpcomingGameItem = props => {
 
     let host = '';
     const getNewHost = () => {
-        firebaseDb.firestore().collection('users').doc(props.gameDetails.players[1])
-            .get()
-            .then(doc => {
-                host = doc.data().username;
-            })
-    }
+        if(props.gameDetails.players.length === 1){}
+        else {
+            firebaseDb.firestore().collection('users').doc(props.gameDetails.players[1])
+                .get()
+                .then(doc => {
+                    host = doc.data().username;
+                })
+        }
 
+    }
     const gameQuit = () => {
         if(props.gameDetails.players.length === 1){
             gameRef.delete().then(() => {})
