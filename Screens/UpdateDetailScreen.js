@@ -72,7 +72,6 @@ const UpdateDetailScreen = (props) => {
                                 currentPassword: '',
                                 newPassword: '',
                                 confirmPassword: '',
-                                referee:props.route.params.data.referee
                             }}
                             validationSchema = {reviewSchema(props.route.params.data.password)}
                             onSubmit={(values, actions) => {
@@ -82,7 +81,6 @@ const UpdateDetailScreen = (props) => {
                                     username: values.username,
                                     password: values.confirmPassword,
                                     uri: values.uri,
-                                    referee: values.referee
                                 })
                                 actions.resetForm()
                                 registeredPress()
@@ -107,7 +105,6 @@ const UpdateDetailScreen = (props) => {
                                                               });
 
                                                               if (!result.cancelled) {
-                                                                  console.log(result)
                                                                   let base64Img = `data:image/jpg;base64,${result.base64}`
 
                                                                   let apiUrl = 'https://api.cloudinary.com/v1_1/ashley451/image/upload';
@@ -183,7 +180,6 @@ const UpdateDetailScreen = (props) => {
                                             Cancel
                                         </GradientButton>
                                         <GradientButton onPress={() => {
-                                            console.log(props.values.referee)
                                             props.handleSubmit()
                                         }}
                                                         style={style.button}

@@ -6,16 +6,13 @@ import {
     Alert,
     ScrollView,
     Image,
-    Button,
-    FlatList,
-    TouchableOpacity
+    SafeAreaView
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
 import firebase from 'firebase';
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
-import HostGameItem from "../Components/HostGameItem";
 import UpcomingGameItem from "../Components/UpcomingGameItem";
 import RefereeApplicationItem from "../Components/RefereeApplicationItem";
 import UpcomingRefereeItem from "../Components/UpcomingRefereeItem";
@@ -178,7 +175,6 @@ const ProfileScreen = props => {
             username: values.username,
             uri: values.uri,
             password: values.password !== '' ? values.password : data.password,
-            referee: values.referee,
         }).then(() => {
             setData({
                 ...data,
@@ -187,7 +183,6 @@ const ProfileScreen = props => {
                 username: values.username,
                 uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
-                referee: values.referee,
             })
         }).catch(error => {
             console.log(error)
@@ -212,6 +207,7 @@ const ProfileScreen = props => {
     }
 
     return <Background>
+            <SafeAreaView>
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>
                         <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
@@ -247,7 +243,7 @@ const ProfileScreen = props => {
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => {
                                                 console.log(appList);
-                                                navigation.navigate('HostGameItem',
+                                                navigation.navigate('HostGameScreen',
                                                     {
                                                         uid: data.id,
                                                         username: data.username,
@@ -347,6 +343,7 @@ const ProfileScreen = props => {
 
                     </View>
                 </ScrollView>
+            </SafeAreaView>
             </Background>
 }
 
