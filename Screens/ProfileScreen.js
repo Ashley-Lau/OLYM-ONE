@@ -242,7 +242,7 @@ const ProfileScreen = props => {
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
                                             onPress={() => {
-                                                console.log(appList);
+                                                console.log(upcomingGameList);
                                                 navigation.navigate('HostGameScreen',
                                                     {
                                                         uid: data.id,
@@ -262,7 +262,7 @@ const ProfileScreen = props => {
                                     Upcoming Games
                                 </Text>
                             </View>
-                            {data.upcoming_games.length <= 0
+                            {upcomingGameList.length <= 0
                                 ?<View>
                                     <Text>No Upcoming Games!</Text>
                                 </View>
