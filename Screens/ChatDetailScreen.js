@@ -82,39 +82,38 @@ const ChatDetailScreen = (props) => {
     }
 
     //function to get the keywords pertaining to the items from firebase in order of the lastest message time
-    const getKeywordsChatList = () => {
+    const getKeywordsChatList = async () => {
+        const newChat= []
+        const newChat2 = []
         if (keywords === '' ) {
             setChatList(tempChatList)
             return;
         }
-
-        messagesRef
+        await messagesRef
             .where('smallId', '==', userId)
             .where('keywords', 'array-contains', keywords)
             .orderBy('lastMessageTime', 'desc')
             .get()
             .then(
                 documents => {
-                    const newChat= []
                     documents.forEach(doc => {
                         newChat.push({key: doc.id, value: doc.data()})
                     });
-                    messagesRef
-                        .where('largeId', '==', userId)
-                        .where('keywords', 'array-contains', keywords)
-                        .orderBy('lastMessageTime', 'desc')
-                        .get()
-                        .then(
-                            documents => {
-                                const newChat2 = []
-                                documents.forEach(doc => {
-                                    newChat2.push({key: doc.id, value: doc.data()})
-                                });
-                                setChatList(messageSorter(newChat, newChat2))
-                            })
-                        .catch(error => console.log(error))
                 })
             .catch(error => console.log(error))
+        await messagesRef
+            .where('largeId', '==', userId)
+            .where('keywords', 'array-contains', keywords)
+            .orderBy('lastMessageTime', 'desc')
+            .get()
+            .then(
+                documents => {
+                    documents.forEach(doc => {
+                        newChat2.push({key: doc.id, value: doc.data()})
+                    });
+                })
+            .catch(error => console.log(error))
+        setChatList(messageSorter(newChat, newChat2))
     }
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
                 <SafeAreaView style = {{backgroundColor: '#fafafa'}}>
