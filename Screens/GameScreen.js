@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, TextInput, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, Alert, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
 import {Select, SelectItem, SelectItem0} from "@ui-kitten/components";
@@ -7,14 +7,15 @@ import {Select, SelectItem, SelectItem0} from "@ui-kitten/components";
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
+
 import firebaseDb from "../firebaseDb";
 
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 
 const GameScreen = (props) => {
     const navigation = useNavigation()
+    const user = props.route.params.user
 
     // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
@@ -46,11 +47,9 @@ const GameScreen = (props) => {
 
     // MODAL FUNCTION ==============================================================================================
     const [game, setGame] = useState ([]);
-    const[uid, setUid] = useState('')
 
     //UID OF USER ================================================================================================
     const currentUser = props.route.params.user.id;
-    // console.log(props.route.params.user.username)
 
     //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
 
@@ -114,15 +113,28 @@ const GameScreen = (props) => {
 
                 {game.length !== 0
                     ?
+                //     <FlatList
+                //     // key = {game.key.toString()}
+                //     contentContainerStyle= {{justifyContent:"space-between"}}
+                //     keyExtractor={(item) => item.key.toString()}
+                //     data = {game}
+                //     renderItem= {({item}) => <GameItem  title={item.value}
+                //                                         // updateGames ={allGames}
+                //                                         gameId={item.key} user={currentUser}/>}
+                // >
+                //
+                //     </FlatList>
                     <FlatList
-                    // key = {game.key.toString()}
-                    contentContainerStyle= {{justifyContent:"space-between"}}
-                    keyExtractor={(item) => item.key.toString()}
-                    data = {game}
-                    renderItem= {({item}) => <GameItem  title={item.value}
-                                                        // updateGames ={allGames}
-                                                        gameId={item.key} user={currentUser}/>}
-                >
+                        // key = {game.key.toString()}
+                        contentContainerStyle= {{justifyContent:"space-between"}}
+                        keyExtractor={(item) => item.key.toString()}
+                        data = {game}
+                        renderItem= {({item}) => <GameItem  gameDetails={item.value}
+                                                            gameId={item.key}
+                                                            user={user}
+                                                            itemType={"Join"}
+                        />}
+                    >
 
                     </FlatList>
                     :

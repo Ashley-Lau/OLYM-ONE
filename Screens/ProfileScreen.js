@@ -13,9 +13,7 @@ import firebase from 'firebase';
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
-import UpcomingGameItem from "../Components/UpcomingGameItem";
 import RefereeApplicationItem from "../Components/RefereeApplicationItem";
-import UpcomingRefereeItem from "../Components/UpcomingRefereeItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import {keywordsMaker} from "../Components/SearchBarFunctions";
@@ -271,11 +269,18 @@ const ProfileScreen = props => {
                                     <ScrollView nestedScrollEnabled={true}>
                                         {upcomingGameList.map(game =>
                                             (
-                                                <UpcomingGameItem key={game.key}
-                                                                  gameDetails={game.value}
-                                                                  gameId={game.key}
-                                                                  user={user.id}
-                                                />
+                                                // <UpcomingGameItem key={game.key}
+                                                //                   gameDetails={game.value}
+                                                //                   gameId={game.key}
+                                                //                   user={user.id}
+                                                //                   itemType={"Quit"}
+                                                // />
+                                            <GameItem key={game.key}
+                                                              gameDetails={game.value}
+                                                              gameId={game.key}
+                                                              user={user}
+                                                              itemType={"Quit"}
+                                            />
                                             )
                                         )}
                                     </ScrollView>
@@ -288,27 +293,26 @@ const ProfileScreen = props => {
                                     Referee applications
                                 </Text>
                             </View>
-                            <View>
-                                {appList.length <= 0
-                                    ?<View>
-                                        <Text>No Applications!</Text>
-                                    </View>
+                            {appList.length <= 0
+                                ?<View>
+                                    <Text>No Applications!</Text>
+                                </View>
 
-                                    :
-                                    <ScrollView nestedScrollEnabled={true}>
-                                        {appList.map(appl =>
-                                            (
-                                                <RefereeApplicationItem
-                                                                  key={appl.key}
-                                                                  refDetails={appl.value}
-                                                                  appId={appl.key}
-                                                                  user={user.id}
-                                                />
-                                            )
-                                        )}
-                                    </ScrollView>
-                                }
-                            </View>
+                                :
+                                <ScrollView nestedScrollEnabled={true}>
+                                    {appList.map(appl =>
+                                        (
+                                            <RefereeApplicationItem
+                                                              key={appl.key}
+                                                              refDetails={appl.value}
+                                                              appId={appl.key}
+                                                              user={user.id}
+                                            />
+
+                                        )
+                                    )}
+                                </ScrollView>
+                            }
                         </View>
 
 
@@ -318,27 +322,32 @@ const ProfileScreen = props => {
                                     Upcoming Refereeing Games
                                 </Text>
                             </View>
-                            <View>
-                                {upcomingRefList.length <= 0
-                                    ?<View>
-                                        <Text>No Upcoming Refereeing!</Text>
-                                    </View>
+                            {upcomingRefList.length <= 0
+                                ?<View>
+                                    <Text>No Upcoming Refereeing!</Text>
+                                </View>
 
-                                    :
-                                    <ScrollView nestedScrollEnabled={true}>
-                                        {upcomingRefList.map(upcoming =>
-                                            (
-                                                <UpcomingRefereeItem
-                                                    key={upcoming.key}
-                                                    gameDetails={upcoming.value}
-                                                    gameId={upcoming.key}
-                                                    user={user.id}
-                                                />
-                                            )
-                                        )}
-                                    </ScrollView>
-                                }
-                            </View>
+                                :
+                                <ScrollView nestedScrollEnabled={true}>
+                                    {upcomingRefList.map(upcoming =>
+                                        (
+                                            // <UpcomingRefereeItem
+                                            //     key={upcoming.key}
+                                            //     gameDetails={upcoming.value}
+                                            //     gameId={upcoming.key}
+                                            //     user={user.id}
+                                            // />
+                                            <GameItem
+                                                key={upcoming.key}
+                                                gameDetails={upcoming.value}
+                                                gameId={upcoming.key}
+                                                user={user}
+                                                itemType={"Resign"}
+                                            />
+                                        )
+                                    )}
+                                </ScrollView>
+                            }
                         </View>
 
                     </View>
