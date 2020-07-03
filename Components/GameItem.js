@@ -1,38 +1,22 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TouchableOpacity, StyleSheet, Modal, View, ScrollView, Image, Alert} from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import {Text, TouchableOpacity, StyleSheet, View, Alert} from 'react-native';
 import * as firebase from 'firebase';
 
 import { useNavigation } from '@react-navigation/native';
-
-
-import GradientButton from "./GradientButton";
-import Styles from "../../OLYM-ONE/styling/Styles";
-import Background from "../views/Background";
 import firebaseDb from "../firebaseDb"
 import ViewPlayerItem from "../Components/ViewPlayerItem"
 import GameItemBackGround from "../views/GameItemBackGround";
+import GameDetailsModal from "./GameDetailsModal";
 import {keywordsMaker} from '../Components/SearchBarFunctions'
 
 const GameItem = props => {
     const navigation = useNavigation()
 
-    //IMAGE LOCATION ==================================================================================================
-    let location = require("../assets/tampines.jpg");
-    if(props.title.location.toLowerCase() === "tampines"){
-        location = require("../assets/tampines.jpg");
-    } else if (props.title.location.toLowerCase() === "pasir ris"){
-        location = require("../assets/pasirris.jpg");
-    } else if (props.title.location.toLowerCase() === "seng kang"){
-        location = require("../assets/sengkang.jpg");
-    } else if (props.title.location.toLowerCase() === "punggol"){
-        location = require("../assets/punggol.jpg");
-    } else if (props.title.location.toLowerCase() === "clementi"){
-        location = require("../assets/clementi.jpg");
-    } else if (props.title.location.toLowerCase() === "hougang"){
-        location = require("../assets/hougang_sports_hall.jpg");
+    //DATE AND TIME STRING ================================================================================================
+    let gameDate = props.gameDetails.date
+    if(props.gameDetails.date){
+        gameDate = gameDate.toDate().toString().slice(4,15);
     }
-
 
     // LIST OF PLAYERS ================================================================================================
     const [playerUser, setPlayerUser] = useState([]);
@@ -40,14 +24,14 @@ const GameItem = props => {
     const username = () => {
         setPlayerUser([]);
         let playerList = [];
-        props.title.players.map(uid => {
+        props.gameDetails.players.map(uid => {
             firebaseDb.firestore().collection('users')
                 .doc(uid)
                 .onSnapshot(doc => {
                     playerList.push(doc.data().username);
-            }, error => {
+                }, error => {
                     console.log(error.message);
-                    })
+                })
         })
         setPlayerUser(playerList);
     }
@@ -58,32 +42,8 @@ const GameItem = props => {
         return () => unsubscribe;
     }, [])
 
-    //GETTING USER UPCOMING_GAME ARRAY =================================================================================
-    const userRef = firebaseDb.firestore().collection('users').doc(props.user);
 
 
-    //JOINING GAME ====================================================================================================================
-    const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
-
-    const gameJoin = () => {
-        const slots = parseInt(props.title.availability) - 1
-        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.user)}).then(() => {})
-        userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayUnion(props.gameId)}).then(() => {});
-    }
-
-    const alreadyJoined = () => {
-        //rejects the join game request if the user is already in the game
-        if(props.title.players.includes(props.user)){
-            Alert.alert("Already in Game!", "You are already in this game!")
-        }
-        //rejects the join request if there are no slots left
-        else if(props.title.availability <= 0){
-            Alert.alert("Game is Full!", "There are no more slots available!")
-        } else {
-            gameJoin();
-        }
-
-    }
 
     //MODAL STATES ================================================================================================================
     const [playerDetails, openPlayerDetails] = useState(false);
@@ -92,20 +52,14 @@ const GameItem = props => {
 
     //SPORT ICON ================================================================================================================================
     let gameColor = "rgb(255,255,255)";
-    let sportIcon = props.title.sport.toLowerCase();
+    let sportIcon = props.gameDetails.sport.toLowerCase();
 
 
-    //DATE AND TIME STRING ================================================================================================
-    let gameDate = props.title.date
-    let gameTime = props.title.date
-    if(props.title.date){
-        gameDate = gameDate.toDate().toString().slice(4,15);
-        gameTime = gameTime.toDate().toString().slice(16,21);
-    }
+    //CHAT FUNCTION====================================================================================================
 
     const chatWithHost = () => {
-        const hostId = props.title.hostId
-        const currentUserId = props.user
+        const hostId = props.gameDetails.hostId
+        const currentUserId = props.user.id
         const smallerId = hostId < currentUserId ? hostId : currentUserId
         const largerId = hostId < currentUserId ? currentUserId : hostId
         const chatId = smallerId + '_' + largerId
@@ -181,82 +135,29 @@ const GameItem = props => {
 
     return (
         <View>
-            {/*to add additional details in firestore for the players modal*/}
             <ViewPlayerItem visible={playerDetails}
                             username={playerUser}
                             closePlayer ={() => {openPlayerDetails(false)}}/>
-            <Modal visible = {gameDetails} animationType="slide">
-                <Background style={{top: 0,right:0, position:"absolute"}}/>
 
-                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+            <GameDetailsModal visible={gameDetails}
+                              gameDetails={props.gameDetails}
+                              closeGame={() => {openGameDetails(false)}}
+                              openPlayer ={() => {openPlayerDetails(true)}}
+                              itemType = {props.itemType}
+                              chatFunction ={chatWithHost}
+                              gameId ={props.gameId}
+                              user = {props.user}
+            />
 
-                    <View style={styles.scrollBox}>
-
-                        <ScrollView style={{flex:1}}>
-                            <ScrollView nestedScrollEnabled={true} horizontal={true}>
-                                <Image source={location} style={{flexWrap:"wrap"}}/>
-                            </ScrollView>
-                            <View style = {{alignItems: 'center'}}>
-                                <View>
-                                    <Text style={{fontSize:35}}>{props.title.sport.toUpperCase()}</Text>
-                                    <Text style={{fontSize:20}}>Location: {props.title.location}</Text>
-                                    <Text style={{fontSize:20}}>Host : {props.title.host}</Text>
-                                    <Text style={{fontSize:20}}>Date  : {gameDate}</Text>
-                                    <Text style={{fontSize:20}}>Time : {gameTime}</Text>
-                                    <Text style={{fontSize:20}}>Price : {props.title.price}</Text>
-                                    <Text style={{fontSize:20}}>To Take Note: </Text>
-                                    <Text style={{fontSize:20}}>{props.title.notes}</Text>
-                                    <Text style={{fontSize:20}}>Slots Left: {props.title.availability}</Text>
-                                </View>
-                            </View>
-                            <View style = {{flexDirection: 'row', justifyContent: 'space-around', marginTop: 20}}>
-                                <GradientButton style={{width: '27%', marginLeft: 20}}
-                                                onPress={chatWithHost}
-                                                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
-                                    Chat with host
-                                </GradientButton>
-                                <GradientButton style={{width: '27%', marginRight: 20}}
-                                                onPress={() => {
-                                                    openPlayerDetails(true);}}
-                                                colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-                                    View Players
-                                </GradientButton>
-                            </View>
-                            <View style = {{marginBottom: 20}} />
-                        </ScrollView>
-                    </View>
-
-                    <View style={{...Styles.horizontalbuttonContainer}}>
-                        <GradientButton onPress={() => {
-                            openGameDetails(false)
-                        }}
-                                        colors={["red", "maroon"]}
-                                        style={{...Styles.buttonSize, marginRight:75}}>
-                            <Text>Cancel</Text>
-                        </GradientButton>
-
-                        <GradientButton style={{...Styles.buttonSize}}
-                                        onPress={() => {
-                                            alreadyJoined();
-                                            openGameDetails(false);
-
-                                        }}
-                                        colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-                            <Text>Join</Text>
-                        </GradientButton>
-                    </View>
-                </View>
-
-            </Modal>
             <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
                 <GameItemBackGround iconName={sportIcon}>
-                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.title.sport} </Text>
+                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.gameDetails.sport} </Text>
                 </GameItemBackGround>
 
                 <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"black"}}> Date: {gameDate} </Text>
-                    <Text style={{fontSize:18, color:"black"}}> Slots Left: {props.title.availability} </Text>
+                    <Text style={{fontSize:18, color:"black"}}>Date: {gameDate} </Text>
+                    <Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>
                 </View>
             </TouchableOpacity>
         </View>

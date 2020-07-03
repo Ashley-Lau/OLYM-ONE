@@ -1,9 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import {View, TextInput, StyleSheet, FlatList,TouchableOpacity, Text} from 'react-native';
+import {View,StyleSheet, FlatList} from 'react-native';
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
-import RefereeItem from "../Components/RefereeItem";
+import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
 import {Select, SelectItem} from "@ui-kitten/components";
 
@@ -33,6 +33,7 @@ const RefereeScreen = (props) => {
     }
 
     // CURRENT USER ===========================================================================================
+    const user = props.route.params.user
     const userId = props.route.params.user.id
 
     // GETTING REFEREE DETAILS ======================================================================================
@@ -81,12 +82,23 @@ const RefereeScreen = (props) => {
 
             </View>
 
+                {/*<FlatList*/}
+                {/*    contentContainerStyle={{justifyContent: "space-between"}}*/}
+                {/*    keyExtractor={(item) => item.key}*/}
+                {/*    data={refereeList}*/}
+                {/*    renderItem={({item}) => <RefereeItem refereeId ={props.route.params.user} gameId={item.key} game_details={item.value}/>}*/}
+                {/*/>*/}
                 <FlatList
                     contentContainerStyle={{justifyContent: "space-between"}}
                     keyExtractor={(item) => item.key}
                     data={refereeList}
-                    renderItem={({item}) => <RefereeItem refereeId ={props.route.params.user} gameId={item.key} game_details={item.value}/>}
+                    renderItem={({item}) => <GameItem user ={props.route.params.user}
+                                                         gameId={item.key}
+                                                         gameDetails={item.value}
+                                                         itemType={"Referee"}
+                    />}
                 />
+
         </Background>
     )
 }

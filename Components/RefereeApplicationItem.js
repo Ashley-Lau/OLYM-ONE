@@ -1,16 +1,14 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState} from 'react';
 import {
     View,
     StyleSheet,
     Text,
     Modal,
-    ScrollView,
     TouchableOpacity,
     ImageBackground,
     Image,
     Alert
 } from 'react-native';
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import * as firebase from 'firebase';
 
 import Background from "../views/Background";
@@ -132,7 +130,7 @@ const RefereeApplicationItem = props => {
                         <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
                     </View>
 
-                    <View style={styles.games}
+                    <View style={{...styles.games, borderBottomWidth:0}}
                           onPress={() => {
                               setOpen(true);
                           }}>
@@ -187,7 +185,7 @@ const RefereeApplicationItem = props => {
     return (
         <View>
             {refItem}
-            <TouchableOpacity style={{...styles.games, borderBottomWidth:0.7}}
+            <TouchableOpacity style={styles.games}
                               onPress={() => {
                                   setOpen(true);
                               }}>
@@ -222,7 +220,7 @@ const styles = StyleSheet.create({
     },
     games:{
         flexDirection:"row",
-        // borderBottomWidth:0.7,
+        borderBottomWidth:0.7,
         borderColor:"grey",
         width:"100%",
         height:65,
