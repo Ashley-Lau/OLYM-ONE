@@ -51,7 +51,18 @@ const GameItem = props => {
 
 
     //SPORT ICON ================================================================================================================================
-    let gameColor = "rgb(255,255,255)";
+    let gameColor = "rgba(255,255,255,0.6)";
+    if(props.gameDetails.sport.toLowerCase() === "basketball"){
+        gameColor = "rgba(245,117,68,0.56)";
+    } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
+        gameColor = "rgba(130,65,236,0.62)";
+    } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
+        gameColor = "rgba(82,215,238,0.51)";
+    } else if(props.gameDetails.sport.toLowerCase() === "tennis"){
+        gameColor = "rgba(203,239,61,0.55)";
+    } else if(props.gameDetails.sport.toLowerCase() === "badminton") {
+        gameColor = "rgba(229,197,102,0.62)";
+    }
     let sportIcon = props.gameDetails.sport.toLowerCase();
 
 
@@ -149,7 +160,7 @@ const GameItem = props => {
                               user = {props.user}
             />
 
-            <TouchableOpacity style={styles.games}
+            <TouchableOpacity style={{...styles.games, backgroundColor:gameColor}}
                               onPress={() => {openGameDetails(true);}}>
                 <GameItemBackGround iconName={sportIcon}>
                     <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.gameDetails.sport} </Text>
@@ -169,14 +180,24 @@ const GameItem = props => {
 const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
-        borderBottomWidth:0.7,
-        borderColor:"white",
+        borderWidth:0.7,
+        borderColor:"black",
+        borderRadius:10,
         width:"100%",
-        height:65,
+        height:80,
         padding:5,
-        justifyContent:"space-between",
+        justifyContent:"center",
         alignItems:"center",
-        backgroundColor:"transparent",
+        marginTop:10,
+        elevation:3,
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 100,
+            height: 100,
+        },
+        shadowOpacity: 0,
+        shadowRadius: 6.27,
+
     },
     scrollBox:{
         flex:1,
