@@ -5,12 +5,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 const BackgroundTrial = props => {
     return (
         <View style={[styles.container, props.style]}>
-            {/*    <LinearGradient style={styles.circle}*/}
-            {/*                    colors ={["rgba(132,110,1,0.73)",*/}
-            {/*                        // "rgba(255,255,255,0.37)",*/}
-            {/*                        "rgb(0,0,0)"]}>*/}
 
-            {/*    </LinearGradient>*/}
             <LinearGradient style={{...styles.circle}}
                             colors ={["rgba(255,212,0,0.71)",
                                 // "rgba(255,255,255,0.37)",

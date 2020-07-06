@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, ImageBackground} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
 import {Select, SelectItem, SelectItem0} from "@ui-kitten/components";
@@ -90,7 +90,8 @@ const GameScreen = (props) => {
     }, [])
 
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <Background style = {styles.container}>
+            <ImageBackground source={require("../assets/BlueSkylineBackGround.png")} style={{height:"100%", width:"100%"}}>
+            {/*<BackGround >*/}
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
                         <Select
@@ -126,7 +127,7 @@ const GameScreen = (props) => {
                 //     </FlatList>
                     <FlatList
                         // key = {game.key.toString()}
-                        contentContainerStyle= {{justifyContent:"space-between"}}
+                        contentContainerStyle= {{justifyContent:"center", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
                         renderItem= {({item}) => <GameItem  gameDetails={item.value}
@@ -145,7 +146,8 @@ const GameScreen = (props) => {
 
                 }
 
-            </Background>
+            {/*</BackGround>*/}
+            </ImageBackground>
         </TouchableWithoutFeedback>
     )
 }
