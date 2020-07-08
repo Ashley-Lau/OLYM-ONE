@@ -106,7 +106,7 @@ const SignupScreen = props => {
 
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <ImageBackground source = {require('../assets/sunset_running_newstyle.png')} style={Styles.container}>
+            <ImageBackground source = {require('../assets/BrownSkyline.png')} style={Styles.container}>
                 <View style = {{flex: 1}}/>
                 <Animatable.View style = {style.popout} animation = "fadeInUpBig">
                     <Text style = {{fontSize: 30, fontWeight: 'bold', borderBottomWidth: 4, borderBottomColor: 'black'}}>

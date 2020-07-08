@@ -21,7 +21,7 @@ const LoginScreen = (props) => {
 
 
     const backSunset = require("../assets/sunset_running_newstyle.png");
-    const logo = require("../assets/OLYMONE.png")
+    const logo = require("../assets/OLYMONE_login.png")
 
     const alertMessage = () => Alert.alert(
         "Invalid Email or Password",
@@ -68,7 +68,8 @@ const LoginScreen = (props) => {
     if(loaded){
         return (
             <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                <ImageBackground source = {backSunset} style={Styles.container}>
+                <ImageBackground source={require("../assets/BrownSkyline.png")} style={Styles.container}>
+                {/*<ImageBackground source = {backSunset} style={Styles.container}>*/}
                     <Image style={Styles.logo} source={logo}/>
                     <View style = {style.inputContainer}>
                         <Sae label= {'Email:'}
@@ -102,19 +103,21 @@ const LoginScreen = (props) => {
                              onChangeText={pw => setPassword(pw)}
                              value = {password}
                         />
-                        <View style={Styles.buttonContainer}>
-                            <GradientButton onPress={signInUser}
-                                            style={style.button}
-                                            colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
-                                Login
-                            </GradientButton>
+                        <View style={{...Styles.buttonContainer, flexDirection:"row"}}>
                             <GradientButton onPress={() => navigation.navigate('SignupScreen')}
                                             style={style.button}
                                             colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
-                                Sign Up
+                                Sign up
                             </GradientButton>
+
+                            <GradientButton onPress={signInUser}
+                                            style={{...style.button, marginLeft:125}}
+                                            colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
+                                Sign in
+                            </GradientButton>
+
                         </View>
-                        <Text style = {{fontSize: 20, fontWeight: 'bold', top: 10}}> Forgot password?
+                        <Text style = {{fontSize: 14, fontWeight: 'bold', top: 10}}> Forgot password?
                             <Text style = {{color: '#1F45FC'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
                         </Text>
                     </View>
@@ -135,7 +138,7 @@ const LoginScreen = (props) => {
 
 const style = StyleSheet.create({
     inputContainer: {
-        backgroundColor: '#ffffff99',
+        backgroundColor: 'rgba(255,255,255,0.42)',
         marginTop: 20,
         width: 300,
         height: 320,

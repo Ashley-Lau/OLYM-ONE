@@ -34,7 +34,7 @@ const styles = StyleSheet.create({
     },
     imageBack:{
         width:200,
-        height:64,
+        height:78,
         flexDirection:"row",
         justifyContent:"flex-start",
         alignItems:"center",
