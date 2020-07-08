@@ -9,6 +9,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
+import GameScreenItem from "../Components/GameScreenItem";
 
 import firebaseDb from "../firebaseDb";
 
@@ -31,9 +32,9 @@ const GameScreen = (props) => {
         } else if(sport === "BasketBall"){
             return require("../assets/basketball_coloured.png");
         } else if(sport === "Floorball"){
-            return require("../assets/floorball_coloured.png");
+            return require("../assets/floorball_icon.png");
         } else if(sport === "Badminton"){
-            return require("../assets/badminton_coloured.png");
+            return require("../assets/badminton_icon.png");
         } else if(sport === "Tennis"){
             return require("../assets/tennis_coloured.png");
         } else {
@@ -119,23 +120,23 @@ const GameScreen = (props) => {
     return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             {/*<ImageBackground source={require("../assets/SkylineBackGround.png")} style={{height:"100%", width:"100%"}}>*/}
             <Background style = {styles.container}>
-            
+
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
-                        {/*<Select*/}
-                        {/*    style = {{width: "90%", justifyContent:"space-between"}}*/}
-                        {/*    placeholder='Select Sport'*/}
-                        {/*    value ={sports[sportsIndex - 1]}*/}
-                        {/*    onSelect={index => {*/}
-                        {/*        setSportsIndex(index)*/}
-                        {/*        setSportValue(sports[index.row])*/}
-                        {/*    }}*/}
-                        {/*    selectedIndex={sportsIndex}>*/}
-                        {/*    {sports.map(sport => (*/}
-                        {/*        <SelectItem key={sport} title={sport}/>*/}
-                        {/*    ))}*/}
+                        <Select
+                            style = {{width: "90%", justifyContent:"space-between"}}
+                            placeholder='Select Sport'
+                            value ={sports[sportsIndex - 1]}
+                            onSelect={index => {
+                                setSportsIndex(index)
+                                setSportValue(sports[index.row])
+                            }}
+                            selectedIndex={sportsIndex}>
+                            {sports.map(sport => (
+                                <SelectItem key={sport} title={sport}/>
+                            ))}
 
-                        {/*</Select>*/}
+                        </Select>
                         <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
                     </View>
                 </View>
@@ -194,10 +195,12 @@ const GameScreen = (props) => {
                     ?
 
                     <FlatList
-                        contentContainerStyle= {{justifyContent:"center", alignItems:"center", backgroundColor:"black"}}
+                        showsHorizontalScrollIndicator={false}
+                        horizontal={true}
+                        contentContainerStyle= {{justifyContent:"center", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
-                        renderItem= {({item}) => <GameItem  gameDetails={item.value}
+                        renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
                                                             gameId={item.key}
                                                             user={user}
                                                             itemType={"Join"}
@@ -227,12 +230,12 @@ const styles = StyleSheet.create({
     },
     searchBar:{
         flexDirection: "row",
-        justifyContent:"space-between",
+        justifyContent:"space-around",
         alignItems:"center",
         borderWidth:1,
         borderRadius:4,
         width:"98%",
-        marginTop:36,
+        marginTop:30,
         marginBottom:10,
         borderColor:"black",
         backgroundColor:"transparent"
@@ -250,7 +253,7 @@ const styles = StyleSheet.create({
         borderBottomColor:"rgba(177,177,177,0.78)"
     },
     sportSelection:{
-        backgroundColor:'rgb(224,223,223)',
+        backgroundColor:'rgb(255,255,255)',
         elevation:10,
         borderRadius:15,
         height:70,
@@ -271,7 +274,7 @@ const styles = StyleSheet.create({
     sportItem:{
         height:90,
         width:100,
-        marginVertical:10,
+        marginTop:10,
         marginHorizontal:10,
         justifyContent:"center",
         alignItems:"center",
