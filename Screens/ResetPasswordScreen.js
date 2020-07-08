@@ -62,7 +62,7 @@ const ResetPasswordScreen = () => {
     }
 
     return  <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                <ImageBackground source = {require('../assets/sunset_running_newstyle.png')} style={Styles.container}>
+                <ImageBackground source = {require('../assets/BrownSkyline.png')} style={Styles.container}>
                     <View style = {style.inputContainer}>
                         <Text style = {{fontSize: 30, fontWeight: 'bold', borderBottomWidth: 4, borderBottomColor: 'black'}}>Reset Password</Text>
                         <View style = {{marginHorizontal: 10, marginVertical: 20}}>
