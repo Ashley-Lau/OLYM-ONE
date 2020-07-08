@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, YellowBox} from 'react-native';
+import {View, YellowBox, } from 'react-native';
 import * as eva from '@eva-design/eva';
-import { ApplicationProvider} from '@ui-kitten/components';
+import { ApplicationProvider, IconRegistry} from '@ui-kitten/components';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import LoginScreen from "./Screens/LoginScreen";
 import BottomTabs from "./Stack/BottomTabs";
@@ -12,7 +13,7 @@ import {NavigationContainer} from "@react-navigation/native";
 import {createStackNavigator} from "@react-navigation/stack";
 import AnimatedSplash from "react-native-animated-splash-screen";
 import firebaseDb from "./firebaseDb";
-// import { EvaIconsPack } from '@ui-kitten/eva-icons';
+import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 import {set} from "react-native-reanimated";
 
@@ -58,24 +59,26 @@ export default function App() {
           logoWidht={300}
       >
         <View style={{flex: 1}}>
-          {/*<IconRegistry icons={EvaIconsPack} />*/}
+          <IconRegistry icons={EvaIconsPack} />
           <ApplicationProvider {...eva} theme={eva.light}>
-            <NavigationContainer>
-              <Stack.Navigator headerMode={false}>
-                {data.user ? (
-                    <Stack.Screen name='BottomTabs'>
-                      {props => <BottomTabs {...props} extraData={data.user} />}
-                    </Stack.Screen>
-                  ) : (
-                    <>
-                    <Stack.Screen name='LoginScreen' component={LoginScreen}/>
-                    <Stack.Screen name='SignupScreen' component={SignupScreen}/>
-                    <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen}/>
-                    </>
-                  )
-                }
-              </Stack.Navigator>
-          </NavigationContainer>
+            <SafeAreaProvider>
+              <NavigationContainer>
+                <Stack.Navigator headerMode={false}>
+                  {data.user ? (
+                      <Stack.Screen name='BottomTabs'>
+                        {props => <BottomTabs {...props} extraData={data.user} />}
+                      </Stack.Screen>
+                    ) : (
+                      <>
+                      <Stack.Screen name='LoginScreen' component={LoginScreen}/>
+                      <Stack.Screen name='SignupScreen' component={SignupScreen}/>
+                      <Stack.Screen name='ResetPasswordScreen' component={ResetPasswordScreen}/>
+                      </>
+                    )
+                  }
+                </Stack.Navigator>
+            </NavigationContainer>
+            </SafeAreaProvider>
           </ApplicationProvider>
         </View>
       </AnimatedSplash>

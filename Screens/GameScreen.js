@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {View, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity} from 'react-native';
+import {View, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
-import {Select, SelectItem, SelectItem0} from "@ui-kitten/components";
+import {Select, SelectItem,} from "@ui-kitten/components";
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
@@ -89,7 +89,8 @@ const GameScreen = (props) => {
 
     }, [])
 
-    return (<TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+    return (
+        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <Background style = {styles.container}>
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>

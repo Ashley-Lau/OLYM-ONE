@@ -6,10 +6,18 @@ import {
     Alert,
     ScrollView,
     Image,
-    SafeAreaView
+    SafeAreaView,
+    ImageBackground,
+    TouchableOpacity,
+    Button
 } from 'react-native';
+import {Popover } from '@ui-kitten/components';
 import {useNavigation} from "@react-navigation/native";
+
 import firebase from 'firebase';
+import * as Animatable from 'react-native-animatable';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
@@ -21,6 +29,10 @@ import {keywordsMaker} from "../Components/SearchBarFunctions";
 
 const ProfileScreen = props => {
     const navigation = useNavigation();
+
+    //for logout and change profile picture buttons
+    const [color, setColor] = useState('#5a5959')
+    const [buttonVisible, setButtonVisible] = React.useState(false);
 
 
     // GETTING USER DATA ================================================================================================
@@ -198,44 +210,81 @@ const ProfileScreen = props => {
                 onPress: () => firebaseDb.auth().signOut(),
                 style: 'cancel'
             },
-                {text:"Cancel", onPress: () => {},  style:'cancel'}
+                {text:"Cancel", onPress: () => {setColor('#5a5959')},  style:'cancel'}
             ],
             {cancelable: false}
         )
     }
 
-    return <Background>
-            <SafeAreaView>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <View style = {{alignItems: 'center', paddingBottom: 30,}}>
-                        <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
+    const renderToggleButton = () => (
+        <TouchableOpacity style = {{backgroundColor: 'transparent', alignItems: 'center'}}
+                          activeOpacity= {0.9}
+                          onPress={() => {setButtonVisible(true); setColor('white');}}>
+            <AntDesign name="caretdown" color={color} size={20} />
+        </TouchableOpacity>
+    );
 
-                            <View style = {{flexDirection: 'row', justifyContent: 'space-around', paddingTop: 5,}}>
-                                <View style = {style.photoFrame}>
-                                    <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+    return <SafeAreaView>
+                <ScrollView showsVerticalScrollIndicator={false}>
+
+                    {/*============================================== orange thing at the top=========================================*/}
+                    <Animatable.View style = {{height: 150, width: '100%', borderBottomLeftRadius: 40}} animation = "fadeInDown">
+                        <ImageBackground source={require('../assets/OrangeBackground.jpg')}
+                                         style = {{flex: 1, flexDirection: 'row', justifyContent: 'space-around', alignItems: 'center'}}
+                                         imageStyle={{borderBottomLeftRadius: 40}}
+                        >
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly'}}>
+                                <View>
+                                    <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, marginRight: 40}}>
+                                        Welcome back,
+                                    </Text>
+                                    <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 25,}}>
+                                        {data.username}!
+                                    </Text>
+                                </View>
+                                <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 15, position: 'absolute', bottom: 0}}>
+                                    Here are your upcoming events...
+                                </Text>
+                            </View>
+                            <View style = {{flexDirection: 'row', alignItems: 'flex-end'}}>
+                            {/*====================================================Profile Picture================================*/}
+                                <View style = {{...style.photoFrame, right: 10}}>
+                                    <Image style = {{height: 50, width: 50, borderRadius: 170}} source = {{
                                         uri: data.uri
                                     }}/>
                                 </View>
-                                <GradientButton style={{width: 120, height:37, marginTop: 20,}}
-                                                colors = {['#1bb479','#026c45']}
-                                                textStyle = {{fontSize: 15}}
-                                                onPress = {() => navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)})}>
-                                    Update details
-                                </GradientButton>
-                                <GradientButton style={{width: 120, height:37, marginTop: 20,}}
-                                                colors = {["red", "maroon"]}
-                                                onPress = {logout}
-                                                textStyle = {{fontSize: 15}}>
-                                    Log Out
-                                </GradientButton>
+                                {/*==========================================Button beside profile picture============================*/}
+                                <Popover
+                                    backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
+                                    visible={buttonVisible}
+                                    anchor={renderToggleButton}
+                                    onBackdropPress={() => {setButtonVisible(false); setColor('#5a5959')}}>
+                                    <View style = {{width: 100}}>
+                                        <TouchableOpacity style={{...style.buttonStyle, borderBottomColor: 'grey', borderBottomWidth: 1}}
+                                                          activeOpacity={0.7}
+                                                          onPress = {() => {
+                                                              setButtonVisible(false);
+                                                              setColor('#5a5959');
+                                                              navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)});
+                                                          }}
+                                        >
+                                            <Text style = {{fontWeight: 'bold'}}> Update profile </Text>
+                                        </TouchableOpacity>
+                                        <TouchableOpacity style={style.buttonStyle}
+                                                          activeOpacity={0.7}
+                                                          onPress = {() => {setButtonVisible(false);logout()}}
+                                        >
+                                            <Text style = {{fontWeight: 'bold'}}> Logout </Text>
+                                        </TouchableOpacity>
+                                    </View>
+                                </Popover>
                             </View>
 
-                            <View style = {{paddingLeft: 30, marginTop: 10}}>
-                                <Text style = {{fontSize: 20}}> Name: {data.firstName} {data.lastName}</Text>
-                                <Text style = {{fontSize: 20}}> Username: {data.username} </Text>
-                                <Text style = {{fontSize: 20}}> Email: {data.email}</Text>
-                                <Text style = {{fontSize: 20}}> DOB: {data.birthDate.toDate().toString().slice(4,15)}</Text>
-                            </View>
+                        </ImageBackground>
+                    </Animatable.View>
+
+                    <View style = {{alignItems: 'center', paddingBottom: 30,}}>
+                        <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
 
                             <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
                                             colors = {['#1bb479','#026c45']}
@@ -353,7 +402,6 @@ const ProfileScreen = props => {
                     </View>
                 </ScrollView>
             </SafeAreaView>
-            </Background>
 }
 
 const style = StyleSheet.create({
@@ -397,8 +445,8 @@ const style = StyleSheet.create({
         color: 'white',
     },
     photoFrame: {
-        height: 85,
-        width: 85,
+        height: 50,
+        width: 50,
         borderRadius: 170,
         elevation: 30,
         shadowOffset: {
@@ -409,7 +457,14 @@ const style = StyleSheet.create({
         shadowRadius: 3.27,
         justifyContent: 'center',
         backgroundColor: 'white',
-    }
+    },
+    buttonStyle : {
+        backgroundColor: 'white',
+        width: '100%',
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
 })
 
 export default ProfileScreen;
