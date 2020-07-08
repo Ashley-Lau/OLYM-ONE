@@ -1,15 +1,21 @@
 import React from 'react';
-import {View, StyleSheet, Image, Dimensions} from 'react-native';
+import {View, StyleSheet, Image, Dimensions,} from 'react-native';
+import SafeAreaView from 'react-native-safe-area-view';
 
 const Background = props => {
-    return (
-        <View style={[styles.container, props.style]}>
-            <View style={styles.circle}>
-                <Image source={require("../assets/OLYMONE.png")} style={styles.image}/>
-            </View>
-                {props.children}
-        </View>
+    return (<SafeAreaView style = {{flex: 1}}>
+            <View style={[styles.container, props.style]}>
 
+                <View style={styles.topView}>
+                    <Image source={require('../assets/OrangeBackground.jpg')}
+                           style = {{height: 150, width: '100%', borderBottomLeftRadius: 40}}
+                           imageStyle={{borderBottomLeftRadius: 40}}
+                    />
+                </View>
+
+                    {props.children}
+            </View>
+        </SafeAreaView>
     );
 }
 
@@ -23,14 +29,13 @@ const styles = StyleSheet.create({
         flex:1,
         backgroundColor:'white',
     },
-    circle:{
+    topView:{
         width:winWidth * 1.2,
         height:winWidth * 1.2,
-        borderRadius:winWidth * 0.6,
-        backgroundColor:"rgb(239,239,239)",
+        // backgroundColor:"rgb(239,239,239)",
         position:"absolute",
-        top:-5 * heightRatio,
-        right: -25 * widthRatio,
+        // top:-5 * heightRatio,
+        // right: -25 * widthRatio,
 
     },
     image: {

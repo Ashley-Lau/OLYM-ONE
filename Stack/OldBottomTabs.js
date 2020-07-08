@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import {createMaterialBottomTabNavigator} from "@react-navigation/material-bottom-tabs";
 import {createStackNavigator} from "@react-navigation/stack";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import AntDesign from 'react-native-vector-icons/AntDesign';
@@ -17,22 +17,22 @@ import firebaseDb from "../firebaseDb";
 
 
 
-const Tab = createBottomTabNavigator();
+const Tab = createMaterialBottomTabNavigator();
 const Stack = createStackNavigator();
 
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
-                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
-                <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
-                <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
-            </Stack.Navigator>
+        <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
+        <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
+        <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
+    </Stack.Navigator>
 }
 
 const ChatStack = (props) => {
     return  <Stack.Navigator initialRouteName={ChatDetailScreen} headerMode={false}>
-                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams = {{user: props.extraData}}/>
-                <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
-            </Stack.Navigator>
+        <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams = {{user: props.extraData}}/>
+        <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
+    </Stack.Navigator>
 }
 
 const BottomTabs = (props) => {
@@ -41,30 +41,20 @@ const BottomTabs = (props) => {
         initialRouteName= "ProfileStack"
         activeColor="#fff"
         inactiveColor="#888888"
-        tabBarOptions={{
-            activeTintColor: '#ff7134',
-            tabStyle: {
-                paddingTop: 7,
-                paddingBottom: 5,
-            },
-            style : {
-                height: 60,
-                borderTopColor: 'transparent',
-                shadowColor: 'rgba(58,55,55,0.1)',
-                shadowOffset: { width: 0, height: 0 },
-                shadowOpacity: 1,
-                shadowRadius: 15,
-                elevation: 10,
-            }
-
+        barStyle={{
+            backgroundColor: 'rgba(71,51,121,0.76)',
+            justifyContent: 'center',
+            borderTopWidth: 2,
+            elevation: 0,
+            borderColor: '#696969',
         }}
-        style = {{height: 40}}
     >
         <Tab.Screen
             name="ProfileStack"
             children={ProfileStack}
             options={{
                 tabBarLabel: 'PROFILE',
+                tabBarColor: '#026c45',
                 tabBarIcon: ({ color }) => (
                     <AntDesign name="user" color={color} size={26} />
                 ),
@@ -78,6 +68,7 @@ const BottomTabs = (props) => {
             initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'GAMES',
+                tabBarColor: '#7b0303',
                 tabBarIcon: ({ color }) => (
                     <Ionicons name="ios-football" color={color} size={26} />
                 ),
@@ -99,6 +90,7 @@ const BottomTabs = (props) => {
             initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'Referee',
+                tabBarColor: '#0f2471',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name= "whistle" color={color} size={26} />
                 ),
@@ -109,6 +101,7 @@ const BottomTabs = (props) => {
             children={ChatStack}
             options={{
                 tabBarLabel: 'CHATS',
+                tabBarColour: 'rgb(71,51,121)',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name="chat" color={color} size={26} />
                 ),
