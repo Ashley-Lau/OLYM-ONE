@@ -5,6 +5,7 @@ import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
 import {Select, SelectItem,} from "@ui-kitten/components";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from 'react-native-vector-icons/Entypo'
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
@@ -12,6 +13,7 @@ import GameItem from "../Components/GameItem";
 import GameScreenItem from "../Components/GameScreenItem";
 
 import firebaseDb from "../firebaseDb";
+import AntDesign from "react-native-vector-icons/AntDesign";
 
 
 
@@ -121,6 +123,26 @@ const GameScreen = (props) => {
             {/*<ImageBackground source={require("../assets/SkylineBackGround.png")} style={{height:"100%", width:"100%"}}>*/}
             <Background style = {styles.container}>
 
+                {/*==================================== Title and hosting a gmae ======================================*/}
+                <View style = {{justifyContent: 'space-between',height: 50, width: '100%', backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 5}}>
+                    <Text style = {styles.text}> Games </Text>
+                    <View style = {{backgroundColor: 'transparent', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', marginLeft: 20, top: 5}}>
+                        <Text style = {{...styles.text, bottom: 2}}>  Host </Text>
+                    <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', width: 40}}
+                                      activeOpacity={ 0.9}
+                                      onPress={() => {
+                                          navigation.navigate('HostGameScreen',
+                                              {
+                                                  uid: currentUser,
+                                              }
+                                          )
+                                      }}
+                    >
+                        <Entypo name="plus" color={'white'} size={40}/>
+                    </TouchableOpacity>
+                </View>
+                </View>
+
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
                         <Select
@@ -140,6 +162,20 @@ const GameScreen = (props) => {
                         <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
                     </View>
                 </View>
+                {/*<TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.84)', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', marginLeft: 20, top: 5}}*/}
+                {/*                  activeOpacity={ 0.9}*/}
+                {/*                  onPress={() => {*/}
+                {/*                      navigation.navigate('HostGameScreen',*/}
+                {/*                          {*/}
+                {/*                              uid: currentUser,*/}
+                {/*                          }*/}
+                {/*                      )*/}
+                {/*                  }}*/}
+                {/*>*/}
+                {/*    <Text style = {{...styles.text, color: '#1c1c1c', bottom: 2}}>  Host </Text>*/}
+                {/*    <FontAwesome name="plus" color={'#1c1c1c'} size={20}/>*/}
+                {/*    <Text >   </Text>*/}
+                {/*</TouchableOpacity>*/}
                 <FlatList showsHorizontalScrollIndicator={false}
                           horizontal={true}
                           contentContainerStyle= {{justifyContent:"space-between"}}
@@ -297,7 +333,13 @@ const styles = StyleSheet.create({
         backgroundColor: "transparent",
         alignItems: "center",
         paddingTop: 7
-    }
+    },
+    text: {
+        color: 'white',
+        justifyContent: 'center',
+        fontSize: 27,
+        fontWeight: "bold",
+    },
 })
 
 export default GameScreen;

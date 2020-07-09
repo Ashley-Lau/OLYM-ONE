@@ -9,10 +9,10 @@ import {
     TouchableWithoutFeedback,
     TouchableOpacity,
     SafeAreaView,
-    Image
+    Image, ImageBackground
 } from 'react-native';
 
-import { GiftedChat } from 'react-native-gifted-chat'
+import { GiftedChat, Day, Bubble } from 'react-native-gifted-chat'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from "@react-navigation/native";
 
@@ -83,39 +83,67 @@ const ChatScreen = props => {
         }).catch(error => console.log(error))
     }
 
-    return  <Background>
-            <SafeAreaView>
-                <View style = {{width: '100%', height: 50, backgroundColor: 'rgb(71,51,121)', flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
+    // changing the color of the date
+    const renderDay = (props) => {
+        return <Day {...props} textStyle={{color: 'black', fontWeight: 'bold'}}/>
+    }
 
-                    {/*==================================================back button==========================================*/}
-                    <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
-                                      onPress = {() => navigation.navigate('ChatDetailScreen')}
-                                      activeOpacity= {0.8}>
-                        <Ionicons name="ios-arrow-back" color={'white'} size={30} />
-                        <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
-                    </TouchableOpacity>
+    const renderBubble  = (props) => {
+        return (
+            <Bubble
+                {...props}
+                textStyle={{
+                    right: {
+                        // color: "white"
+                    },
+                    left: {
+                        // color: "white"
+                    }
+                }}
+                wrapperStyle={{
+                    right: {
+                        backgroundColor: '#ff6600'
+                    },
+                    left: {
+                        backgroundColor: 'white'
+                    }
+                }}
+            />
+        )
+    }
 
-                    <Text style = {{...style.text}}> {otherUserInformation[1]} </Text>
-                    {/*=============================================profile picture of other user====================================================*/}
-                    <TouchableOpacity style = {{marginRight: 8}} activeOpacity={0.9}>
-                        <Image source = {{uri: chatInformation.smallerId[0] === userId ? chatInformation.largerId[2] : chatInformation.smallerId[2]}}
-                               style = {style.image}/>
-                    </TouchableOpacity>
-                </View>
+    return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+            <SafeAreaView style = {{flex: 1}}>
+                <ImageBackground source={require("../assets/BrownSkylineChat.png")} style = {{width: '100%', height: '100%',}}>
+
+                            <View style = {{width: '100%', height: 50, backgroundColor: 'rgb(226,147,73)', flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
+                                {/*==================================================back button==========================================*/}
+                                <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
+                                                  onPress = {() => navigation.navigate('ChatDetailScreen')}
+                                                  activeOpacity= {0.8}>
+                                    <Ionicons name="ios-arrow-back" color={'white'} size={30} />
+                                    <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
+                                </TouchableOpacity>
+
+                                <Text style = {{...style.text}}> {otherUserInformation[1]} </Text>
+                                {/*=============================================profile picture of other user====================================================*/}
+                                <TouchableOpacity style = {{marginRight: 8}} activeOpacity={0.9}>
+                                    <Image source = {{uri: chatInformation.smallerId[0] === userId ? chatInformation.largerId[2] : chatInformation.smallerId[2]}}
+                                           style = {style.image}/>
+                                </TouchableOpacity>
+                            </View>
+                        {/*==================================================gifted chat===============================================================*/}
+                            <GiftedChat messages = {data.messages}
+                                            onSend = {messages => onSend(messages)}
+                                            user={{_id: userInformation[0], name: userInformation[1], avatar: null}}
+                                            // renderUsernameOnMessage={true}
+                                            renderDay={renderDay}
+                                            renderBubble={renderBubble}
+                                            renderAvatar={() => {return null}}
+                            />
+                </ImageBackground>
             </SafeAreaView>
-            {/*==================================================gifted chat===============================================================*/}
-            <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                <View style = {{flex: 10}}>
-                    <GiftedChat messages = {data.messages}
-                                onSend = {messages => onSend(messages)}
-                                user={{_id: userInformation[0], name: userInformation[1], avatar: null}}
-                                // renderUsernameOnMessage={true}
-                                renderAvatar={() => {return null}}
-
-                    />
-                </View>
-            </TouchableWithoutFeedback>
-            </Background>
+        </TouchableWithoutFeedback>
 }
 
 const style = StyleSheet.create({

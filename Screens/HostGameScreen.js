@@ -1,10 +1,11 @@
-import React,{useState} from 'react';
-import {Text,TextInput, StyleSheet, SafeAreaView, Modal, View, ScrollView} from 'react-native';
+import React,{useState, useEffect} from 'react';
+import {Text,TextInput, StyleSheet, Modal, View, ScrollView} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
 import Background from "../views/Background";
 import Styles from "../styling/Styles";
+
 import RNDateTimePicker from "@react-native-community/datetimepicker";
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
@@ -12,7 +13,6 @@ import * as yup from 'yup'
 import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
 import { Select, SelectItem } from '@ui-kitten/components';
-
 
 
 const reviewSchema = yup.object({
@@ -31,11 +31,26 @@ const reviewSchema = yup.object({
 
 const HostGameScreen = props => {
 
+    const [data, setData] = useState({})
+
+
+    useEffect(() => {
+            firebaseDb.firestore().collection('users').doc(props.route.params.uid).get()
+                .then((doc) => {
+                    const newData = doc.data()
+                    setData(newData)
+                    // console.log(newData)
+                    // console.log(0)
+                })
+                .catch(error => console.log(error))
+        }
+    , [])
+
     //NAVIGATION ===================================================================================================
     const navigation = useNavigation()
 
     const registeredPress = () => {
-        navigation.navigate('ProfileScreen');
+        navigation.goBack();
     }
 
     //CHECKS FOR IOS PLATFORM ========================================================================================================================
@@ -47,7 +62,6 @@ const HostGameScreen = props => {
         const sgTime = new Date(utc + (3600000*8));
         return sgTime;
     }
-
 
     //ARRAY FOR PICKER ==============================================================================================================
 
@@ -61,6 +75,7 @@ const HostGameScreen = props => {
 
     // UPDATING THE GAME ITEM AND DETAIL ==============================================================================================================
     const handleCreateGame = values => {
+        console.log(data)
         firebaseDb.firestore()
             .collection('game_details')
             .add({
@@ -69,10 +84,10 @@ const HostGameScreen = props => {
                 notes: values.notes,
                 availability : values.slots,
                 date: sgTime(values.date),
-                host: props.route.params.username,
+                host: data.username,
                 price: values.price,
-                players: [props.route.params.uid],
-                hostId: props.route.params.uid,
+                players: [data.id],
+                hostId: data.id,
                 referee: values.referee
             })
             .then(() => {registeredPress()})
@@ -80,16 +95,7 @@ const HostGameScreen = props => {
 
     }
 
-    return(
-        <View>
-            <Background style={{position:"absolute", right:0, top:0}}/>
-            <SafeAreaView>
-            <View style={styles.header}>
-                <Text style={{fontSize:22, color:"white", alignSelf: 'center'}}>GAME DETAILS</Text>
-            </View>
-            </SafeAreaView>
-
-            <ScrollView>
+    return(<ScrollView>
                 <Formik initialValues={{
                     location: 'Select',
                     sport:'Select',
@@ -112,6 +118,10 @@ const HostGameScreen = props => {
                     {(props) => (
 
                         <View>
+                            <Background/>
+                            <View style={{width: '100%', height: 50, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
+                                <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}>GAME DETAILS</Text>
+                            </View>
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
                                 <View style={styles.dropDownCopy}>
@@ -390,19 +400,10 @@ const HostGameScreen = props => {
                 </Formik>
 
             </ScrollView>
-
-        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    header:{
-        width:"100%",
-        height:50,
-        backgroundColor:'#026c45',
-        justifyContent: 'center',
-        elevation: 5
-    },
     dropDownCopy:{
         flexDirection:"row",
         marginTop: 5,
