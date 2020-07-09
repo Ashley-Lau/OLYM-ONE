@@ -16,6 +16,7 @@ import firebaseDb from "./firebaseDb";
 import { EvaIconsPack } from '@ui-kitten/eva-icons';
 
 import {set} from "react-native-reanimated";
+import ChatScreen from "./Screens/ChatScreen";
 
 YellowBox.ignoreWarnings([
   'Non-serializable values were found in the navigation state',
@@ -65,9 +66,12 @@ export default function App() {
               <NavigationContainer>
                 <Stack.Navigator headerMode={false}>
                   {data.user ? (
+                      <>
                       <Stack.Screen name='BottomTabs'>
                         {props => <BottomTabs {...props} extraData={data.user} />}
                       </Stack.Screen>
+                      <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
+                      </>
                     ) : (
                       <>
                       <Stack.Screen name='LoginScreen' component={LoginScreen}/>

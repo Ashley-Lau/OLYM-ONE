@@ -21,7 +21,6 @@ import {messageSorter} from "../Components/SearchBarFunctions";
 const ChatDetailScreen = (props) => {
     const navigation = useNavigation()
     const userId = props.route.params.user.id
-    const userData = {username: 'donkey', uri: 'fker'}
     const messagesRef = firebaseDb.firestore().collection('messages')
 
 
@@ -116,72 +115,74 @@ const ChatDetailScreen = (props) => {
         setChatList(messageSorter(newChat, newChat2))
     }
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                <SafeAreaView style = {{backgroundColor: '#fafafa'}}>
-                <View style = {{justifyContent: 'center',height: 50, width: '100%', backgroundColor: '#fafafa'}}>
-                    <Text style = {style.text}> Chats</Text>
-                </View>
-                <View style={{...style.searchBar, }}>
-                    <View style = {{left: 10, width: '5%'}}>
-                    <SearchButtons style={{flex: 1, elevation: 5}}
-                                   searchMe={() => {
-                                       Keyboard.dismiss()
-                                       getKeywordsChatList()
-                                   }}/>
+                <SafeAreaView >
+                    <View style = {{backgroundColor: 'rgb(226,147,73)'}}>
+                    <View style = {{justifyContent: 'center',height: 50, width: '100%', backgroundColor: 'rgb(226,147,73)'}}>
+                        <Text style = {style.text}> Chats</Text>
                     </View>
-                    <TextInput style={{...style.searchInput, }}
-                               placeholder= "Username, Group"
-                               placeholderTextColor="#414141"
-                               onChangeText={(value) => {setKeywords(value.toLowerCase())}}
-                               value={keywords}
-                    />
-                </View>
-                <FlatList
-                    contentContainerStyle={{width: '100%', height: '100%',borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
-                    keyExtractor={(item) => item.key.toString()}
-                    data={chatList}
-                    renderItem={({item}) =>
-                        <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 75, flexDirection: 'row',}}
-                                          activeOpacity = {0.85}
-                                          onPress={() => navigation.navigate('ChatScreen', {chat: item.value, userId: userId})}>
-                            {/*========================================image of the other user===========================================*/}
-                            <View style = {{width: '20%'}}>
-                                <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}}
-                                       style = {style.image}/>
-                            </View>
+                    <View style={{...style.searchBar, }}>
+                        <View style = {{left: 10, width: '5%'}}>
+                        <SearchButtons style={{flex: 1, elevation: 5}}
+                                       searchMe={() => {
+                                           Keyboard.dismiss()
+                                           getKeywordsChatList()
+                                       }}/>
+                        </View>
+                        <TextInput style={{...style.searchInput, }}
+                                   placeholder= "Username, Group"
+                                   placeholderTextColor="#414141"
+                                   onChangeText={(value) => {setKeywords(value.toLowerCase())}}
+                                   value={keywords}
+                        />
+                    </View>
+                    <FlatList
+                        contentContainerStyle={{width: '100%', height: '100%',borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
+                        keyExtractor={(item) => item.key.toString()}
+                        data={chatList}
+                        renderItem={({item}) =>
+                            <TouchableOpacity style = {{alignItems: 'center', width: '100%', height: 75, flexDirection: 'row',}}
+                                              activeOpacity = {0.85}
+                                              onPress={() => navigation.navigate('ChatScreen', {chat: item.value, userId: userId})}>
+                                {/*========================================image of the other user===========================================*/}
+                                <View style = {{width: '20%'}}>
+                                    <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}}
+                                           style = {style.image}/>
+                                </View>
 
-                            <View style = {{alignItems: 'center', width: '80%', height: 75, flexDirection: 'row', borderBottomWidth: 0.3, borderColor: 'grey',justifyContent: 'space-between',}}>
-                                {/*=======================================Name and last message============================================*/}
-                                <View style = {{flexDirection: 'column',}}>
-                                    <Text style = {{fontSize: 20, fontWeight: 'bold'}}>
-                                        {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
-                                    </Text>
-                                    <Text style = {{fontSize: 15,}}>
-                                        {item.value.lastMessage.toString().length > 20
-                                            ? item.value.lastMessage.slice(0,19) + '...'
-                                            : item.value.lastMessage.toString().length === 0
-                                                ? ''
-                                                : item.value.lastMessage.slice(0,19)
+                                <View style = {{alignItems: 'center', width: '80%', height: 75, flexDirection: 'row', borderBottomWidth: 0.3, borderColor: 'grey',justifyContent: 'space-between',}}>
+                                    {/*=======================================Name and last message============================================*/}
+                                    <View style = {{flexDirection: 'column',}}>
+                                        <Text style = {{fontSize: 20, fontWeight: 'bold'}}>
+                                            {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
+                                        </Text>
+                                        <Text style = {{fontSize: 15,}}>
+                                            {item.value.lastMessage.toString().length > 20
+                                                ? item.value.lastMessage.slice(0,19) + '...'
+                                                : item.value.lastMessage.toString().length === 0
+                                                    ? ''
+                                                    : item.value.lastMessage.slice(0,19)
+                                            }
+                                        </Text>
+                                    </View>
+                                    {/*======================================unread messages and time============================================*/}
+                                    <View style = {{color: 'black', justifyContent: 'center', marginRight: 9, alignItems: 'flex-end'}}>
+                                        <Text style = {{fontSize: 16}}>{displayTime(item.value.lastMessageTime)}</Text>
+                                        {item.value.lastMessageFrom === userId || item.value.notificationStack === 0
+                                            ? <View>
+                                                <Text style = {{color: 'white', borderRadius: 60}}> </Text>
+                                                </View>
+                                            : <View style = {{borderRadius: 60, backgroundColor: '#1F45FC'}}>
+                                                <Text style = {{color: 'white', fontWeight: 'bold'}}>
+                                                      {'  ' + item.value.notificationStack + '  '}
+                                                </Text>
+                                                </View>
                                         }
-                                    </Text>
+                                    </View>
                                 </View>
-                                {/*======================================unread messages and time============================================*/}
-                                <View style = {{color: 'black', justifyContent: 'center', marginRight: 9, alignItems: 'flex-end'}}>
-                                    <Text style = {{fontSize: 16}}>{displayTime(item.value.lastMessageTime)}</Text>
-                                    {item.value.lastMessageFrom === userId || item.value.notificationStack === 0
-                                        ? <View>
-                                            <Text style = {{color: 'white', borderRadius: 60}}> </Text>
-                                            </View>
-                                        : <View style = {{borderRadius: 60, backgroundColor: '#1F45FC'}}>
-                                            <Text style = {{color: 'white', fontWeight: 'bold'}}>
-                                                  {'  ' + item.value.notificationStack + '  '}
-                                            </Text>
-                                            </View>
-                                    }
-                                </View>
-                            </View>
 
-                        </TouchableOpacity>}
-                />
+                            </TouchableOpacity>}
+                    />
+                    </View>
             </SafeAreaView>
             </TouchableWithoutFeedback>
 }
@@ -194,7 +195,7 @@ const style = StyleSheet.create({
     },
     text: {
         top: 10,
-        color: '#232323',
+        color: 'white',
         justifyContent: 'center',
         fontSize: 27,
         fontWeight: "bold",
