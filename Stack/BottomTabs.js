@@ -6,6 +6,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
+
 import ChatScreen from "../../OLYM-ONE/Screens/ChatScreen";
 import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
 import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
@@ -24,25 +25,30 @@ const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
                 <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
-                <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
             </Stack.Navigator>
+}
+
+const GameStack = (props) => {
+    return  <Stack.Navigator headerMode={false}>
+        <Stack.Screen name = "GameScreen" component = {GameScreen} initialParams={{user: props.extraData}}/>
+        <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
+    </Stack.Navigator>
 }
 
 const ChatStack = (props) => {
     return  <Stack.Navigator initialRouteName={ChatDetailScreen} headerMode={false}>
                 <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams = {{user: props.extraData}}/>
-                <Stack.Screen name = "ChatScreen" component = {ChatScreen}/>
             </Stack.Navigator>
 }
 
 const BottomTabs = (props) => {
-
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         activeColor="#fff"
         inactiveColor="#888888"
         tabBarOptions={{
             activeTintColor: '#ff7134',
+            keyboardHidesTabBar: true,
             tabStyle: {
                 paddingTop: 7,
                 paddingBottom: 5,
@@ -64,9 +70,9 @@ const BottomTabs = (props) => {
             name="ProfileStack"
             children={ProfileStack}
             options={{
-                tabBarLabel: 'PROFILE',
+                tabBarLabel: 'HOME',
                 tabBarIcon: ({ color }) => (
-                    <AntDesign name="user" color={color} size={26} />
+                    <MaterialCommunityIcons name="home" color={color} size={26} />
                 ),
             }}
         >
@@ -74,7 +80,7 @@ const BottomTabs = (props) => {
         </Tab.Screen>
         <Tab.Screen
             name="GameScreen"
-            component={GameScreen}
+            children={GameStack}
             initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'GAMES',
@@ -91,8 +97,9 @@ const BottomTabs = (props) => {
             //         navigation.navigate('ProfileScreen')
             //     }
             // })}
-        />
-
+        >
+            {prop => <GameStack {...prop}  extraData = {props.extraData}/>}
+        </Tab.Screen>
         <Tab.Screen
             name="RefereeScreen"
             component={RefereeScreen}

@@ -186,14 +186,15 @@ const ProfileScreen = props => {
             uri: values.uri,
             password: values.password !== '' ? values.password : data.password,
         }).then(() => {
-            setData({
+            const newData = {
                 ...data,
                 firstName: values.firstName,
                 lastName: values.lastName,
                 username: values.username,
                 uri: values.uri,
                 password: values.password !== '' ? values.password : data.password,
-            })
+            }
+            setData(newData)
         }).catch(error => {
             console.log(error)
             alert(error)
@@ -243,7 +244,7 @@ const ProfileScreen = props => {
                                     </Text>
                                 </View>
                                 <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 15, position: 'absolute', bottom: 0}}>
-                                    Here are your upcoming events...
+                                    These are your upcoming events...
                                 </Text>
                             </View>
                             <View style = {{flexDirection: 'row', alignItems: 'flex-end'}}>
@@ -259,7 +260,7 @@ const ProfileScreen = props => {
                                     visible={buttonVisible}
                                     anchor={renderToggleButton}
                                     onBackdropPress={() => {setButtonVisible(false); setColor('#5a5959')}}>
-                                    <View style = {{width: 100}}>
+                                    <View style = {{width: 120}}>
                                         <TouchableOpacity style={{...style.buttonStyle, borderBottomColor: 'grey', borderBottomWidth: 1}}
                                                           activeOpacity={0.7}
                                                           onPress = {() => {
@@ -268,7 +269,7 @@ const ProfileScreen = props => {
                                                               navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)});
                                                           }}
                                         >
-                                            <Text style = {{fontWeight: 'bold'}}> Update profile </Text>
+                                            <Text style = {{fontWeight: 'bold'}}> Update Profile </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={style.buttonStyle}
                                                           activeOpacity={0.7}
@@ -284,25 +285,6 @@ const ProfileScreen = props => {
                     </Animatable.View>
 
                     <View style = {{alignItems: 'center', paddingBottom: 30,}}>
-                        <View style = {{...style.elevatedComponent, height: 300, justifyContent: 'space-evenly'}}>
-
-                            <GradientButton style={{width: "95%", height:"14%", marginTop: 15, alignSelf: 'center'}}
-                                            colors = {['#1bb479','#026c45']}
-                                            onPress={() => {
-                                                console.log(upcomingGameList);
-                                                navigation.navigate('HostGameScreen',
-                                                    {
-                                                        uid: data.id,
-                                                        username: data.username,
-                                                        upcoming: data.upcoming_games
-                                                    }
-
-
-                                                )}}
-                                            textStyle = {{fontSize: 20}}>
-                                Host Game
-                            </GradientButton>
-                        </View>
                         <View style = {{...style.elevatedComponent, marginTop: 20, height: 200}}>
                             <View style = {style.titleBackground} >
                                 <Text style ={style.titleText}>
@@ -431,7 +413,7 @@ const style = StyleSheet.create({
         shadowRadius: 6.27,
     },
     titleBackground: {
-        backgroundColor: 'green',
+        backgroundColor: 'orange',
         height: 40,
         borderTopRightRadius: 10,
         borderTopLeftRadius: 10,

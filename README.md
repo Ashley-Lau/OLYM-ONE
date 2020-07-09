@@ -18,3 +18,4 @@
 # connected updated username and profile pic to chat and game_details
 # added support for ios in signupscreen 
 # improved ui /ux for profilescreen and included more support for ios
+# improved ui /ux for Chatscreen and someother screens
