@@ -7,7 +7,7 @@ const Background = props => {
             <View style={[styles.container, props.style]}>
 
                 <View style={styles.topView}>
-                    <Image source={require('../assets/OrangeBackground.jpg')}
+                    <Image source={require('../assets/Test.png')}
                            style = {{height: "30%", width: '100%', borderBottomLeftRadius: 40}}
                            imageStyle={{borderBottomLeftRadius: 40}}
                     />
