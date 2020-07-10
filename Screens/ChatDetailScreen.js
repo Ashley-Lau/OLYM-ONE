@@ -171,7 +171,7 @@ const ChatDetailScreen = (props) => {
                                             ? <View>
                                                 <Text style = {{color: 'white', borderRadius: 60}}> </Text>
                                                 </View>
-                                            : <View style = {{borderRadius: 60, backgroundColor: '#1F45FC'}}>
+                                            : <View style = {{borderRadius: 60, backgroundColor: 'orange'}}>
                                                 <Text style = {{color: 'white', fontWeight: 'bold'}}>
                                                       {'  ' + item.value.notificationStack + '  '}
                                                 </Text>

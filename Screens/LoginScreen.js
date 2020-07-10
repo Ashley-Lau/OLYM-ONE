@@ -71,7 +71,7 @@ const LoginScreen = (props) => {
                 <ImageBackground source={require("../assets/BrownSkyline.png")} style={{...Styles.container, justifyContent:'space-around'}}>
                 {/*<ImageBackground source = {backSunset} style={Styles.container}>*/}
                     <View style={{flexDirection:"column", justifyContent:"center", alignItems:'center'}}>
-                        <Image style={Styles.logo} source={logo}/>
+                        <Image style={{...Styles.logo, marginTop: 40}} source={logo}/>
                         <View style = {style.inputContainer}>
                             <Sae label= {'Email:'}
                                  iconClass = {FontAwesome5}
@@ -92,7 +92,6 @@ const LoginScreen = (props) => {
                                  iconClass = {SimpleLineIcons}
                                  iconName = {'lock'}
                                  iconColor = {'black'}
-                                // iconSize = {30}
                                  autoCorrect = {false}
                                  style = {style.textContainer}
                                  labelHeight = {24}
@@ -122,9 +121,9 @@ const LoginScreen = (props) => {
                         </View>
                     </View>
 
-                    <View style={{paddingTop:30}}>
+                    <View style={{paddingTop:20}}>
                         <Text style = {{fontSize: 14, fontWeight: 'bold', top: 25}}> Forgot password?
-                            <Text style = {{color: '#1F45FC'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
+                            <Text style = {{color: 'blue'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
                         </Text>
                     </View>
 
@@ -146,7 +145,7 @@ const LoginScreen = (props) => {
 const style = StyleSheet.create({
     inputContainer: {
         // backgroundColor: 'rgba(255,255,255,0.42)',
-        marginTop: 20,
+
         width: 300,
         height: 320,
         borderRadius: 10,

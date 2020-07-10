@@ -57,12 +57,10 @@ const UpdateDetailScreen = (props) => {
 
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+            <ScrollView showsVerticalScrollIndicator={false}>
             <Background>
-                <View style = {{alignItems: 'center', marginTop: 30}}>
-                    <Text style = {style.titleStyle} >Update Details</Text>
-                </View>
-                <View style = {{marginTop: 20, marginHorizontal: 52}}>
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                <View style = {{marginTop: 20, alignItems: 'center'}}>
+                            <Text style = {style.titleStyle} >Update Details</Text>
                         <Formik
                             initialValues = {{
                                 uri: props.route.params.data.uri,
@@ -87,12 +85,13 @@ const UpdateDetailScreen = (props) => {
                             }}
                         >
                             {(props) => (
-                                <View style = {{justifyContent: 'center'}}>
+                                <View style = {{width: 300}}>
                                     <View style = {{...style.photoFrame, marginBottom: 15}}>
                                         <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
                                             uri: props.values.uri
                                         }}/>
                                     </View>
+                                    {/*======================================change profile picture button=========================*/}
                                     <View style = {{alignSelf: 'center', justifyContent: 'center'}}>
                                         <TouchableOpacity style={{width: 75, height: 25, justifyContent: 'center', alignSelf: 'center'}}
                                                           onPress={ async () => {
@@ -190,9 +189,10 @@ const UpdateDetailScreen = (props) => {
                                 </View>
                             )}
                             </Formik>
-                        </ScrollView>
+
                 </View>
             </Background>
+            </ScrollView>
         </TouchableWithoutFeedback>)
 }
 
@@ -200,8 +200,9 @@ const style = StyleSheet.create({
     titleStyle: {
         fontWeight: "bold",
         fontSize: 30,
-        borderBottomWidth: 4,
-        borderBottomColor: 'black'
+        color: 'white',
+        alignSelf: 'center',
+        marginBottom: 20,
     },
     photoFrame: {
         height: 85,

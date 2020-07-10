@@ -123,24 +123,24 @@ const GameScreen = (props) => {
             {/*<ImageBackground source={require("../assets/SkylineBackGround.png")} style={{height:"100%", width:"100%"}}>*/}
             <Background style = {styles.container}>
 
-                {/*==================================== Title and hosting a gmae ======================================*/}
-                <View style = {{justifyContent: 'space-between',height: 50, width: '100%', backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 5}}>
-                    <Text style = {styles.text}> Games </Text>
-                    <View style = {{backgroundColor: 'transparent', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', marginLeft: 20, top: 5}}>
+                {/*==================================== Title and hosting a game ======================================*/}
+                <View style = {{justifyContent: 'space-between',height: 50, width: '100%', backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal: 10}}>
+                    <Text style = {styles.text}>Games</Text>
+                    <View style = {{backgroundColor: 'transparent', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', flexDirection: 'row', top: 5,}}>
                         <Text style = {{...styles.text, bottom: 2}}>  Host </Text>
-                    <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', width: 40}}
-                                      activeOpacity={ 0.9}
-                                      onPress={() => {
-                                          navigation.navigate('HostGameScreen',
-                                              {
-                                                  uid: currentUser,
-                                              }
-                                          )
-                                      }}
-                    >
-                        <Entypo name="plus" color={'white'} size={40}/>
-                    </TouchableOpacity>
-                </View>
+                        <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 20, height: 40, alignItems: 'center', justifyContent: 'center', width: 40}}
+                                          activeOpacity={ 0.9}
+                                          onPress={() => {
+                                              navigation.navigate('HostGameScreen',
+                                                  {
+                                                      uid: currentUser,
+                                                  }
+                                              )
+                                          }}
+                        >
+                            <Entypo name="plus" color={'white'} size={40}/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 <View style={styles.searchSpace}>
