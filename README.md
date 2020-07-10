@@ -19,3 +19,4 @@
 # added support for ios in signupscreen 
 # improved ui /ux for profilescreen and included more support for ios
 # improved ui /ux for Chatscreen and someother screens
+# finished general ui ux of profile screen

@@ -136,7 +136,6 @@ const GameScreen = (props) => {
                 </View>
 
                 {/*==================================SEARCH BAR ==============================================*/}
-
                 <View style={styles.searchSpace}>
                     <View style={styles.searchBar}>
                         <Select

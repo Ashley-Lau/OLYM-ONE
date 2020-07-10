@@ -1,20 +1,17 @@
 import React from 'react';
-import {View, StyleSheet, Image, Dimensions,} from 'react-native';
-import SafeAreaView from 'react-native-safe-area-view';
+import {View, StyleSheet, Image, Dimensions, ImageBackground, SafeAreaView} from 'react-native';
 
 const Background = props => {
-    return (<SafeAreaView style={{flex:1, justifyContent:"flex-start", alignItems:"flex-start"}}>
-            <View style={[styles.container, props.style]}>
-
+    return (<SafeAreaView style = {{flex: 1}}>
+            <ImageBackground style={[styles.container, props.style]} source={require('../assets/whiteBackground.jpg')}>
                 <View style={styles.topView}>
-                    <Image source={require('../assets/Test.png')}
-                           style = {{height: "30%", width: '100%', borderBottomLeftRadius: 40}}
-                           imageStyle={{borderBottomLeftRadius: 40}}
+                    <Image source={require('../assets/OrangeBackground.jpg')}
+                           style = {{flex: 1, borderBottomLeftRadius: 40,}}
+                           imageStyle={{borderBottomLeftRadius: 40,}}
                     />
                 </View>
-
                     {props.children}
-            </View>
+            </ImageBackground>
         </SafeAreaView>
     );
 }
@@ -29,14 +26,21 @@ const styles = StyleSheet.create({
         flex:1,
     },
     topView:{
-        width:winWidth * 1.2,
-        height:winWidth * 1.2,
+        // width:winWidth * 1.2,
+        // height:winWidth * 1.2,
         // backgroundColor:"rgb(239,239,239)",
-        position:"absolute",
-        backgroundColor:"transparent"
         // top:-5 * heightRatio,
         // right: -25 * widthRatio,
-
+        height: 150,
+        // width: '100%',
+        position:"absolute",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 5,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 6.27,
     },
     image: {
         opacity:0.15,
