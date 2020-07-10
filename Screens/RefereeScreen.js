@@ -43,6 +43,7 @@ const RefereeScreen = (props) => {
             .then(snapshot => {
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
+                    else if(doc.data().players.includes(userId)){}
                     else if(doc.data().referee[0] === "Yes") {
                         searched.push({key:doc.id, value:doc.data()})
                     }
@@ -65,6 +66,7 @@ const RefereeScreen = (props) => {
                 let gameList = [];
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
+                    else if(doc.data().players.includes(userId)){}
                     else if(doc.data().referee[0] === "Yes"){
                         gameList.push({key:doc.id, value:doc.data()});
                     }
@@ -82,7 +84,7 @@ const RefereeScreen = (props) => {
     return (<Background style = {styles.container}>
 
             {/*==================================== Title and hosting a game ======================================*/}
-            <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "7.5%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
+            <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
                 <Text style = {styles.text}> Referable Games </Text>
 
             </View>
@@ -166,7 +168,7 @@ const RefereeScreen = (props) => {
                 </FlatList>
             </View>
 
-            <View style={{height:"65%", paddingTop:"4%"}}>
+            <View style={{height:"68%", paddingTop:"5%"}}>
                 <FlatList
                     showsHorizontalScrollIndicator={false}
                     horizontal={true}
@@ -190,6 +192,7 @@ const RefereeScreen = (props) => {
 
 const styles = StyleSheet.create({
     container: {
+        top:-24
         // flex: 1,
         // marginTop:36,
         // justifyContent: 'flex-start',
