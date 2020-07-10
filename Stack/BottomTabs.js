@@ -105,7 +105,7 @@ const BottomTabs = (props) => {
             component={RefereeScreen}
             initialParams={{user: props.extraData}}
             options={{
-                tabBarLabel: 'Referee',
+                tabBarLabel: 'REFEREE',
                 tabBarIcon: ({ color }) => (
                     <MaterialCommunityIcons name= "whistle" color={color} size={26} />
                 ),
