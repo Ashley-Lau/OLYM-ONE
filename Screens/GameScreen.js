@@ -164,7 +164,7 @@ const GameScreen = (props) => {
                 <View style={{height:"15%"}}>
                     <FlatList showsHorizontalScrollIndicator={false}
                               horizontal={true}
-                              contentContainerStyle= {{justifyContent:"space-between"}}
+                              contentContainerStyle= {{justifyContent:"space-between", paddingRight:"45%"}}
                               keyExtractor={(item) => item.toString()}
                               data = {sports}
                               renderItem= {({item}) =>

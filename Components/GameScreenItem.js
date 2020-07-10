@@ -199,10 +199,19 @@ const GameScreenItem = props => {
                             <MaterialCommunityIcons name="calendar-range" size={20}/>
                             <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
                         </View>
-                        <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
-                            <MaterialCommunityIcons name="account-group-outline" size={20}/>
-                            <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability} </Text>
-                        </View>
+                        {props.itemType === "Join"
+                        ?
+                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                <MaterialCommunityIcons name="account-group-outline" size={20}/>
+                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability} </Text>
+                            </View>
+                        :
+                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                <MaterialCommunityIcons name="whistle" size={20}/>
+                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.referee[0]} </Text>
+                            </View>
+                        }
+
 
                     </View>
                 </ImageBackground>
