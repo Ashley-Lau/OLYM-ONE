@@ -55,7 +55,22 @@ const GameScreenItem = props => {
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/BballBG.png");
     let sportColor = "rgba(0,0,0,1)"
-    if(props.gameDetails.sport.toLowerCase() === "basketball"){
+    if(props.gameDetails.sport.toLowerCase() === "basketball" && props.itemType === "Referee"){
+        sportBG = require("../assets/BballRefereeBG.png");
+        sportColor = "rgba(200,98,57,1)";
+    } else if(props.gameDetails.sport.toLowerCase() === "soccer" && props.itemType === "Referee"){
+        sportBG = require("../assets/SoccerRefereeBG.png");
+        sportColor = "rgba(134,119,198,1)";
+    } else if(props.gameDetails.sport.toLowerCase() === "floorball" && props.itemType === "Referee"){
+        sportBG = require("../assets/floorballRefereeBG.png");
+        sportColor = "rgba(58,204,255,1)";
+    } else if(props.gameDetails.sport.toLowerCase() === "tennis" && props.itemType === "Referee"){
+        sportBG = require("../assets/TennisRefereeBG.png");
+        sportColor = "rgba(212,242,102,1)";
+    } else if(props.gameDetails.sport.toLowerCase() === "badminton" && props.itemType === "Referee") {
+        sportBG = require("../assets/BadmintonRefereeBG.png");
+        sportColor = "rgba(211,55,64,1)";
+    } else if(props.gameDetails.sport.toLowerCase() === "basketball"){
         sportBG = require("../assets/BballBG.png");
         sportColor = "rgba(200,98,57,1)";
     } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
@@ -71,7 +86,7 @@ const GameScreenItem = props => {
         sportBG = require("../assets/BadmintonBG.png");
         sportColor = "rgba(211,55,64,1)";
     }
-    let sportIcon = props.gameDetails.sport.toLowerCase();
+
 
 
     //CHAT FUNCTION====================================================================================================
@@ -168,7 +183,7 @@ const GameScreenItem = props => {
                               user = {props.user}
             />
 
-            <TouchableOpacity style={{...styles.games}}
+            <TouchableOpacity style={styles.games}
                               onPress={() => {openGameDetails(true);}}>
                 <ImageBackground source={sportBG}
                                  style={styles.gameBG}
@@ -202,31 +217,35 @@ const GameScreenItem = props => {
 
 const styles = StyleSheet.create({
     gameBG:{
-        height:400,
-        width:350,
+        height:"100%",
+        width:"100%",
+        // flex:1,
         borderRadius:50,
         justifyContent: "flex-start",
         alignItems: "flex-start",
         paddingTop:20,
-        paddingHorizontal:20
+        paddingHorizontal:20,
+        // elevation:1
+
 
     },
     games:{
         flexDirection:"row",
         borderRadius:40,
         width:350,
-        height:400,
+        height:"100%",
+        // flex:1,
         justifyContent:"center",
         alignItems:"center",
-        marginHorizontal:10,
-        elevation:10,
+        // marginHorizontal:10,
+        // elevation:2,
         shadowColor: "#000",
         shadowOffset: {
-            width: 100,
-            height: 100,
+            width: 5,
+            height: 5,
         },
         shadowOpacity: 0,
-        shadowRadius: 6.27,
+        shadowRadius: 2,
 
     },
     scrollBox:{

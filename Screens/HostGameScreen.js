@@ -118,9 +118,9 @@ const HostGameScreen = props => {
                     {(props) => (
 
                         <View>
-                            <Background/>
+                            <Background />
                             <View style={{width: '100%', height: 50, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
-                                <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}>GAME DETAILS</Text>
+                                <Text style={{fontSize:30, color:"white", fontWeight: 'bold'}}> HOST A GAME</Text>
                             </View>
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
