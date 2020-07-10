@@ -105,7 +105,7 @@ const HostGameScreen = props => {
                     notes:'',
                     showDate: false,
                     showTime: false,
-                    referee:["No"]
+                    referee:["No", "1"]
                 }}
                         validationSchema={reviewSchema}
                         onSubmit={(values, actions) => {
@@ -118,9 +118,9 @@ const HostGameScreen = props => {
                     {(props) => (
 
                         <View>
-                            <Background/>
+                            <Background />
                             <View style={{width: '100%', height: 50, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
-                                <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}>GAME DETAILS</Text>
+                                <Text style={{fontSize:30, color:"white", fontWeight: 'bold'}}> HOST A GAME</Text>
                             </View>
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
@@ -371,6 +371,28 @@ const HostGameScreen = props => {
                                 </View>
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
+
+                            {props.values.referee[0] === "Yes"
+                            ?
+                                <View style={styles.selectionItem}>
+                                    <Text style={{fontSize:15, marginLeft:8}}>NO. OF REFEREES :</Text>
+                                    <View style ={{...styles.dropDown}}>
+                                        <TextInput
+                                                   keyboardType={"number-pad"}
+                                                   placeholder={"1"}
+                                                   style={{...styles.dropDownText, fontSize:16}}
+                                                   onChangeText={props.handleChange('referee[1]')}
+                                                   value={props.values.referee[1]}
+                                                   onBlur = {props.handleBlur('referee[1]')}
+                                        />
+                                    </View>
+
+                                </View>
+                            :
+                                <View/>
+                            }
+
+
 
 
                             {/*//BUTTONS at the Bottom------------------------------------------------------------------------*/}

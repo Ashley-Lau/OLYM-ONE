@@ -1,11 +1,13 @@
 import React, {useState, useEffect} from 'react';
-import {View,StyleSheet, FlatList} from 'react-native';
+import {View, StyleSheet, FlatList, Text, TouchableOpacity, Image} from 'react-native';
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
 import {Select, SelectItem} from "@ui-kitten/components";
+import Entypo from "react-native-vector-icons/Entypo";
+import GameScreenItem from "../Components/GameScreenItem";
 
 const RefereeScreen = (props) => {
 
@@ -14,16 +16,34 @@ const RefereeScreen = (props) => {
     const [sportsIndex, setSportsIndex] = useState();
     const [sportValue, setSportValue] = useState();
 
+    // IMAGE FOR RELATIVE SPORT =======================================================================================
+    const sportImage = (sport) => {
+        if(sport === "Soccer"){
+            return require("../assets/soccer_coloured.png");
+        } else if(sport === "BasketBall"){
+            return require("../assets/basketball_coloured.png");
+        } else if(sport === "Floorball"){
+            return require("../assets/floorball_icon.png");
+        } else if(sport === "Badminton"){
+            return require("../assets/badminton_icon.png");
+        } else if(sport === "Tennis"){
+            return require("../assets/tennis_coloured.png");
+        } else {
+            return require("../assets/other_games.png")
+        }
+    }
+
     // SEARCH BAR FUNCTION =============================================================================================
 
     const gamesRef = firebaseDb.firestore().collection("game_details")
-    const searchSport = () => {
+    const searchSport = (sport) => {
         let searched = [];
-        gamesRef.where('sport', '==', sportValue)
+        gamesRef.where('sport', '==', sport)
             .get()
             .then(snapshot => {
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
+                    else if(doc.data().players.includes(userId)){}
                     else if(doc.data().referee[0] === "Yes") {
                         searched.push({key:doc.id, value:doc.data()})
                     }
@@ -46,6 +66,7 @@ const RefereeScreen = (props) => {
                 let gameList = [];
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
+                    else if(doc.data().players.includes(userId)){}
                     else if(doc.data().referee[0] === "Yes"){
                         gameList.push({key:doc.id, value:doc.data()});
                     }
@@ -61,6 +82,15 @@ const RefereeScreen = (props) => {
 
 
     return (<Background style = {styles.container}>
+
+            {/*==================================== Title and hosting a game ======================================*/}
+            <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
+                <Text style = {styles.text}> Referable Games </Text>
+
+            </View>
+
+            {/*================================== SEARCH BAR ==============================================*/}
+
             <View style={styles.searchSpace}>
                 <View style={styles.searchBar}>
                     <Select
@@ -79,25 +109,82 @@ const RefereeScreen = (props) => {
                     </Select>
                     <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
                 </View>
-
             </View>
 
-                {/*<FlatList*/}
-                {/*    contentContainerStyle={{justifyContent: "space-between"}}*/}
-                {/*    keyExtractor={(item) => item.key}*/}
-                {/*    data={refereeList}*/}
-                {/*    renderItem={({item}) => <RefereeItem refereeId ={props.route.params.user} gameId={item.key} game_details={item.value}/>}*/}
-                {/*/>*/}
+
+
+            {/*===============================Sport Selection ===========================================*/}
+
+            <View style={{height:"15%"}}>
+                <FlatList showsHorizontalScrollIndicator={false}
+                          horizontal={true}
+                          contentContainerStyle= {{justifyContent:"space-between"}}
+                          keyExtractor={(item) => item.toString()}
+                          data = {sports}
+                          renderItem= {({item}) =>
+                              item === sportValue
+                                  ?
+                                  <View style={styles.sportItem}>
+                                      <TouchableOpacity activeOpacity={0.6}
+                                                        style={{...styles.sportSelected}}
+                                                        onPress ={ () => {
+                                                            setSportValue(item);
+                                                            searchSport(item);
+
+
+                                                        }}
+                                      >
+                                          <View style={styles.sportImageSelected}>
+                                              <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
+                                          </View>
+
+                                      </TouchableOpacity>
+                                      <Text>{item}</Text>
+                                  </View>
+                                  : <View style={styles.sportItem}>
+                                      <TouchableOpacity activeOpacity={0.6}
+                                                        style={{...styles.sportSelection}}
+                                                        onPress ={ () => {
+                                                            setSportValue(item);
+                                                            searchSport(item);
+
+
+                                                        }}
+                                      >
+                                          <View style={styles.sportImageShadow}>
+                                              <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
+                                          </View>
+
+                                      </TouchableOpacity>
+                                      <Text style={{opacity:0.3}}>{item}</Text>
+                                  </View>
+
+                          }
+
+                >
+
+
+
+                </FlatList>
+            </View>
+
+            <View style={{height:"68%", paddingTop:"5%"}}>
                 <FlatList
-                    contentContainerStyle={{justifyContent: "space-between"}}
-                    keyExtractor={(item) => item.key}
-                    data={refereeList}
-                    renderItem={({item}) => <GameItem user ={props.route.params.user}
-                                                         gameId={item.key}
-                                                         gameDetails={item.value}
-                                                         itemType={"Referee"}
+                    showsHorizontalScrollIndicator={false}
+                    horizontal={true}
+                    contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
+                    keyExtractor={(item) => item.key.toString()}
+                    data = {refereeList}
+                    renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
+                                                              gameId={item.key}
+                                                              user={user}
+                                                              itemType={"Referee"}
                     />}
-                />
+                >
+
+                </FlatList>
+
+            </View>
 
         </Background>
     )
@@ -105,34 +192,100 @@ const RefereeScreen = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        top:-24
+        // flex: 1,
         // marginTop:36,
-        justifyContent: 'flex-start',
-        flexDirection:"column"
+        // justifyContent: 'flex-start',
+        // flexDirection: "column",
     },
     searchBar:{
-        // marginTop: 20,
         flexDirection: "row",
-        justifyContent:"space-between",
+        justifyContent:"space-around",
         alignItems:"center",
-        borderWidth:1,
+        borderBottomWidth:1,
         borderRadius:4,
         width:"98%",
-        marginTop:36,
-        marginBottom:10
+        // marginTop:30,
+        marginBottom:10,
+        borderColor:"black",
+        backgroundColor:"transparent"
     },
     searchInput:{
         width:"85%",
-        height:45,
+        height:"100%",
         fontSize:20,
         left: 10
     },
     searchSpace:{
-        justifyContent:"center",
+        width:"98%",
+        height:"10%",
+        // flex:1,
+        flexDirection:"column",
+        justifyContent:"space-around",
         alignItems:"center",
-        borderBottomWidth:1,
-        borderBottomColor:"rgba(177,177,177,0.78)",
-        marginBottom: 10,
+        marginLeft:"2%"
+        // borderBottomWidth:1,
+        // borderBottomColor:"rgba(177,177,177,0.78)",
+    },
+    sportItem:{
+        // height:"80%",
+        // width:"40%",
+        flex:1,
+        // marginTop:10,
+        marginHorizontal:10,
+        justifyContent:"flex-start",
+        alignItems:"center",
+
+    },
+    sportSelection:{
+        backgroundColor:'rgb(255,255,255)',
+        elevation:10,
+        borderRadius:15,
+        height:70,
+        width:100,
+        justifyContent:"center",
+        alignItems:"center"
+
+    },
+    sportSelected:{
+        backgroundColor:'rgb(239,195,144)',
+        elevation:5,
+        borderRadius:15,
+        height:75,
+        width:110,
+        justifyContent:"center",
+        alignItems:"center"
+    },
+    sportImageShadow:{
+        width: 50,
+        height: 50 ,
+        borderRadius:27.5,
+        backgroundColor:"transparent",
+        alignItems:"center",
+        paddingTop:7.5
+    },
+    sportImageSelected: {
+        width: 50,
+        height: 50,
+        borderRadius: 27.5,
+        // borderWidth: 1,
+        // borderColor: "rgba(46,44,47,0.83)",
+        backgroundColor: "transparent",
+        alignItems: "center",
+        paddingTop: 7
+    },
+    text: {
+        color: 'white',
+        justifyContent: 'center',
+        fontSize: 30,
+        fontWeight: "bold",
+    },
+    hostButton:{
+    borderRadius: 20,
+        height: 30,
+        alignItems: 'center',
+        justifyContent: 'center',
+        flexDirection: 'row'
     }
 
 })
