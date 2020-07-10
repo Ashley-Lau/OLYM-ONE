@@ -273,7 +273,8 @@ const styles = StyleSheet.create({
         // flex:1,
         flexDirection:"column",
         justifyContent:"space-around",
-        alignItems:"center",
+        alignItems:"flex-end",
+        marginLeft:"2%"
         // borderBottomWidth:1,
         // borderBottomColor:"rgba(177,177,177,0.78)",
     },
