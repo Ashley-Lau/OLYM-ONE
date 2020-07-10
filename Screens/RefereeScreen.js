@@ -192,7 +192,7 @@ const RefereeScreen = (props) => {
 
 const styles = StyleSheet.create({
     container: {
-        top:-24
+        // top:-24
         // flex: 1,
         // marginTop:36,
         // justifyContent: 'flex-start',

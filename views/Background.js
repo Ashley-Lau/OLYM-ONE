@@ -10,7 +10,7 @@ const Background = props => {
                            imageStyle={{borderBottomLeftRadius: 40,}}
                     />
                 </View>
-                    {props.children}
+                {props.children}
             </ImageBackground>
         </SafeAreaView>
     );
