@@ -18,7 +18,7 @@ const GameItemBackGround = props => {
     }
     return (
 
-        <ImageBackground source={icon} style={style}>
+        <ImageBackground source={icon} style={[style, props.style]}>
             {props.children}
         </ImageBackground>
 
