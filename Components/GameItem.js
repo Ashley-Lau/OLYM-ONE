@@ -163,22 +163,42 @@ const GameItem = props => {
 
             <TouchableOpacity style={{...styles.games}}
                               onPress={() => {openGameDetails(true);}}>
-                <GameItemBackGround iconName={sportIcon}>
-                    <Text style={{fontWeight:"bold", fontSize:25, color: "black", marginLeft:10}}>{props.gameDetails.sport} </Text>
-                </GameItemBackGround>
 
-                <View style={{flexDirection:"column"}}>
+                <View style={{flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start"}}>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <Text style={{fontWeight:"bold", fontSize:18, color: "black"}}>{props.gameDetails.sport}</Text>
+                    </View>
+
                     <View style={{flexDirection:"row", alignItems:"center"}}>
                         <MaterialCommunityIcons name="map-marker" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.location}</Text>
                     </View>
-                    <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
                         <MaterialCommunityIcons name="calendar-range" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
+                    </View>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="account-group" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability}</Text>
                     </View>
                     {/*<Text style={{fontSize:18, color:"black"}}>Date: {gameDate} </Text>*/}
                     {/*<Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>*/}
                 </View>
+
+                <GameItemBackGround iconName={sportIcon} style={{height:90, flexDirection:"row", justifyContent: "flex-end", alignItems:"flex-end"}}>
+
+                    {props.gameDetails.hostId === props.user.id
+                        ?
+                        <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                            <MaterialCommunityIcons name="crown" size={22} style={{color:'black'}}/>
+                            <Text>Hosting</Text>
+                        </View>
+
+                        :
+                        <View></View>
+                    }
+
+                </GameItemBackGround>
             </TouchableOpacity>
         </View>
 
@@ -193,7 +213,7 @@ const styles = StyleSheet.create({
         borderColor:"black",
         borderRadius:10,
         width:"100%",
-        height:80,
+        height:100,
         padding:5,
         justifyContent:"center",
         alignItems:"center",

@@ -133,23 +133,19 @@ const RefereeApplicationItem = props => {
                     {/*</ImageBackground>*/}
                 </View>
 
-                <View style = {{...styles.elevatedComponent, height: 115}}>
+                <View style = {{...styles.elevatedComponent, height: 135}}>
                     <View style={styles.requestTitle}>
                         <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
                     </View>
 
-                    <View style={{...styles.games, borderBottomWidth:0}}
+                    <View style={{...styles.games}}
                           onPress={() => {
                               setOpen(true);
                           }}>
 
-                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()}>
-                            <Text style={{fontWeight:"bold", fontSize:25, color: "black", marginLeft:10}}>{props.refDetails.sport} </Text>
-                        </GameItemBackGround>
-
-
                         <View style={{flexDirection:"column"}}>
-                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="calendar-range" size={20}/>
                                 <Text style={{fontSize:20, color:"black"}}>  {gameDate} </Text>
                             </View>
@@ -159,6 +155,9 @@ const RefereeApplicationItem = props => {
                             </View>
 
                         </View>
+
+                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+
                     </View>
 
                 </View>
@@ -206,13 +205,10 @@ const RefereeApplicationItem = props => {
                                   setOpen(true);
                               }}>
 
-                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()}>
-                    <Text style={{fontWeight:"bold", fontSize:25, color: "black", marginLeft:10}}>{props.refDetails.sport} </Text>
-                </GameItemBackGround>
 
-
-                <View style={{flexDirection:"column"}}>
-                    <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                <View style={{flexDirection:"column", justifyContent:"flex-start"}}>
+                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
                         <MaterialCommunityIcons name="calendar-range" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
                     </View>
@@ -222,6 +218,10 @@ const RefereeApplicationItem = props => {
                     </View>
 
                 </View>
+
+                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+
+
             </TouchableOpacity>
         </View>
 
@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
         borderBottomWidth:0.7,
         borderColor:"grey",
         width:"100%",
-        height:80,
+        height:100,
         padding:5,
         justifyContent:"space-between",
         alignItems:"center",
