@@ -21,23 +21,35 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 
 
-const RefereeApplicationItem = props => {
+const PlayerApplicationItem = props => {
     //ACCEPT AND DECLINE FUNCTION ========================================================================================
-    const applRef = firebaseDb.firestore().collection("application_details").doc(props.appId)
-    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.refDetails.gameId)
+    const applRef = firebaseDb.firestore().collection("player_application_details").doc(props.appId)
+    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.playerDetails.gameId)
 
     const deleteReq = () => {
         applRef.delete().then(()=>{})
     }
 
     const acceptReq = () => {
-        gameRef.update({referee: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
+        const slots = parseInt(props.playerDetails.availability) - 1
+        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.playerDetails.playerId)})
             .then(()=>{deleteReq()});
     }
 
+    const acceptFunction = () => {
+        if(props.playerDetails.availability <= 0){
+            return noMoreSlot();
+        } else {
+            return confirmAccept();
+        }
+    }
+
+
+    //ALERTS FOR CONFIRMATION AND TO INFORM USER IF THERE ARE NO SLOTS LEFT ============================================
+
     const confirmDecline = () => {
         Alert.alert("Confirmation",
-            "Are you sure you want to decline this request?",
+            "Are you sure you want to decline this player's request?",
             [
                 {
                     text:'Cancel',
@@ -56,7 +68,7 @@ const RefereeApplicationItem = props => {
 
     const confirmAccept = () => {
         Alert.alert("Confirmation",
-            "Do you want to accept this request?",
+            "Do you want to accept this player's request?",
             [
                 {
                     text:'Cancel',
@@ -71,38 +83,53 @@ const RefereeApplicationItem = props => {
                     },
                 }
             ]
-            )
+        )
+    }
+
+    const noMoreSlot = () => {
+        Alert.alert("Warning!",
+            "There are no longer any availability left in this game! \n You cannot accept this player into the game! \n Press Confirm to delete this request!",
+            [
+                {
+                    text:'Cancel',
+                    onPress:() => {},
+                    style:'cancel'
+                },
+                {
+                    text:'Confirm',
+                    onPress:() => {
+                        deleteReq();
+                        setOpen(false);
+                    },
+                }
+            ]
+        )
+
     }
 
 
 
     // PROFILE CARD BACKGROUND ===========================================================================================
-    let profileBack = require("../assets/tennis_coloured.png");
-    let refBack = require("../assets/BballRefereeApp.png");
-    if(props.refDetails.sport.toLowerCase() === "tennis"){
-        profileBack = require("../assets/tennis_coloured.png");
-        refBack = require("../assets/TennisRefereeApp.png");
-    } else if(props.refDetails.sport.toLowerCase() === "floorball"){
-        profileBack = require("../assets/floorball_coloured.png");
-        refBack = require("../assets/floorballRefereeApp.png");
-    } else if(props.refDetails.sport.toLowerCase() === "basketball"){
-        profileBack = require("../assets/basketball_coloured.png");
-        refBack = require("../assets/BballRefereeApp.png");
-    } else if(props.refDetails.sport.toLowerCase() === "soccer"){
-        profileBack = require("../assets/soccer_coloured.png");
-        refBack = require("../assets/SoccerRefereeApp.png");
-    } else if(props.refDetails.sport.toLowerCase() === "badminton"){
-        profileBack = require("../assets/badminton_coloured.png");
-        refBack = require("../assets/BadmintonRefereeApp.png");
+    let refBack = require("../assets/BballBG.png");
+    if(props.playerDetails.sport.toLowerCase() === "tennis"){
+        refBack = require("../assets/TennisBG.png");
+    } else if(props.playerDetails.sport.toLowerCase() === "floorball"){
+        refBack = require("../assets/floorballBG.png");
+    } else if(props.playerDetails.sport.toLowerCase() === "basketball"){
+        refBack = require("../assets/BballBG.png");
+    } else if(props.playerDetails.sport.toLowerCase() === "soccer"){
+        refBack = require("../assets/SoccerBG.png");
+    } else if(props.playerDetails.sport.toLowerCase() === "badminton"){
+        refBack = require("../assets/BadmintonBG.png");
     }
 
 
     //DATE AND TIME STRING ================================================================================================
-    let gameDate = props.refDetails.date
-    let gameTime = props.refDetails.date
-    if(props.refDetails.date){
-        gameDate = props.refDetails.date.toDate().toString().slice(4,15);
-        gameTime = props.refDetails.date.toDate().toString().slice(16,21);
+    let gameDate = props.playerDetails.date
+    let gameTime = props.playerDetails.date
+    if(props.playerDetails.date){
+        gameDate = props.playerDetails.date.toDate().toString().slice(4,15);
+        gameTime = props.playerDetails.date.toDate().toString().slice(16,21);
     }
 
     //MODAL STATE =====================================================================================================================
@@ -110,32 +137,32 @@ const RefereeApplicationItem = props => {
 
     const refItem = <Modal visible={openDetails}>
         <ImageBackground source={refBack} style ={{height:"100%", width:"100%"}}>
-        {/*<Background>*/}
+            {/*<Background>*/}
             <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
                 <View style = {{...styles.elevatedComponent, height: 225}}>
                     {/*<ImageBackground source={profileBack} style ={{width:"100%",height:"100%"}}>*/}
-                        <View style = {{marginTop:10}}>
-                            <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-                                <View style = {styles.photoFrame}>
-                                    <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
-                                        uri: props.refDetails.refereeUri
-                                    }}/>
-                                </View>
+                    <View style = {{marginTop:10}}>
+                        <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+                            <View style = {styles.photoFrame}>
+                                <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                    uri: props.playerDetails.playerUri
+                                }}/>
+                            </View>
 
-                                <View style = {{paddingLeft: 30, marginTop: 10}}>
-                                    <Text style = {{fontSize: 20}}> Name: {props.refDetails.refereeName}</Text>
-                                    <Text style = {{fontSize: 20}}> Username: {props.refDetails.refereeUserName} </Text>
-                                    <Text style = {{fontSize: 20}}> Email: {props.refDetails.refereeEmail}</Text>
+                            <View style = {{paddingLeft: 30, marginTop: 10}}>
+                                <Text style = {{fontSize: 20}}> Name: {props.playerDetails.playerName}</Text>
+                                <Text style = {{fontSize: 20}}> Username: {props.playerDetails.playerUserName} </Text>
+                                <Text style = {{fontSize: 20}}> Email: {props.playerDetails.playerEmail}</Text>
 
-                                </View>
                             </View>
                         </View>
+                    </View>
                     {/*</ImageBackground>*/}
                 </View>
 
                 <View style = {{...styles.elevatedComponent, height: 135}}>
                     <View style={styles.requestTitle}>
-                        <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
+                        <Text style={{fontSize:25}}>REQUESTS TO JOIN</Text>
                     </View>
 
                     <View style={{...styles.games}}
@@ -144,7 +171,7 @@ const RefereeApplicationItem = props => {
                           }}>
 
                         <View style={{flexDirection:"column"}}>
-                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.playerDetails.sport} </Text>
                             <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="calendar-range" size={20}/>
                                 <Text style={{fontSize:20, color:"black"}}>  {gameDate} </Text>
@@ -156,7 +183,7 @@ const RefereeApplicationItem = props => {
 
                         </View>
 
-                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+                        <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:90}}/>
 
                     </View>
 
@@ -175,7 +202,7 @@ const RefereeApplicationItem = props => {
                     <GradientButton style={{width: 120, height:37,}}
                                     colors = {['#1bb479','#026c45']}
                                     textStyle = {{fontSize: 15}}
-                                    onPress = {confirmAccept}
+                                    onPress = {acceptFunction}
                     >
                         ACCEPT
                     </GradientButton>
@@ -191,8 +218,8 @@ const RefereeApplicationItem = props => {
                     </GradientButton>
                 </View>
             </View>
-        {/*</Background>*/}
-    </ImageBackground>
+            {/*</Background>*/}
+        </ImageBackground>
     </Modal>
 
 
@@ -200,14 +227,14 @@ const RefereeApplicationItem = props => {
     return (
         <View>
             {refItem}
-            <TouchableOpacity style={{...styles.games}}
+            <TouchableOpacity style={styles.games}
                               onPress={() => {
                                   setOpen(true);
                               }}>
 
 
                 <View style={{flexDirection:"column", justifyContent:"flex-start"}}>
-                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.playerDetails.sport} </Text>
                     <View style={{flexDirection:"row", alignItems:"center"}}>
                         <MaterialCommunityIcons name="calendar-range" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
@@ -219,7 +246,7 @@ const RefereeApplicationItem = props => {
 
                 </View>
 
-                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+                <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:90}}/>
 
 
             </TouchableOpacity>
@@ -277,4 +304,4 @@ const styles = StyleSheet.create({
     }
 })
 
-export default RefereeApplicationItem;
+export default PlayerApplicationItem;
