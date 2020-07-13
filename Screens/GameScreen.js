@@ -1,25 +1,32 @@
 import React, {useEffect, useState} from 'react';
-
-import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView} from 'react-native';
+import {Animated, View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
 import {Select, SelectItem,} from "@ui-kitten/components";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo'
+import Entypo from 'react-native-vector-icons/Entypo';
+
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
-import GameScreenItem from "../Components/GameScreenItem";
+import FullGameItem from "../Components/FullGameItem";
+
 
 import firebaseDb from "../firebaseDb";
 
-
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
 const GameScreen = (props) => {
     const navigation = useNavigation()
     const user = props.route.params.user
+
+    //ANIMATED COMPONENTS =========================================================================================
+    const x = new Animated.Value(0);
+    const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
+        {useNativeDriver:true,
+        });
 
     // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
@@ -217,20 +224,29 @@ const GameScreen = (props) => {
                 </View>
 
                 <View style={{height:"68%", paddingVertical:"4%"}}>
-                    <FlatList
+                    <AnimatedFlatList
+                        scrollEventThrottle={16}
+                        {...{onScroll}}
                         showsHorizontalScrollIndicator={false}
+                        //KIV need to do some Apploading for it to work
+                        // initialScrollIndex={Math.floor(game.length/2)}
                         horizontal={true}
+
                         contentContainerStyle= {{ paddingHorizontal:"6%", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
-                        renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
-                                                                  gameId={item.key}
-                                                                  user={user}
-                                                                  itemType={"Join"}
+                        renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
+                                                               gameId={item.key}
+                                                               user={user}
+                                                               itemType={"Join"}
+                                                               translateX = {x}
+                                                               index = {index}
+
                         />}
                     >
 
-                    </FlatList>
+                    </AnimatedFlatList>
+
 
                 </View>
 

@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TouchableOpacity, StyleSheet, View, Alert,ImageBackground, Image} from 'react-native';
+import {Text, TouchableOpacity, StyleSheet, View, Alert,ImageBackground, Image, Animated, Dimensions} from 'react-native';
 import * as firebase from 'firebase';
 
 import { useNavigation } from '@react-navigation/native';
@@ -11,8 +11,10 @@ import GameItemBackGround from "../views/GameItemBackGround";
 import GameDetailsModal from "./GameDetailsModal";
 import {keywordsMaker} from '../Components/SearchBarFunctions'
 
-const GameScreenItem = props => {
+const FullGameItem = props => {
     const navigation = useNavigation()
+
+
 
     //DATE AND TIME STRING ================================================================================================
     let gameDate = props.gameDetails.date
@@ -166,6 +168,42 @@ const GameScreenItem = props => {
             .catch(error => console.log(error))
     }
 
+    //ANIMATION PROPERTIES===========================================================================================
+    const x = props.translateX;
+    const index = props.index ;
+    const width = Dimensions.get('window').width;
+
+
+    const position = Animated.subtract(index * 350, x);
+    const isDisappearing =  -350;
+    const isLeft = 0;
+    const isRight = width - 350;
+    const isAppearing = width;
+
+    const translateX =Animated.add(Animated.add(x, x.interpolate({
+        inputRange: [0, 0.00001 + index * 350],
+        outputRange: [0, -index * 350],
+        // extrapolate:"clamp"
+    })),
+        position.interpolate({
+            inputRange:[isRight, isAppearing],
+            outputRange:[0, -350/4.5],
+
+        })
+    )
+
+    const scale = position.interpolate({
+        inputRange: [isDisappearing, isLeft, isRight, isAppearing],
+        outputRange: [0.5,1, 1, 0.5],
+        // extrapolate:"clamp"
+
+    });
+    const opacity = position.interpolate({
+        inputRange: [isDisappearing, isLeft, isRight, isAppearing],
+        outputRange: [0.5,1, 1 ,0.5],
+    })
+
+
 
     return (
         <View>
@@ -183,41 +221,48 @@ const GameScreenItem = props => {
                               user = {props.user}
             />
 
-            <TouchableOpacity style={styles.games}
-                              onPress={() => {openGameDetails(true);}}>
-                <ImageBackground source={sportBG}
-                                 style={styles.gameBG}
-                                 imageStyle={{borderRadius:40}}
-                >
-                    <View style={{flexDirection:"column"}}>
-                        <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport}</Text>
-                        <View style={{flexDirection:"row", alignItems:"center"}}>
-                            <MaterialCommunityIcons name="map-marker" size={20}/>
-                            <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.location}</Text>
-                        </View>
-                        <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
-                            <MaterialCommunityIcons name="calendar-range" size={20}/>
-                            <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
-                        </View>
-                        {props.itemType === "Join"
-                        ?
-                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
-                                <MaterialCommunityIcons name="account-group-outline" size={20}/>
-                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability} </Text>
+            <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]}>
+                <TouchableOpacity style={styles.games}
+                                  onPress={() => {openGameDetails(true);}}>
+                    <ImageBackground source={sportBG}
+                                     style={styles.gameBG}
+                                     imageStyle={{borderRadius:40}}
+                    >
+                        <View style={{flexDirection:"column"}}>
+                            <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport}</Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <MaterialCommunityIcons name="crown" size={20}/>
+                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.host}</Text>
                             </View>
-                        :
-                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
-                                <MaterialCommunityIcons name="whistle" size={20}/>
-                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.referee[0]} </Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <MaterialCommunityIcons name="map-marker" size={20}/>
+                                <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.location}</Text>
                             </View>
-                        }
+                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                <MaterialCommunityIcons name="calendar-range" size={20}/>
+                                <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
+                            </View>
+                            {props.itemType === "Join"
+                                ?
+                                <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                    <MaterialCommunityIcons name="account-group-outline" size={20}/>
+                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability} </Text>
+                                </View>
+                                :
+                                <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                    <MaterialCommunityIcons name="whistle" size={20}/>
+                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.referee[0]} </Text>
+                                </View>
+                            }
 
 
-                    </View>
-                </ImageBackground>
+                        </View>
+                    </ImageBackground>
+
+                </TouchableOpacity>
+            </Animated.View>
 
 
-            </TouchableOpacity>
         </View>
 
 
@@ -255,6 +300,7 @@ const styles = StyleSheet.create({
         },
         shadowOpacity: 0,
         shadowRadius: 2,
+        backgroundColor:"transparent"
 
     },
     scrollBox:{
@@ -275,4 +321,4 @@ const styles = StyleSheet.create({
 })
 
 
-export default GameScreenItem;
+export default FullGameItem;
