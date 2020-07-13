@@ -59,10 +59,10 @@ export default function App() {
           logoHeight={300}
           logoWidht={300}
       >
+        <SafeAreaProvider>
         <View style={{flex: 1}}>
           <IconRegistry icons={EvaIconsPack} />
           <ApplicationProvider {...eva} theme={eva.light}>
-            <SafeAreaProvider>
               <NavigationContainer>
                 <Stack.Navigator headerMode={false}>
                   {data.user ? (
@@ -82,9 +82,9 @@ export default function App() {
                   }
                 </Stack.Navigator>
             </NavigationContainer>
-            </SafeAreaProvider>
           </ApplicationProvider>
         </View>
+        </SafeAreaProvider>
       </AnimatedSplash>
   )
 }
