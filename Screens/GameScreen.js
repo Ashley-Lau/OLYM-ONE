@@ -117,23 +117,23 @@ const GameScreen = (props) => {
         <Background style = {styles.container}>
 
                 {/*==================================== Title and hosting a game ======================================*/}
-                <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
+                <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
                     <Text style = {styles.text}> Games </Text>
-                    <TouchableOpacity activeOpacity={ 0.9}
-                                      onPress={() => {
-                                          navigation.navigate('HostGameScreen',
-                                              {
-                                                  uid: currentUser,
-                                              }
-                                          )
-                                      }}
-                                      style = {styles.hostButton}
-                    >
-                        <Text style = {{...styles.text,fontSize:13}}>  Host a Game </Text>
-                        <View style = {{backgroundColor: 'rgba(255,255,255,0.30)', ...styles.hostButton}}>
-                            <Entypo name="plus" color={'white'} size={30}/>
-                        </View>
-                    </TouchableOpacity>
+                    <View style = {{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
+                        <Text style = {{...styles.text, fontSize: 25}}> Host </Text>
+                        <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 30, alignItems: 'center', justifyContent: 'center',}}
+                                          activeOpacity={ 0.9}
+                                          onPress={() => {
+                                              navigation.navigate('HostGameScreen',
+                                                  {
+                                                      uid: currentUser,
+                                                  }
+                                              )
+                                          }}
+                        >
+                            <Entypo name="plus" color={'white'} size={35}/>
+                        </TouchableOpacity>
+                    </View>
                 </View>
 
                 {/*==================================SEARCH BAR ==============================================*/}
@@ -327,17 +327,9 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        justifyContent: 'center',
         fontSize: 30,
         fontWeight: "bold",
     },
-    hostButton:{
-        borderRadius: 20,
-        height: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row'
-    }
 })
 
 export default GameScreen;

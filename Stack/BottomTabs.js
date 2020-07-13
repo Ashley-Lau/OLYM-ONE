@@ -3,19 +3,15 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from "@react-navigation/stack";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import AntDesign from 'react-native-vector-icons/AntDesign';
 import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
-import ChatScreen from "../../OLYM-ONE/Screens/ChatScreen";
 import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
-import ProfileScreen from "../../OLYM-ONE/Screens/ProfileScreen";
+import HomeScreen from "../Screens/HomeScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
 import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
 import ChatDetailScreen from "../Screens/ChatDetailScreen";
 import HostGameScreen from "../Screens/HostGameScreen";
-import firebaseDb from "../firebaseDb";
-
 
 
 const Tab = createBottomTabNavigator();
@@ -23,7 +19,7 @@ const Stack = createStackNavigator();
 
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
-                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen} initialParams={{user: props.extraData}}/>
+                <Stack.Screen name = "ProfileScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
             </Stack.Navigator>
 }
@@ -88,15 +84,6 @@ const BottomTabs = (props) => {
                     <Ionicons name="ios-football" color={color} size={26} />
                 ),
             }}
-            // uncomment to play
-            // listeners={ ({navigation}) => ({
-            //     tabPress: event => {
-            //         // console.log(event)
-            //         // console.log(navigation)
-            //         event.preventDefault()
-            //         navigation.navigate('ProfileScreen')
-            //     }
-            // })}
         >
             {prop => <GameStack {...prop}  extraData = {props.extraData}/>}
         </Tab.Screen>
