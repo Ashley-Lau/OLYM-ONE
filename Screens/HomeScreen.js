@@ -31,7 +31,7 @@ import GameItem from "../Components/GameItem";
 import {keywordsMaker} from "../Components/SearchBarFunctions";
 
 
-const ProfileScreen = props => {
+const HomeScreen = props => {
     const navigation = useNavigation();
 
     //for logout and change profile picture buttons
@@ -56,16 +56,11 @@ const ProfileScreen = props => {
     //GETTING REFEREE APPLICATIONS AND ITS DETAILS ========================================================================================
     const [appList, setAppList] = useState([]);
     const appRef = firebaseDb.firestore().collection('application_details')
-    const [refereeAppVisible, setRefereeAppVisible] = useState(false)
     const refereeRef = useRef(null)
-    const refereeRefInner = useRef()
 
     const renderRefereeButton = (
         <TouchableOpacity style = {style.middleButton} activeOpacity={0.8}
-                          onPress = {() => {setRefereeAppVisible(true);
-                              refereeRef.current.open()
-                              // refereeRefInner.current.snapTo(0)
-                          }}>
+                          onPress = {() => refereeRef.current.open()}>
             <View style = {{alignItems: 'flex-end', }}>
                 {appList.length === 0 ?
                         <Text style = {{color: 'transparent', fontWeight: 'bold'}}>
@@ -84,7 +79,12 @@ const ProfileScreen = props => {
         </TouchableOpacity>
     )
 
-
+    const noApplications = (
+        <View style = {{alignItems: 'center', top: Dimensions.get('window').height * 0.15}}>
+            <FontAwesome name = 'linux' size={100} color={'#5c5c5c'}/>
+            <Text style = {style.noApplication}>No Applications!</Text>
+        </View>
+    )
 
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([]);
@@ -270,8 +270,10 @@ const ProfileScreen = props => {
 
     const gameTab = (
         upcomingGameList.length <= 0
-            ?<View>
-                <Text style = {style.noApplication}>No Upcoming Games!</Text>
+            ?<View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 10}}>
+                <FontAwesome name = 'soccer-ball-o' size={100} color={'#5c5c5c'}/>
+                <Text style = {{...style.noApplication, fontSize: 25, color: 'black'}}>No Upcoming Games</Text>
+                <Text style = {{...style.noApplication, fontSize: 15}}>Search for games to play in games tab!</Text>
             </View>
 
             :
@@ -292,10 +294,11 @@ const ProfileScreen = props => {
 
     const refereeTab = (
         upcomingRefList.length <= 0
-                ?<View>
-                    <Text style = {style.noApplication}>No Upcoming Refereeing!</Text>
+                ?<View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 10}}>
+                    <FontAwesome name = 'optin-monster' size={100} color={'#5c5c5c'}/>
+                    <Text style = {{...style.noApplication, fontSize: 25, color: 'black'}}>No Games to Referee</Text>
+                    <Text style = {{...style.noApplication, fontSize: 15}}>Search for games to referee in referee tab!</Text>
                 </View>
-
                 :
                 <ScrollView nestedScrollEnabled={true}>
                     {upcomingRefList.map(upcoming =>
@@ -400,44 +403,23 @@ const ProfileScreen = props => {
                             {renderRefereeButton}
                             <RBSheet
                                 ref={refereeRef}
-                                height={400}
-                                minClosingHeight = {100}
+                                height={Dimensions.get("window").height * 0.7}
                                 closeOnDragDown={true}
                                 animationType = {'fade'}
                                 dragFromTopOnly = {true}
                                 customStyles={{
                                     container: {
-                                        justifyContent: "center",
                                         alignItems: "center",
                                         borderTopRightRadius: 30,
                                         borderTopLeftRadius: 30,
                                     },
-                                    // draggableIcon: {
-                                    //     backgroundColor: "#000"
-                                    // }
+                                    draggableIcon: {
+                                        width: 60,
+                                    }
                                 }}
                             >
-                                {/*<Text> donkey </Text>*/}
-                                {/*<BottomSheet*/}
-                                {/*    ref={refereeRefInner}*/}
-                                {/*    overdragResistanceFactor={8}*/}
-                                {/*    enabledInnerScrolling={false}*/}
-                                {/*    snapPoints={[400, 0]}*/}
-                                {/*    renderContent={() => (*/}
-                                {/*        <View>*/}
-                                {/*            <Text>*/}
-                                {/*                donkey*/}
-                                {/*            </Text>*/}
-                                {/*        </View>)}*/}
-                                {/*    // renderHeader={this.renderHeader}*/}
-                                {/*    initialSnap={1}*/}
-                                {/*    // callbackNode={this.sheetOpenValue}*/}
-                                {/*/>*/}
                                     {appList.length <= 0
-                                                ?<View>
-                                                    <Text style = {style.noApplication}>No Applications!</Text>
-                                                </View>
-
+                                                ? noApplications
                                                 :
                                                 <ScrollView nestedScrollEnabled={true}>
                                                     {appList.map(appl =>
@@ -454,40 +436,7 @@ const ProfileScreen = props => {
                                                 </ScrollView>
                                             }
                             </RBSheet>
-                            {/*<Modal*/}
-                            {/*    visible={refereeAppVisible}*/}
-                            {/*    backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',position: 'absolute',*/}
-                            {/*        bottom:0}}*/}
-                            {/*    onBackdropPress={() => setRefereeAppVisible(false)}*/}
-                            {/*    style = {{*/}
-                            {/*        height: Dimensions.get('window').height * 0.6,*/}
-                            {/*        width: Dimensions.get('window').width * 0.8,*/}
-                            {/*        backgroundColor: 'white',*/}
-                            {/*        alignSelf: 'stretch',*/}
-                            {/*        borderRadius: 10*/}
-                            {/*        }}*/}
-                            {/*>*/}
-                            {/*    {appList.length <= 0*/}
-                            {/*                ?<View>*/}
-                            {/*                    <Text style = {style.noApplication}>No Applications!</Text>*/}
-                            {/*                </View>*/}
 
-                            {/*                :*/}
-                            {/*                <ScrollView nestedScrollEnabled={true}>*/}
-                            {/*                    {appList.map(appl =>*/}
-                            {/*                        (*/}
-                            {/*                            <RefereeApplicationItem*/}
-                            {/*                                              key={appl.key}*/}
-                            {/*                                              refDetails={appl.value}*/}
-                            {/*                                              appId={appl.key}*/}
-                            {/*                                              user={user.id}*/}
-                            {/*                            />*/}
-
-                            {/*                        )*/}
-                            {/*                    )}*/}
-                            {/*                </ScrollView>*/}
-                            {/*            }*/}
-                            {/*</Modal>*/}
                         </View>
                     </View>
                         {/*========================================Bottom Section==================================================*/}
@@ -587,9 +536,11 @@ const style = StyleSheet.create({
         alignItems: 'center',
     },
     noApplication: {
-        fontSize: 35,
+        fontSize: 33,
         alignSelf: 'center',
-        color: '#5a5959'
+        color: '#5a5959',
+        top: 20,
+        textAlign:'center'
     },
     middleButton: {
         height: '100%',
@@ -620,4 +571,4 @@ const style = StyleSheet.create({
         shadowRadius: 2.27, }
 })
 
-export default ProfileScreen;
+export default HomeScreen;

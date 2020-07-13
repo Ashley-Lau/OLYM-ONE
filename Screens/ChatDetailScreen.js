@@ -121,7 +121,7 @@ const ChatDetailScreen = (props) => {
                         <Text style = {style.text}> Chats</Text>
                     </View>
                     <View style={{...style.searchBar, }}>
-                        <View style = {{left: 10, width: '5%'}}>
+                        <View style = {{ width: '9%', alignItems: 'center'}}>
                         <SearchButtons style={{flex: 1, elevation: 5}}
                                        searchMe={() => {
                                            Keyboard.dismiss()
@@ -217,7 +217,6 @@ const style = StyleSheet.create({
         width:"95%",
         height:45,
         fontSize:17,
-        marginLeft: 13,
     },
     image: {
         width: 60,
