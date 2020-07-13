@@ -164,7 +164,7 @@ const GameScreen = (props) => {
                 <View style={{height:"15%"}}>
                     <FlatList showsHorizontalScrollIndicator={false}
                               horizontal={true}
-                              contentContainerStyle= {{justifyContent:"space-between", paddingRight:"45%"}}
+                              contentContainerStyle= {{justifyContent:"space-between"}}
                               keyExtractor={(item) => item.toString()}
                               data = {sports}
                               renderItem= {({item}) =>
@@ -214,11 +214,11 @@ const GameScreen = (props) => {
                     </FlatList>
                 </View>
 
-                <View style={{height:"68%", paddingTop:"5%"}}>
+                <View style={{height:"68%", paddingVertical:"4%"}}>
                     <FlatList
                         showsHorizontalScrollIndicator={false}
                         horizontal={true}
-                        contentContainerStyle= {{paddingRight:"35%", paddingHorizontal:"6%", alignItems:"center"}}
+                        contentContainerStyle= {{ paddingHorizontal:"6%", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
                         renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}

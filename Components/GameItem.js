@@ -8,6 +8,7 @@ import ViewPlayerItem from "../Components/ViewPlayerItem"
 import GameItemBackGround from "../views/GameItemBackGround";
 import GameDetailsModal from "./GameDetailsModal";
 import {keywordsMaker} from '../Components/SearchBarFunctions'
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 const GameItem = props => {
     const navigation = useNavigation()
@@ -53,15 +54,15 @@ const GameItem = props => {
     //SPORT ICON ================================================================================================================================
     let gameColor = "rgba(255,255,255,0.6)";
     if(props.gameDetails.sport.toLowerCase() === "basketball"){
-        gameColor = "rgba(245,117,68,0.56)";
+        gameColor = "rgba(95,191,236,1)";
     } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
-        gameColor = "rgba(130,65,236,0.62)";
+        gameColor = "rgba(229,227,77,1)";
     } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
-        gameColor = "rgba(82,215,238,0.51)";
+        gameColor = "rgba(245,136,77,1)";
     } else if(props.gameDetails.sport.toLowerCase() === "tennis"){
-        gameColor = "rgba(203,239,61,0.55)";
+        gameColor = "rgba(203,239,61,1)";
     } else if(props.gameDetails.sport.toLowerCase() === "badminton") {
-        gameColor = "rgba(229,197,102,0.62)";
+        gameColor = "rgba(229,197,102,1)";
     }
     let sportIcon = props.gameDetails.sport.toLowerCase();
 
@@ -160,16 +161,44 @@ const GameItem = props => {
                               user = {props.user}
             />
 
-            <TouchableOpacity style={{...styles.games, backgroundColor:gameColor}}
+            <TouchableOpacity style={{...styles.games}}
                               onPress={() => {openGameDetails(true);}}>
-                <GameItemBackGround iconName={sportIcon}>
-                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.gameDetails.sport} </Text>
-                </GameItemBackGround>
 
-                <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"black"}}>Date: {gameDate} </Text>
-                    <Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>
+                <View style={{flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start"}}>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <Text style={{fontWeight:"bold", fontSize:18, color: "black"}}>{props.gameDetails.sport}</Text>
+                    </View>
+
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="map-marker" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.location}</Text>
+                    </View>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="calendar-range" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
+                    </View>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="account-group" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability}</Text>
+                    </View>
+                    {/*<Text style={{fontSize:18, color:"black"}}>Date: {gameDate} </Text>*/}
+                    {/*<Text style={{fontSize:18, color:"black"}}>Slots Left: {props.gameDetails.availability} </Text>*/}
                 </View>
+
+                <GameItemBackGround iconName={sportIcon} style={{height:90, flexDirection:"row", justifyContent: "flex-end", alignItems:"flex-end"}}>
+
+                    {props.gameDetails.hostId === props.user.id
+                        ?
+                        <View style={{flexDirection:"row", justifyContent:"center", alignItems:"center"}}>
+                            <MaterialCommunityIcons name="crown" size={22} style={{color:'black'}}/>
+                            <Text>Hosting</Text>
+                        </View>
+
+                        :
+                        <View></View>
+                    }
+
+                </GameItemBackGround>
             </TouchableOpacity>
         </View>
 
@@ -180,23 +209,15 @@ const GameItem = props => {
 const styles = StyleSheet.create({
     games:{
         flexDirection:"row",
-        borderWidth:0.7,
+        borderBottomWidth:0.7,
         borderColor:"black",
         borderRadius:10,
         width:"100%",
-        height:80,
+        height:100,
         padding:5,
         justifyContent:"center",
         alignItems:"center",
-        marginTop:10,
-        elevation:3,
-        shadowColor: "#000",
-        shadowOffset: {
-            width: 100,
-            height: 100,
-        },
-        shadowOpacity: 0,
-        shadowRadius: 6.27,
+
 
     },
     scrollBox:{

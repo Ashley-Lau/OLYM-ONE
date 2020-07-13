@@ -278,12 +278,7 @@ const ProfileScreen = props => {
             <ScrollView nestedScrollEnabled={true}>
                 {upcomingGameList.map(game =>
                     (
-                        // <UpcomingGameItem key={game.key}
-                        //                   gameDetails={game.value}
-                        //                   gameId={game.key}
-                        //                   user={user.id}
-                        //                   itemType={"Quit"}
-                        // />
+
                         <GameItem key={game.key}
                                   gameDetails={game.value}
                                   gameId={game.key}
@@ -305,12 +300,7 @@ const ProfileScreen = props => {
                 <ScrollView nestedScrollEnabled={true}>
                     {upcomingRefList.map(upcoming =>
                         (
-                            // <UpcomingRefereeItem
-                            //     key={upcoming.key}
-                            //     gameDetails={upcoming.value}
-                            //     gameId={upcoming.key}
-                            //     user={user.id}
-                            // />
+
                             <GameItem
                                 key={upcoming.key}
                                 gameDetails={upcoming.value}

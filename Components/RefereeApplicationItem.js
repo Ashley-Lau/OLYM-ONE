@@ -16,6 +16,7 @@ import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
 import GameItemBackGround from "../views/GameItemBackGround";
 import Styles from "../styling/Styles";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 
@@ -76,17 +77,23 @@ const RefereeApplicationItem = props => {
 
 
     // PROFILE CARD BACKGROUND ===========================================================================================
-    let profileBack = require("../assets/tennis_coloured.png")
+    let profileBack = require("../assets/tennis_coloured.png");
+    let refBack = require("../assets/BballRefereeApp.png");
     if(props.refDetails.sport.toLowerCase() === "tennis"){
         profileBack = require("../assets/tennis_coloured.png");
+        refBack = require("../assets/TennisRefereeApp.png");
     } else if(props.refDetails.sport.toLowerCase() === "floorball"){
         profileBack = require("../assets/floorball_coloured.png");
+        refBack = require("../assets/floorballRefereeApp.png");
     } else if(props.refDetails.sport.toLowerCase() === "basketball"){
         profileBack = require("../assets/basketball_coloured.png");
+        refBack = require("../assets/BballRefereeApp.png");
     } else if(props.refDetails.sport.toLowerCase() === "soccer"){
         profileBack = require("../assets/soccer_coloured.png");
+        refBack = require("../assets/SoccerRefereeApp.png");
     } else if(props.refDetails.sport.toLowerCase() === "badminton"){
         profileBack = require("../assets/badminton_coloured.png");
+        refBack = require("../assets/BadmintonRefereeApp.png");
     }
 
 
@@ -102,10 +109,11 @@ const RefereeApplicationItem = props => {
     const [openDetails, setOpen] = useState(false);
 
     const refItem = <Modal visible={openDetails}>
-        <Background>
+        <ImageBackground source={refBack} style ={{height:"100%", width:"100%"}}>
+        {/*<Background>*/}
             <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
                 <View style = {{...styles.elevatedComponent, height: 225}}>
-                    <ImageBackground source={profileBack} style ={{width:"100%",height:"100%"}}>
+                    {/*<ImageBackground source={profileBack} style ={{width:"100%",height:"100%"}}>*/}
                         <View style = {{marginTop:10}}>
                             <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
                                 <View style = {styles.photoFrame}>
@@ -122,28 +130,34 @@ const RefereeApplicationItem = props => {
                                 </View>
                             </View>
                         </View>
-                    </ImageBackground>
+                    {/*</ImageBackground>*/}
                 </View>
 
-                <View style = {{...styles.elevatedComponent, height: 100}}>
+                <View style = {{...styles.elevatedComponent, height: 135}}>
                     <View style={styles.requestTitle}>
                         <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
                     </View>
 
-                    <View style={{...styles.games, borderBottomWidth:0}}
+                    <View style={{...styles.games}}
                           onPress={() => {
                               setOpen(true);
                           }}>
 
-                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()}>
-                            <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.refDetails.sport} </Text>
-                        </GameItemBackGround>
-
-
                         <View style={{flexDirection:"column"}}>
-                            <Text style={{fontSize:18, color:"black"}}>Date: {gameDate}</Text>
-                            <Text style={{fontSize:18, color:"black"}}>Time: {gameTime} </Text>
+                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <MaterialCommunityIcons name="calendar-range" size={20}/>
+                                <Text style={{fontSize:20, color:"black"}}>  {gameDate} </Text>
+                            </View>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <MaterialCommunityIcons name="clock-outline" size={20}/>
+                                <Text style={{fontSize:20, color:"black"}}>  {gameTime}</Text>
+                            </View>
+
                         </View>
+
+                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+
                     </View>
 
                 </View>
@@ -177,7 +191,8 @@ const RefereeApplicationItem = props => {
                     </GradientButton>
                 </View>
             </View>
-        </Background>
+        {/*</Background>*/}
+    </ImageBackground>
     </Modal>
 
 
@@ -190,15 +205,23 @@ const RefereeApplicationItem = props => {
                                   setOpen(true);
                               }}>
 
-                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()}>
-                    <Text style={{fontSize:18, color: "black", marginLeft:10}}>{props.refDetails.sport} </Text>
-                </GameItemBackGround>
 
+                <View style={{flexDirection:"column", justifyContent:"flex-start"}}>
+                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="calendar-range" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
+                    </View>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="clock-outline" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {gameTime}</Text>
+                    </View>
 
-                <View style={{flexDirection:"column"}}>
-                    <Text style={{fontSize:18, color:"black"}}>Date: {gameDate}</Text>
-                    <Text style={{fontSize:18, color:"black"}}>Time: {gameTime} </Text>
                 </View>
+
+                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+
+
             </TouchableOpacity>
         </View>
 
@@ -223,7 +246,7 @@ const styles = StyleSheet.create({
         borderBottomWidth:0.7,
         borderColor:"grey",
         width:"100%",
-        height:65,
+        height:100,
         padding:5,
         justifyContent:"space-between",
         alignItems:"center",
@@ -231,7 +254,7 @@ const styles = StyleSheet.create({
     },
     elevatedComponent: {
         width: '90%',
-        height: 150,
+        height: 200,
         elevation: 10,
         backgroundColor: 'white',
         marginTop: 25,
