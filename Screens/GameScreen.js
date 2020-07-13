@@ -60,6 +60,7 @@ const GameScreen = (props) => {
                         doc.ref.delete().then(()=>{});
                     } else if(d.hostId === currentUser){}
                     else if(parseInt(d.availability) <= 0){}
+                    else if(d.players.includes(currentUser)){}
                     else {
                         searched.push({key:doc.id, value:doc.data()});
                     }
@@ -94,6 +95,7 @@ const GameScreen = (props) => {
                                 doc.ref.delete().then(()=>{});
                             } else if(d.hostId === currentUser){}
                             else if( parseInt(d.availability) <= 0){}
+                            else if(d.players.includes(currentUser)){}
                             else {
                                 someGame.push({key:doc.id, value:doc.data()});
                             }
