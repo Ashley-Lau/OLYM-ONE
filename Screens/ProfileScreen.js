@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useRef} from 'react';
 import {
     View,
     StyleSheet,
@@ -9,7 +9,8 @@ import {
     SafeAreaView,
     ImageBackground,
     TouchableOpacity,
-    Dimensions
+    Dimensions,
+
 } from 'react-native';
 import {Popover, Modal} from '@ui-kitten/components';
 import {useNavigation} from "@react-navigation/native";
@@ -19,7 +20,8 @@ import * as Animatable from 'react-native-animatable';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-
+import RBSheet from "react-native-raw-bottom-sheet";
+import BottomSheet from 'reanimated-bottom-sheet'
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
@@ -55,9 +57,15 @@ const ProfileScreen = props => {
     const [appList, setAppList] = useState([]);
     const appRef = firebaseDb.firestore().collection('application_details')
     const [refereeAppVisible, setRefereeAppVisible] = useState(false)
+    const refereeRef = useRef(null)
+    const refereeRefInner = useRef()
 
     const renderRefereeButton = (
-        <TouchableOpacity style = {style.middleButton} activeOpacity={0.8} onPress = {() => setRefereeAppVisible(true)}>
+        <TouchableOpacity style = {style.middleButton} activeOpacity={0.8}
+                          onPress = {() => {setRefereeAppVisible(true);
+                              refereeRef.current.open()
+                              // refereeRefInner.current.snapTo(0)
+                          }}>
             <View style = {{alignItems: 'flex-end', }}>
                 {appList.length === 0 ?
                         <Text style = {{color: 'transparent', fontWeight: 'bold'}}>
@@ -390,40 +398,96 @@ const ProfileScreen = props => {
                             </TouchableOpacity>
                             {/*=======================================referee button===========================================*/}
                             {renderRefereeButton}
-                            <Modal
-                                visible={refereeAppVisible}
-                                backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',position: 'absolute',
-                                    bottom:0}}
-                                onBackdropPress={() => setRefereeAppVisible(false)}
-                                style = {{
-                                    height: Dimensions.get('window').height * 0.6,
-                                    width: Dimensions.get('window').width * 0.8,
-                                    backgroundColor: 'white',
-                                    alignSelf: 'stretch',
-                                    borderRadius: 10
-                                    }}
+                            <RBSheet
+                                ref={refereeRef}
+                                height={400}
+                                minClosingHeight = {100}
+                                closeOnDragDown={true}
+                                animationType = {'fade'}
+                                dragFromTopOnly = {true}
+                                customStyles={{
+                                    container: {
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        borderTopRightRadius: 30,
+                                        borderTopLeftRadius: 30,
+                                    },
+                                    // draggableIcon: {
+                                    //     backgroundColor: "#000"
+                                    // }
+                                }}
                             >
-                                {appList.length <= 0
-                                            ?<View>
-                                                <Text style = {style.noApplication}>No Applications!</Text>
-                                            </View>
+                                {/*<Text> donkey </Text>*/}
+                                {/*<BottomSheet*/}
+                                {/*    ref={refereeRefInner}*/}
+                                {/*    overdragResistanceFactor={8}*/}
+                                {/*    enabledInnerScrolling={false}*/}
+                                {/*    snapPoints={[400, 0]}*/}
+                                {/*    renderContent={() => (*/}
+                                {/*        <View>*/}
+                                {/*            <Text>*/}
+                                {/*                donkey*/}
+                                {/*            </Text>*/}
+                                {/*        </View>)}*/}
+                                {/*    // renderHeader={this.renderHeader}*/}
+                                {/*    initialSnap={1}*/}
+                                {/*    // callbackNode={this.sheetOpenValue}*/}
+                                {/*/>*/}
+                                    {appList.length <= 0
+                                                ?<View>
+                                                    <Text style = {style.noApplication}>No Applications!</Text>
+                                                </View>
 
-                                            :
-                                            <ScrollView nestedScrollEnabled={true}>
-                                                {appList.map(appl =>
-                                                    (
-                                                        <RefereeApplicationItem
-                                                                          key={appl.key}
-                                                                          refDetails={appl.value}
-                                                                          appId={appl.key}
-                                                                          user={user.id}
-                                                        />
+                                                :
+                                                <ScrollView nestedScrollEnabled={true}>
+                                                    {appList.map(appl =>
+                                                        (
+                                                            <RefereeApplicationItem
+                                                                              key={appl.key}
+                                                                              refDetails={appl.value}
+                                                                              appId={appl.key}
+                                                                              user={user.id}
+                                                            />
 
-                                                    )
-                                                )}
-                                            </ScrollView>
-                                        }
-                            </Modal>
+                                                        )
+                                                    )}
+                                                </ScrollView>
+                                            }
+                            </RBSheet>
+                            {/*<Modal*/}
+                            {/*    visible={refereeAppVisible}*/}
+                            {/*    backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',position: 'absolute',*/}
+                            {/*        bottom:0}}*/}
+                            {/*    onBackdropPress={() => setRefereeAppVisible(false)}*/}
+                            {/*    style = {{*/}
+                            {/*        height: Dimensions.get('window').height * 0.6,*/}
+                            {/*        width: Dimensions.get('window').width * 0.8,*/}
+                            {/*        backgroundColor: 'white',*/}
+                            {/*        alignSelf: 'stretch',*/}
+                            {/*        borderRadius: 10*/}
+                            {/*        }}*/}
+                            {/*>*/}
+                            {/*    {appList.length <= 0*/}
+                            {/*                ?<View>*/}
+                            {/*                    <Text style = {style.noApplication}>No Applications!</Text>*/}
+                            {/*                </View>*/}
+
+                            {/*                :*/}
+                            {/*                <ScrollView nestedScrollEnabled={true}>*/}
+                            {/*                    {appList.map(appl =>*/}
+                            {/*                        (*/}
+                            {/*                            <RefereeApplicationItem*/}
+                            {/*                                              key={appl.key}*/}
+                            {/*                                              refDetails={appl.value}*/}
+                            {/*                                              appId={appl.key}*/}
+                            {/*                                              user={user.id}*/}
+                            {/*                            />*/}
+
+                            {/*                        )*/}
+                            {/*                    )}*/}
+                            {/*                </ScrollView>*/}
+                            {/*            }*/}
+                            {/*</Modal>*/}
                         </View>
                     </View>
                         {/*========================================Bottom Section==================================================*/}
@@ -432,12 +496,13 @@ const ProfileScreen = props => {
                             Upcoming Events
                         </Text>
                         <View style = {style.tabContainer}>
-                            <View style = {{height: '15%', flexDirection: 'row', backgroundColor: 'transparent', marginTop: 10}}>
+                            <View style = {{height: '15%', flexDirection: 'row', backgroundColor: 'transparent', marginTop: 10, }}>
                                 <TouchableOpacity style = {{height: '100%', width: '50%',
                                                             backgroundColor: isGameTab ? 'white' : '#cbcbcb',
                                                             justifyContent: 'center',
                                                             borderTopWidth: isGameTab ? 2 : 0,
-                                                            borderColor: 'orange'}}
+                                                            borderColor: 'orange',
+                                }}
                                                   activeOpacity={1}
                                                   onPress={() => changeTab(true)}
                                 >
@@ -449,7 +514,8 @@ const ProfileScreen = props => {
                                                             backgroundColor: isGameTab ? '#cbcbcb' : 'white',
                                                             justifyContent: 'center',
                                                             borderTopWidth: isGameTab ? 0 : 2,
-                                                            borderColor: 'orange'}}
+                                                            borderColor: 'orange',
+                                }}
                                                   activeOpacity={1}
                                                   onPress={() => changeTab(false)}
                                 >

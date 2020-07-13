@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 
-import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, ImageBackground} from 'react-native';
+import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView} from 'react-native';
 import firebase from 'firebase';
 import {useNavigation} from "@react-navigation/native";
 import {Select, SelectItem,} from "@ui-kitten/components";
@@ -113,7 +113,8 @@ const GameScreen = (props) => {
 
     }, [])
 
-    return (<Background style = {styles.container}>
+    return (
+        <Background style = {styles.container}>
 
                 {/*==================================== Title and hosting a game ======================================*/}
                 <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
