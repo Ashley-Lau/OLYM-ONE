@@ -136,7 +136,7 @@ const PlayerApplicationItem = props => {
     const [openDetails, setOpen] = useState(false);
 
     const refItem = <Modal visible={openDetails}>
-        <ImageBackground source={refBack} style ={{height:"100%", width:"100%"}}>
+        <ImageBackground source={refBack} opacity={0.8} style ={{height:"100%", width:"100%"}}>
             {/*<Background>*/}
             <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
                 <View style = {{...styles.elevatedComponent, height: 225}}>
@@ -183,7 +183,7 @@ const PlayerApplicationItem = props => {
 
                         </View>
 
-                        <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:90}}/>
+                        <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:93}}/>
 
                     </View>
 
