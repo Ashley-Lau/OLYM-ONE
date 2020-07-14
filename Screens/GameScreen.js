@@ -57,7 +57,7 @@ const GameScreen = (props) => {
     }, [])
 
     //ANIMATED COMPONENTS =========================================================================================
-    const x = new Animated.Value(0);
+    const [x,setX] = useState(new Animated.Value(0));
     const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
         {useNativeDriver:true,
         });
@@ -185,8 +185,6 @@ const GameScreen = (props) => {
 
     // Array for available games ==============================================================================================
     const [game, setGame] = useState ([]);
-
-
 
     // picture shown when the users have not inputted zone or sport yet ==========================================
     const noInput = (

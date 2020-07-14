@@ -107,7 +107,7 @@ const HostGameScreen = props => {
     //ARRAY FOR PICKER ==============================================================================================================
 
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
-    const referee =["No", "Yes"]
+    const referee =["NO", "YES"]
 
     const [sportsIndex, setSportsIndex] = useState();
     const [refIndex, setRefIndex] = useState();
@@ -128,7 +128,9 @@ const HostGameScreen = props => {
                 price: values.price,
                 players: [data.id],
                 hostId: data.id,
-                referee: values.referee
+                referee: values.referee,
+                refereeSlots:values.refereeSlots,
+                refereeList: []
             })
             .then(() => {registeredPress()})
             .catch(err => console.error(err))
@@ -147,7 +149,8 @@ const HostGameScreen = props => {
                     notes:'',
                     showDate: false,
                     showTime: false,
-                    referee:["No", "1"]
+                    referee:"NO",
+                    refereeSlots:'1'
                 }}
                         validationSchema={reviewSchema}
                         onSubmit={(values, actions) => {
@@ -418,7 +421,7 @@ const HostGameScreen = props => {
                                 </View>
                             </View>
 
-                            {props.values.referee[0] === "Yes"
+                            {props.values.referee == "YES"
                             ?
                                 <View style={styles.selectionItem}>
                                     <Text style={{fontSize:15, marginLeft:8}}>NO. OF REFEREES :</Text>
@@ -427,9 +430,9 @@ const HostGameScreen = props => {
                                                    keyboardType={"number-pad"}
                                                    placeholder={"1"}
                                                    style={{...styles.dropDownText, fontSize:16}}
-                                                   onChangeText={props.handleChange('referee[1]')}
-                                                   value={props.values.referee[1]}
-                                                   onBlur = {props.handleBlur('referee[1]')}
+                                                   onChangeText={props.handleChange('refereeSlots')}
+                                                   value={props.values.refereeSlots}
+                                                   onBlur = {props.handleBlur('refereeSlots')}
                                         />
                                     </View>
 

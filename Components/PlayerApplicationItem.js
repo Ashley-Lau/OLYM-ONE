@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
     View,
     StyleSheet,
@@ -22,22 +22,39 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 
 const PlayerApplicationItem = props => {
+    //GETTING CURRENT GAME INFO ========================================================================================
+    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.playerDetails.gameId);
+    const [details, setDetails] = useState({});
+
+    useEffect(() => {
+            const unsubscribe = gameRef
+                .onSnapshot(doc => {
+                        setDetails(doc.data())
+                    },
+                    error => {
+                        console.log("Game Screen " + error.message)
+                    })
+
+            return () => unsubscribe();
+        }
+    , [])
+
     //ACCEPT AND DECLINE FUNCTION ========================================================================================
     const applRef = firebaseDb.firestore().collection("player_application_details").doc(props.appId)
-    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.playerDetails.gameId)
+
 
     const deleteReq = () => {
         applRef.delete().then(()=>{})
     }
 
     const acceptReq = () => {
-        const slots = parseInt(props.playerDetails.availability) - 1
+        const slots = parseInt(details.availability) - 1
         gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.playerDetails.playerId)})
             .then(()=>{deleteReq()});
     }
 
     const acceptFunction = () => {
-        if(props.playerDetails.availability <= 0){
+        if(details.availability <= 0){
             return noMoreSlot();
         } else {
             return confirmAccept();

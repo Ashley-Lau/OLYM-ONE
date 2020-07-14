@@ -151,7 +151,7 @@ const HomeScreen = props => {
                 })
 
         const unsubscribe3 = gameRef
-            .where("referee", "array-contains", data.id)
+            .where("refereeList", "array-contains", data.id)
             .onSnapshot(
                 snapshot => {
                     let refList = [];
