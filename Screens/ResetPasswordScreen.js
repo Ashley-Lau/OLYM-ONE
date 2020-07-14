@@ -65,7 +65,7 @@ const ResetPasswordScreen = () => {
                 <ImageBackground source = {require('../assets/BrownSkyline.png')} style={Styles.container}>
                     <View style = {style.inputContainer}>
                         <Text style = {{fontSize: 30, fontWeight: 'bold', borderBottomWidth: 4, borderBottomColor: 'black'}}>Reset Password</Text>
-                        <View style = {{marginHorizontal: 10, marginVertical: 20}}>
+                        <View style = {{marginHorizontal: 10, marginVertical: 20, width: '85%'}}>
                             <Text style = {{fontSize: 20, fontWeight: 'bold'}}>Email:</Text>
                             <TextInput  style = {{marginTop: 0, fontSize:20, borderBottomWidth: 2, borderBottomColor: 'black' }}
                                         placeholderTextColor = '#708090'

@@ -1,4 +1,5 @@
 import React from 'react';
+import {Dimensions} from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from "@react-navigation/stack";
@@ -50,7 +51,7 @@ const BottomTabs = (props) => {
                 paddingBottom: 5,
             },
             style : {
-                height: 60,
+                height: Dimensions.get('window').height * 0.09,
                 borderTopColor: 'transparent',
                 shadowColor: 'rgba(58,55,55,0.1)',
                 shadowOffset: { width: 0, height: 0 },
@@ -60,7 +61,6 @@ const BottomTabs = (props) => {
             }
 
         }}
-        style = {{height: 40}}
     >
         <Tab.Screen
             name="ProfileStack"

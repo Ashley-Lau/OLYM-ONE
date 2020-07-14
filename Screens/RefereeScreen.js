@@ -1,5 +1,16 @@
 import React, {useState, useEffect} from 'react';
-import {View, StyleSheet, FlatList, Text, TouchableOpacity, Image, Animated} from 'react-native';
+import {
+  View, 
+  StyleSheet, 
+  FlatList, 
+  Text, 
+  TouchableOpacity, 
+  Image, 
+  Animated,
+  Dimensions,
+  Keyboard,
+  TouchableWithoutFeedback
+} from 'react-native';
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
@@ -7,6 +18,10 @@ import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
 import {Select, SelectItem} from "@ui-kitten/components";
 import Entypo from "react-native-vector-icons/Entypo";
+import LocationSearchBar from "../Components/LocationSeachBar";
+
+const sHeight = Dimensions.get('window').height
+
 import FullGameItem from "../Components/FullGameItem";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
@@ -90,41 +105,27 @@ const RefereeScreen = (props) => {
     }, [])
 
 
-    return (<Background style = {styles.container}>
+    return (
+        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+        <Background style = {styles.container}>
 
             {/*==================================== Title and hosting a game ======================================*/}
-            <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-start', paddingHorizontal:10}}>
-                <Text style = {styles.text}> Referable Games </Text>
+            <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
+                <Text style = {styles.text}>Referable Games</Text>
 
             </View>
 
             {/*================================== SEARCH BAR ==============================================*/}
 
             <View style={styles.searchSpace}>
-                <View style={styles.searchBar}>
-                    <Select
-                        style = {{width: "90%", justifyContent:"space-between"}}
-                        placeholder='Select Sport'
-                        value ={sports[sportsIndex - 1]}
-                        onSelect={index => {
-                            setSportsIndex(index)
-                            setSportValue(sports[index.row])
-                        }}
-                        selectedIndex={sportsIndex}>
-                        {sports.map(sport => (
-                            <SelectItem key={sport} title={sport}/>
-                        ))}
-
-                    </Select>
-                    <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
-                </View>
+                <LocationSearchBar onPress = {() => {}}/>
             </View>
 
 
 
             {/*===============================Sport Selection ===========================================*/}
 
-            <View style={{height:"15%"}}>
+            <View style={{height: sHeight * 0.14}}>
                 <FlatList showsHorizontalScrollIndicator={false}
                           horizontal={true}
                           contentContainerStyle= {{justifyContent:"space-between"}}
@@ -177,7 +178,7 @@ const RefereeScreen = (props) => {
                 </FlatList>
             </View>
 
-            <View style={{height:"68%", paddingVertical:"4%"}}>
+            <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
                 <AnimatedFlatList
                     scrollEventThrottle={16}
                     {...{onScroll}}
@@ -198,47 +199,17 @@ const RefereeScreen = (props) => {
                 </AnimatedFlatList>
 
             </View>
-
         </Background>
+        </TouchableWithoutFeedback>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        // top:-24
-        // flex: 1,
-        // marginTop:36,
-        // justifyContent: 'flex-start',
-        // flexDirection: "column",
-    },
-    searchBar:{
-        flexDirection: "row",
-        justifyContent:"space-around",
-        alignItems:"center",
-        borderBottomWidth:1,
-        borderRadius:4,
-        width:"98%",
-        // marginTop:30,
-        marginBottom:10,
-        borderColor:"black",
-        backgroundColor:"transparent"
-    },
-    searchInput:{
-        width:"85%",
-        height:"100%",
-        fontSize:20,
-        left: 10
-    },
     searchSpace:{
-        width:"98%",
-        height:"10%",
-        // flex:1,
-        flexDirection:"column",
-        justifyContent:"space-around",
-        alignItems:"center",
-        marginLeft:"2%"
-        // borderBottomWidth:1,
-        // borderBottomColor:"rgba(177,177,177,0.78)",
+        width:"96%",
+        height: sHeight * 0.1,
+        justifyContent: 'center',
+        alignSelf: 'center'
     },
     sportItem:{
         // height:"80%",
@@ -257,7 +228,14 @@ const styles = StyleSheet.create({
         height:70,
         width:100,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2.27,
 
     },
     sportSelected:{
@@ -267,7 +245,14 @@ const styles = StyleSheet.create({
         height:75,
         width:110,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2.27,
     },
     sportImageShadow:{
         width: 50,
@@ -281,25 +266,16 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 27.5,
-        // borderWidth: 1,
-        // borderColor: "rgba(46,44,47,0.83)",
         backgroundColor: "transparent",
         alignItems: "center",
-        paddingTop: 7
+        paddingTop: 7,
     },
     text: {
         color: 'white',
         justifyContent: 'center',
-        fontSize: 30,
+        fontSize: 27,
         fontWeight: "bold",
     },
-    hostButton:{
-    borderRadius: 20,
-        height: 30,
-        alignItems: 'center',
-        justifyContent: 'center',
-        flexDirection: 'row'
-    }
 
 })
 
