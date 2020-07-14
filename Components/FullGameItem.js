@@ -170,37 +170,38 @@ const FullGameItem = props => {
 
     //ANIMATION PROPERTIES===========================================================================================
     const x = props.translateX;
-    const index = props.index ;
+    let index = props.index;
+    const someNum = 350;
     const width = Dimensions.get('window').width;
 
-
-    const position = Animated.subtract(index * 350, x);
-    const isDisappearing =  -350;
+    const position = Animated.subtract(index * someNum, x);
+    const isDisappearing =  -someNum;
     const isLeft = 0;
-    const isRight = width - 350;
+    const isRight = width - someNum;
     const isAppearing = width;
 
     const translateX =Animated.add(Animated.add(x, x.interpolate({
-        inputRange: [0, 0.00001 + index * 350],
-        outputRange: [0, -index * 350],
-        // extrapolate:"clamp"
+        inputRange: [0,  0.0001 + index * someNum],
+        outputRange: [0, -index * someNum],
+        extrapolateRight:"clamp"
     })),
         position.interpolate({
             inputRange:[isRight, isAppearing],
-            outputRange:[0, -350/4.5],
+            outputRange:[0, -someNum/4.3],
+            // extrapolateRight:"extend"
 
         })
     )
 
     const scale = position.interpolate({
         inputRange: [isDisappearing, isLeft, isRight, isAppearing],
-        outputRange: [0.5,1, 1, 0.5],
-        // extrapolate:"clamp"
+        outputRange: [0.5 ,1 , 1, 0.5],
+        extrapolate:"clamp"
 
     });
     const opacity = position.interpolate({
         inputRange: [isDisappearing, isLeft, isRight, isAppearing],
-        outputRange: [0.5,1, 1 ,0.5],
+        outputRange: [0.5 ,1, 1, 0.5],
     })
 
 
@@ -221,7 +222,7 @@ const FullGameItem = props => {
                               user = {props.user}
             />
 
-            <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]}>
+            <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
                 <TouchableOpacity style={styles.games}
                                   onPress={() => {openGameDetails(true);}}>
                     <ImageBackground source={sportBG}
@@ -251,7 +252,7 @@ const FullGameItem = props => {
                                 :
                                 <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
                                     <MaterialCommunityIcons name="whistle" size={20}/>
-                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.referee[0]} </Text>
+                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.refereeSlots} </Text>
                                 </View>
                             }
 
@@ -288,6 +289,7 @@ const styles = StyleSheet.create({
         borderRadius:40,
         width:350,
         height:"100%",
+        overflow:"hidden",
         // flex:1,
         justifyContent:"center",
         alignItems:"center",
