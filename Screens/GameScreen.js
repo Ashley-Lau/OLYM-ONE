@@ -1,17 +1,29 @@
 import React, {useEffect, useState} from 'react';
-import {Animated, View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView, Dimensions} from 'react-native';
+import {
+    Animated,
+    View,
+    Image,
+    StyleSheet,
+    FlatList,
+    Keyboard,
+    TouchableWithoutFeedback,
+    Text,
+    TouchableOpacity,
+    Dimensions,
+    Alert
+} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
-import {Select, SelectItem,} from "@ui-kitten/components";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo';
 
 
 import Background from "../views/Background";
-import GameItem from "../Components/GameItem";
 import LocationSearchBar from "../Components/LocationSeachBar";
 import FullGameItem from "../Components/FullGameItem";
 import firebaseDb from "../firebaseDb";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
 
 const sHeight = Dimensions.get('window').height
 
@@ -21,16 +33,138 @@ const GameScreen = (props) => {
     const navigation = useNavigation()
     const user = props.route.params.user
 
+    //UID OF USER ================================================================================================
+    const currentUser = props.route.params.user.id;
+
+    //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
+
+    const gamesRef = firebaseDb.firestore().collection('game_details');
+
+    useEffect(() => {
+        // deleting of expired games
+        const now = new Date().getTime() / 1000;
+        gamesRef.where('date', '<', now)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = gamesRef.doc(doc.id)
+                    batch.delete(docRef)
+                })
+                batch.commit().catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
+    }, [])
+
     //ANIMATED COMPONENTS =========================================================================================
     const x = new Animated.Value(0);
     const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
         {useNativeDriver:true,
         });
 
-    // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
+    // SEARCH BAR FUNCTIONS AND PARAMS ===========================================================================================
+    const [zone, setZone] = useState('')
+    const [searchedBefore, setSearchedBefore] = useState(false)
+
+    const noFieldsSelected = () => Alert.alert(
+        "No Fields selected!",
+        "Please select a zone or location or both.",
+        [
+            {text:"Confirm", onPress: () => {},  style:'cancel'}
+        ],
+        {cancelable: false}
+    )
+
+    const search = (sportValue) => {
+        console.log(sportValue)
+        if (sportValue !== '' && zone !== '') {
+            console.log('got both')
+            const filteredGames = []
+            gamesRef
+                .orderBy("date", "asc")
+                .where('sport', '==', sportValue)
+                .where('location', '==', zone)
+                .get()
+                .then(documents => {
+                    const now = new Date().getTime()
+                    documents.forEach( doc => {
+                        console.log('fker')
+                        const d = doc.data();
+                        if(d.date.toMillis() < now){
+                            doc.ref.delete().then(()=>{});
+                        } else if(d.hostId === currentUser){}
+                        else if( parseInt(d.availability) <= 0){}
+                        else if(d.players.includes(currentUser)){}
+                        else {
+                            filteredGames.push({key:doc.id, value:doc.data()});
+                        }
+                    })
+                    setGame(filteredGames)
+                    setSearchedBefore(true)
+                })
+                .catch(error => console.log(error))
+            return;
+        }
+        if (sportValue !== '') {
+            console.log('got sport')
+            const filteredGames = []
+            gamesRef
+                .orderBy("date", "asc")
+                .where('sport', '==', sportValue)
+                .get()
+                .then(documents => {
+                    const now = new Date().getTime()
+                    documents.forEach( doc => {
+                            const d = doc.data();
+                            if(d.date.toMillis() < now){
+                                doc.ref.delete().then(()=>{});
+                            } else if(d.hostId === currentUser){}
+                            else if( parseInt(d.availability) <= 0){}
+                            else if(d.players.includes(currentUser)){}
+                            else {
+                                filteredGames.push({key:doc.id, value:doc.data()});
+                            }
+                        }
+                    )
+                    setGame(filteredGames)
+                    setSearchedBefore(true)
+                })
+                .catch(error => console.log(error))
+            return;
+        }
+        if (zone !== '') {
+            console.log('got zone')
+            const filteredGames = []
+            gamesRef
+                .orderBy("date", "asc")
+                .where('location', '==', zone)
+                .get()
+                .then(documents => {
+                    const now = new Date().getTime()
+                    documents.forEach( doc => {
+                            const d = doc.data();
+                            if(d.date.toMillis() < now){
+                                doc.ref.delete().then(()=>{});
+                            } else if(d.hostId === currentUser){}
+                            else if( parseInt(d.availability) <= 0){}
+                            else if(d.players.includes(currentUser)){}
+                            else {
+                                filteredGames.push({key:doc.id, value:doc.data()});
+                            }
+                        }
+                    )
+                    setGame(filteredGames)
+                    setSearchedBefore(true)
+                })
+                .catch(error => console.log(error))
+            return
+        }
+        noFieldsSelected()
+    }
+
+    // ARRAY FOR SPORT SELECTION BELOW SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
-    const [sportsIndex, setSportsIndex] = useState();
-    const [sportValue, setSportValue] = useState();
+    const [sportValue, setSportValue] = useState('');
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -49,77 +183,27 @@ const GameScreen = (props) => {
         }
     }
 
-
-
-    // SEARCH BAR FUNCTION =============================================================================================
-    const searchSport = (sport) => {
-        console.log(sportValue)
-        console.log(sport)
-        let searched = [];
-        const now = new Date().getTime();
-        gamesRef.where('sport', '==', sport)
-            .get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    const d = doc.data();
-                    if(d.date.toMillis() < now){
-                        doc.ref.delete().then(()=>{});
-                    } else if(d.hostId === currentUser){}
-                    else if(parseInt(d.availability) <= 0){}
-                    else if(d.players.includes(currentUser)){}
-                    else {
-                        searched.push({key:doc.id, value:doc.data()});
-                    }
-                })
-                setGame(searched);
-            })
-    }
-
-
-    // MODAL FUNCTION ==============================================================================================
+    // Array for available games ==============================================================================================
     const [game, setGame] = useState ([]);
 
-    //UID OF USER ================================================================================================
-    const currentUser = props.route.params.user.id;
 
-    //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
 
-    const gamesRef = firebaseDb.firestore().collection('game_details');
-    const allGames = () => {
-        gamesRef
-            .orderBy("date", "asc")
-            .limit(15)
-            .onSnapshot(snapshot => {
-                    const someGame = [];
-                    const now = new Date().getTime();
-                    let num = 1;
-                    snapshot.forEach( doc => {
-                            const d = doc.data();
-                            console.log("num reloads :" + num);
-                            num = num + 1;
-                            if(d.date.toMillis() < now){
-                                doc.ref.delete().then(()=>{});
-                            } else if(d.hostId === currentUser){}
-                            else if( parseInt(d.availability) <= 0){}
-                            else if(d.players.includes(currentUser)){}
-                            else {
-                                someGame.push({key:doc.id, value:doc.data()});
-                            }
-                        }
-                    )
-                    setGame(someGame);
-                },
-                error => {
-                    console.log("Game Screen " + error.message)
-                })
-    }
+    // picture shown when the users have not inputted zone or sport yet ==========================================
+    const noInput = (
+        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
+            <FontAwesome name = 'search-plus' size={100} color={'#5c5c5c'}/>
+            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No sport or zone selected</Text>
+            <Text style = {{...styles.noApplication, fontSize: 15,}}>Search for games or sport by filling the fields above!</Text>
+        </View>
+    )
 
-    useEffect(() => {
-        const unsubscribe = allGames();
-
-        return () => unsubscribe;
-
-    }, [])
+    const noSport = (
+        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
+            <FontAwesome5 name = 'sad-tear' size={100} color={'#5c5c5c'}/>
+            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No games available</Text>
+            <Text style = {{...styles.noApplication, fontSize: 15}}>There are no games currently for the selected location and sport.</Text>
+        </View>
+    )
 
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
@@ -146,7 +230,9 @@ const GameScreen = (props) => {
 
                 {/*==================================SEARCH BAR ==============================================*/}
                 <View style={styles.searchSpace}>
-                    <LocationSearchBar onPress = {() => {}}/>
+                    <LocationSearchBar select = {val => setZone(val)}
+                                       changeText = {val => setZone(val)}
+                                       onPress = {() => search(sportValue)}/>
                 </View>
                 {/*===============================Sport Selection ===========================================*/}
 
@@ -163,10 +249,8 @@ const GameScreen = (props) => {
                                           <TouchableOpacity activeOpacity={0.6}
                                                             style={{...styles.sportSelected}}
                                                             onPress ={ () => {
-                                                                setSportValue(item);
-                                                                searchSport(item);
-
-
+                                                                console.log(item)
+                                                                search(item);
                                                             }}
                                           >
                                               <View style={styles.sportImageSelected}>
@@ -179,11 +263,10 @@ const GameScreen = (props) => {
                                       : <View style={styles.sportItem}>
                                           <TouchableOpacity activeOpacity={0.6}
                                                             style={{...styles.sportSelection}}
-                                                            onPress ={ () => {
+                                                            onPress ={() => {
+                                                                console.log(item)
                                                                 setSportValue(item);
-                                                                searchSport(item);
-
-
+                                                                search(item);
                                                             }}
                                           >
                                               <View style={styles.sportImageShadow}>
@@ -202,28 +285,32 @@ const GameScreen = (props) => {
 
                 <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
 
-                    <AnimatedFlatList
-                        scrollEventThrottle={16}
-                        {...{onScroll}}
-                        showsHorizontalScrollIndicator={false}
-                        //KIV need to do some Apploading for it to work
-                        // initialScrollIndex={Math.floor(game.length/2)}
-                        horizontal={true}
-                        contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
-                        keyExtractor={(item) => item.key.toString()}
-                        data = {game}
-                        renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
-                                                               gameId={item.key}
-                                                               user={user}
-                                                               itemType={"Join"}
-                                                               translateX = {x}
-                                                               index = {index}
+                    {!searchedBefore
+                        ? noInput
+                        : game.length === 0
+                            ? noSport
+                            : <AnimatedFlatList
+                                    scrollEventThrottle={16}
+                                    {...{onScroll}}
+                                    showsHorizontalScrollIndicator={false}
+                                    //KIV need to do some Apploading for it to work
+                                    // initialScrollIndex={Math.floor(game.length/2)}
+                                    horizontal={true}
+                                    contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
+                                    keyExtractor={(item) => item.key.toString()}
+                                    data = {game}
+                                    renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
+                                                                           gameId={item.key}
+                                                                           user={user}
+                                                                           itemType={"Join"}
+                                                                           translateX = {x}
+                                                                           index = {index}
 
-                        />}
-                    >
+                                    />}
+                                >
 
-                    </AnimatedFlatList>
-
+                                </AnimatedFlatList>
+                    }
 
                 </View>
             </Background>
@@ -303,6 +390,14 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 27,
         fontWeight: "bold",
+    },
+    noApplication: {
+        fontSize: 33,
+        alignSelf: 'center',
+        color: '#5a5959',
+        top: 20,
+        textAlign:'center',
+        width: Dimensions.get('window').width * 0.8
     },
 })
 
