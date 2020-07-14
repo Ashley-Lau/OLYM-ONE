@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {
     View,
     StyleSheet,
@@ -22,16 +22,34 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 
 
 const RefereeApplicationItem = props => {
+    //GETTING CURRENT GAME INFO ========================================================================================
+    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.refDetails.gameId);
+    const [details, setDetails] = useState({});
+
+    useEffect(() => {
+            const unsubscribe = gameRef
+                .onSnapshot(doc => {
+                        setDetails(doc.data())
+                    },
+                    error => {
+                        console.log("Game Screen " + error.message)
+                    })
+
+            return () => unsubscribe();
+        }
+        , [])
+
     //ACCEPT AND DECLINE FUNCTION ========================================================================================
     const applRef = firebaseDb.firestore().collection("application_details").doc(props.appId)
-    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.refDetails.gameId)
+
 
     const deleteReq = () => {
         applRef.delete().then(()=>{})
     }
 
     const acceptReq = () => {
-        gameRef.update({referee: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
+        const slots = parseInt(details.refereeSlots) - 1
+        gameRef.update({refereeSlots:slots.toString(), refereeList: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
             .then(()=>{deleteReq()});
     }
 

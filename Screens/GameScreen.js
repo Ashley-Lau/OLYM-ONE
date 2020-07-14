@@ -22,7 +22,7 @@ const GameScreen = (props) => {
     const user = props.route.params.user
 
     //ANIMATED COMPONENTS =========================================================================================
-    const x = new Animated.Value(0);
+    const [x,setX] = useState(new Animated.Value(0));
     const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
         {useNativeDriver:true,
         });
@@ -100,7 +100,7 @@ const GameScreen = (props) => {
                             if(d.date.toMillis() < now){
                                 doc.ref.delete().then(()=>{});
                             } else if(d.hostId === currentUser){}
-                            else if( parseInt(d.availability) <= 0){}
+                            else if(parseInt(d.availability) <= 0){}
                             else if(d.players.includes(currentUser)){}
                             else {
                                 someGame.push({key:doc.id, value:doc.data()});

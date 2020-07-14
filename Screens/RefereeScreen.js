@@ -1,11 +1,11 @@
 import React, {useState, useEffect} from 'react';
 import {
-  View, 
-  StyleSheet, 
-  FlatList, 
-  Text, 
-  TouchableOpacity, 
-  Image, 
+  View,
+  StyleSheet,
+  FlatList,
+  Text,
+  TouchableOpacity,
+  Image,
   Animated,
   Dimensions,
   Keyboard,
@@ -68,6 +68,8 @@ const RefereeScreen = (props) => {
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
                     else if(doc.data().players.includes(userId)){}
+                    else if(doc.data().refereeList.includes(userId)){}
+                    else if(parseInt(doc.data().refereeSlots) <= 0){}
                     else if(doc.data().referee[0] === "Yes") {
                         searched.push({key:doc.id, value:doc.data()})
                     }
@@ -91,7 +93,9 @@ const RefereeScreen = (props) => {
                 snapshot.forEach(doc => {
                     if(doc.data().hostId === userId){}
                     else if(doc.data().players.includes(userId)){}
-                    else if(doc.data().referee[0] === "Yes"){
+                    else if(doc.data().refereeList.includes(userId)){}
+                    else if(parseInt(doc.data().refereeSlots) <= 0){}
+                    else if(doc.data().referee[0] === "YES"){
                         gameList.push({key:doc.id, value:doc.data()});
                     }
                 })

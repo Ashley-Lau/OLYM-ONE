@@ -48,7 +48,7 @@ const JoinItem = props => {
 
 
     return (
-        <GradientButton style={{...Styles.buttonSize}}
+        <GradientButton style={{...props.style}}
                         onPress={() => {
                             alreadyJoined();
                             props.closeGame();
