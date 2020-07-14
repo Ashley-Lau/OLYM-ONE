@@ -21,7 +21,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import RBSheet from "react-native-raw-bottom-sheet";
-import BottomSheet from 'reanimated-bottom-sheet'
+
 
 import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
@@ -29,6 +29,7 @@ import RefereeApplicationItem from "../Components/RefereeApplicationItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import {keywordsMaker} from "../Components/SearchBarFunctions";
+import PlayerApplicationItem from "../Components/PlayerApplicationItem";
 
 
 const HomeScreen = props => {
@@ -52,6 +53,33 @@ const HomeScreen = props => {
         upcoming_games: user.upcoming_games,
         referee: user.referee
     })
+
+    //GETTING PLAYER APPLICATION AND THEIR DETAILS ==========================================================================
+    const [gameAppList, setGameAppList] = useState([]);
+    const gameAppRef = firebaseDb.firestore().collection('player_application_details');
+    const playerRef = useRef (null);
+
+    const renderPlayerButton = (
+        <TouchableOpacity style = {style.middleButton} activeOpacity={0.8}
+                          onPress={()=>playerRef.current.open()}>
+            <View style = {{alignItems: 'flex-end', }}>
+                {gameAppList.length === 0 ?
+                    <Text style = {{color: 'transparent', fontWeight: 'bold'}}>
+                        {'  ' + 0 + '  '}
+                    </Text>
+                    :
+                    <View style = {{borderRadius: 60, backgroundColor: 'orange',right:-5, top: 5, zIndex: 1 }}>
+                        <Text style = {{color: 'white', fontWeight: 'bold'}}>
+                            {'  ' + gameAppList.length + '  '}
+                        </Text>
+                    </View>}
+                <FontAwesome name="group" color={'#5a5959'} size={50} />
+            </View>
+            <Text style = {{ color: '#5a5959', fontSize: 20, marginTop: 6, textAlign: 'center'}}>
+                Players
+            </Text>
+        </TouchableOpacity>
+    )
 
     //GETTING REFEREE APPLICATIONS AND ITS DETAILS ========================================================================================
     const [appList, setAppList] = useState([]);
@@ -136,12 +164,26 @@ const HomeScreen = props => {
             console.log("Refereeing Games " + error.message)
                 })
 
+        const unsubscribe4 = gameAppRef
+            .where("hostId", "==", data.id)
+            .onSnapshot(snapshot => {
+                let gameApps = [];
+                snapshot.forEach(doc => {
+                    console.log("Game application loaded")
+                    gameApps.push({key:doc.id, value:doc.data()});
+                })
+                setGameAppList(gameApps);
+            },error => {
+                console.log("Upcoming Games " + error.message)
+            })
+
 
 
         return () => {
             unsubscribe2();
             unsubscribe();
             unsubscribe3();
+            unsubscribe4();
         }
 
     },[])
@@ -385,20 +427,42 @@ const HomeScreen = props => {
                         <View style = {{height: 130, width: '100%',marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', }}>
                             {/*=========================================player button=========================================*/}
                             {/*=======================================functionalities not inputted yet=================================*/}
-                            <TouchableOpacity style = {style.middleButton} activeOpacity={0.8}>
-                                <View style = {{alignItems: 'flex-end', }}>
-                                    <View style = {{borderRadius: 60, backgroundColor: 'orange', left: 12, top: 5, zIndex: 1 }}>
-                                        <Text style = {{color: 'white', fontWeight: 'bold'}}>
-                                            {'  ' + '1' + '  '}
-                                        </Text>
-                                    </View>
+                            {renderPlayerButton}
+                            <RBSheet
+                                ref={playerRef}
+                                height={Dimensions.get("window").height * 0.7}
+                                closeOnDragDown={true}
+                                animationType = {'fade'}
+                                dragFromTopOnly = {true}
+                                customStyles={{
+                                    container: {
+                                        alignItems: "center",
+                                        borderTopRightRadius: 30,
+                                        borderTopLeftRadius: 30,
+                                    },
+                                    draggableIcon: {
+                                        width: 60,
+                                    }
+                                }}
+                            >
+                                {gameAppList.length <= 0
+                                    ? noApplications
+                                    :
+                                    <ScrollView nestedScrollEnabled={true}>
+                                        {gameAppList.map(appl =>
+                                            (
+                                                <PlayerApplicationItem
+                                                    key={appl.key}
+                                                    playerDetails={appl.value}
+                                                    appId={appl.key}
+                                                    user={user.id}
+                                                />
 
-                                    <FontAwesome name="group" color={'#5a5959'} size={50} />
-                                </View>
-                                <Text style = {{ color: '#5a5959', fontSize: 20, marginTop: 6, textAlign: 'center'}}>
-                                    Players
-                                </Text>
-                            </TouchableOpacity>
+                                            )
+                                        )}
+                                    </ScrollView>
+                                }
+                            </RBSheet>
                             {/*=======================================referee button===========================================*/}
                             {renderRefereeButton}
                             <RBSheet

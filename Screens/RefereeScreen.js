@@ -1,14 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {
-    View,
-    StyleSheet,
-    FlatList,
-    Text,
-    TouchableOpacity,
-    Image,
-    Dimensions,
-    Keyboard,
-    TouchableWithoutFeedback
+  View, 
+  StyleSheet, 
+  FlatList, 
+  Text, 
+  TouchableOpacity, 
+  Image, 
+  Animated,
+  Dimensions,
+  Keyboard,
+  TouchableWithoutFeedback
 } from 'react-native';
 
 import Background from "../views/Background";
@@ -17,10 +18,13 @@ import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
 import {Select, SelectItem} from "@ui-kitten/components";
 import Entypo from "react-native-vector-icons/Entypo";
-import GameScreenItem from "../Components/GameScreenItem";
 import LocationSearchBar from "../Components/LocationSeachBar";
 
 const sHeight = Dimensions.get('window').height
+
+import FullGameItem from "../Components/FullGameItem";
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
 const RefereeScreen = (props) => {
@@ -29,6 +33,12 @@ const RefereeScreen = (props) => {
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportsIndex, setSportsIndex] = useState();
     const [sportValue, setSportValue] = useState();
+
+    //ANIMATED COMPONENTS =========================================================================================
+    const x = new Animated.Value(0);
+    const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
+        {useNativeDriver:true,
+        });
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -169,20 +179,24 @@ const RefereeScreen = (props) => {
             </View>
 
             <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-                <FlatList
+                <AnimatedFlatList
+                    scrollEventThrottle={16}
+                    {...{onScroll}}
                     showsHorizontalScrollIndicator={false}
                     horizontal={true}
                     contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
                     keyExtractor={(item) => item.key.toString()}
                     data = {refereeList}
-                    renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
-                                                              gameId={item.key}
-                                                              user={user}
-                                                              itemType={"Referee"}
+                    renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
+                                                           gameId={item.key}
+                                                           user={user}
+                                                           itemType={"Referee"}
+                                                           index = {index}
+                                                           translateX = {x}
                     />}
                 >
 
-                </FlatList>
+                </AnimatedFlatList>
 
             </View>
         </Background>

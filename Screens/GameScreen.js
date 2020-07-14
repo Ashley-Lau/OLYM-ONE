@@ -1,22 +1,31 @@
 import React, {useEffect, useState} from 'react';
-
-import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, Dimensions} from 'react-native';
+import {Animated, View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView, Dimensions} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
-import Entypo from 'react-native-vector-icons/Entypo'
+import {Select, SelectItem,} from "@ui-kitten/components";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Entypo from 'react-native-vector-icons/Entypo';
+
 
 import Background from "../views/Background";
 import GameItem from "../Components/GameItem";
-import GameScreenItem from "../Components/GameScreenItem";
 import LocationSearchBar from "../Components/LocationSeachBar";
-
+import FullGameItem from "../Components/FullGameItem";
 import firebaseDb from "../firebaseDb";
 
 const sHeight = Dimensions.get('window').height
 
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
 const GameScreen = (props) => {
     const navigation = useNavigation()
     const user = props.route.params.user
+
+    //ANIMATED COMPONENTS =========================================================================================
+    const x = new Animated.Value(0);
+    const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
+        {useNativeDriver:true,
+        });
 
     // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
@@ -57,6 +66,7 @@ const GameScreen = (props) => {
                         doc.ref.delete().then(()=>{});
                     } else if(d.hostId === currentUser){}
                     else if(parseInt(d.availability) <= 0){}
+                    else if(d.players.includes(currentUser)){}
                     else {
                         searched.push({key:doc.id, value:doc.data()});
                     }
@@ -91,6 +101,7 @@ const GameScreen = (props) => {
                                 doc.ref.delete().then(()=>{});
                             } else if(d.hostId === currentUser){}
                             else if( parseInt(d.availability) <= 0){}
+                            else if(d.players.includes(currentUser)){}
                             else {
                                 someGame.push({key:doc.id, value:doc.data()});
                             }
@@ -190,20 +201,29 @@ const GameScreen = (props) => {
                 </View>
 
                 <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-                    <FlatList
+
+                    <AnimatedFlatList
+                        scrollEventThrottle={16}
+                        {...{onScroll}}
                         showsHorizontalScrollIndicator={false}
+                        //KIV need to do some Apploading for it to work
+                        // initialScrollIndex={Math.floor(game.length/2)}
                         horizontal={true}
                         contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
-                        renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
-                                                                  gameId={item.key}
-                                                                  user={user}
-                                                                  itemType={"Join"}
+                        renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
+                                                               gameId={item.key}
+                                                               user={user}
+                                                               itemType={"Join"}
+                                                               translateX = {x}
+                                                               index = {index}
+
                         />}
                     >
 
-                    </FlatList>
+                    </AnimatedFlatList>
+
 
                 </View>
             </Background>

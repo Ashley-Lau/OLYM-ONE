@@ -9,13 +9,28 @@ import firebaseDb from "../firebaseDb"
 
 const JoinItem = props => {
 
-    //JOINING GAME ====================================================================================================================
-    const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
+    // REQUESTING TO JOIN INSTEAD OF JOINING THE GAME STRAIGHT ====================================================
 
-    const gameJoin = () => {
-        const slots = parseInt(props.gameDetails.availability) - 1
-        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.user.id)}).then(() => {})
+    const playerAppRef = firebaseDb.firestore().collection("player_application_details")
+
+    const gameApp = () => {
+        playerAppRef.add({
+            date:props.gameDetails.date,
+            gameId:props.gameId,
+            hostId:props.gameDetails.hostId,
+            availability:props.gameDetails.availability,
+            playerId: props.user.id,
+            sport:props.gameDetails.sport,
+            playerEmail:props.user.email,
+            playerUserName:props.user.username,
+            playerName: props.user.firstName + " " + props.user.lastName,
+            playerUri:props.user.uri
+
+        })
+            .then(() => {})
+            .catch(err => console.error(err))
     }
+
 
     const alreadyJoined = () => {
         //rejects the join game request if the user is already in the game
@@ -26,7 +41,7 @@ const JoinItem = props => {
         else if(props.gameDetails.availability <= 0){
             Alert.alert("Game is Full!", "There are no more slots available!")
         } else {
-            gameJoin();
+            gameApp();
         }
 
     }
