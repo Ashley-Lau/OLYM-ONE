@@ -65,10 +65,10 @@ const HomeScreen = props => {
             <View style = {{alignItems: 'flex-end', }}>
                 {gameAppList.length === 0 ?
                     <Text style = {{color: 'transparent', fontWeight: 'bold'}}>
-                        {'  ' + 0 + '  '}
+                        {'  ' + 1 + '  '}
                     </Text>
                     :
-                    <View style = {{borderRadius: 60, backgroundColor: 'orange',right:-5, top: 5, zIndex: 1 }}>
+                    <View style = {{borderRadius: 60, backgroundColor: 'orange',left: 10, top: 5, zIndex: 1 }}>
                         <Text style = {{color: 'white', fontWeight: 'bold'}}>
                             {'  ' + gameAppList.length + '  '}
                         </Text>

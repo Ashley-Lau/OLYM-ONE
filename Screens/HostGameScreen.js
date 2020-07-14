@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions} from 'react-native';
+import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions, Alert, TouchableOpacity} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
@@ -12,12 +12,52 @@ import {Formik} from 'formik';
 import * as yup from 'yup'
 import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
-import { Select, SelectItem } from '@ui-kitten/components';
+import {Autocomplete, AutocompleteItem, Select, SelectItem, Input} from '@ui-kitten/components';
+import {mrtStations} from "../Components/SearchBarFunctions";
 
 const sHeight = Dimensions.get('window').height
 
+const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
+
+const LocationSearch = (props) => {
+    const [value, setValue] = useState('');
+    const [data, setData] = useState(mrtStations);
+
+    const onSelect = (index) => {
+        setValue(data[index].title);
+        props.select(data[index].title)
+    };
+
+    const onChangeText = (query) => {
+        props.changeText(query)
+        setValue(query);
+        setData(mrtStations.filter(item => filter(item, query)));
+    };
+
+    const renderOption = (item, index) => (
+        <AutocompleteItem
+            key={index}
+            title={item.title}
+        />
+    );
+
+    return <Autocomplete
+        placement = {'bottom start'}
+        value={value}
+        onChangeText={onChangeText}
+        onSelect={onSelect}
+        {...props}
+    >
+        {data.map(renderOption)}
+    </Autocomplete>
+}
+
 const reviewSchema = yup.object({
-    location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location != ''),
+    location: yup.string().label('Zone')
+        .test('InputZone', 'Please select a valid zone!', (location) => location === undefined ? false :
+            mrtStations.filter(item => item.title.toLowerCase() === location.toLowerCase()).length === 1)
+    ,
+    specificLocation: yup.string().label('Specific Location').required(),
     sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != ''),
     date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > Date.now()),
     time: yup.date().label('Time'),
@@ -66,11 +106,9 @@ const HostGameScreen = props => {
 
     //ARRAY FOR PICKER ==============================================================================================================
 
-    const sgLocations = ["Tampines", "Hougang", "Seng Kang", "Punggol", "Pasir Ris", "Jurong","Clementi",]
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
     const referee =["NO", "YES"]
 
-    const [locationIndex, setLocationIndex] = useState();
     const [sportsIndex, setSportsIndex] = useState();
     const [refIndex, setRefIndex] = useState();
 
@@ -82,6 +120,7 @@ const HostGameScreen = props => {
             .add({
                 sport: values.sport,
                 location: values.location,
+                specificLocation: values.specificLocation,
                 notes: values.notes,
                 availability : values.slots,
                 date: sgTime(values.date),
@@ -101,7 +140,8 @@ const HostGameScreen = props => {
     return(<ScrollView>
         <Background >
                 <Formik initialValues={{
-                    location: 'Select',
+                    location: '',
+                    specificLocation: '',
                     sport:'Select',
                     price:'',
                     slots:'',
@@ -119,33 +159,40 @@ const HostGameScreen = props => {
                         }
                         }
                 >
-                    {/*// LOCATION ------------------------------------------------------------------------*/}
                     {(props) => (
                         <View>
+                            {console.log(props.values)}
                             <View style={{width: '100%', height: sHeight * 0.08, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
                                 <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}> Host a game</Text>
                             </View>
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
-                                <View style={styles.dropDownCopy}>
 
-                                    <Select
-                                        style = {{width: "100%", justifyContent:"space-between"}}
-                                        placeholder='Location'
-                                        value ={sgLocations[locationIndex - 1]}
-                                        onSelect={index => {
-                                            setLocationIndex(index)
-                                            props.setFieldValue('location', sgLocations[index.row])
-                                        }}
-                                        selectedIndex={locationIndex}>
-                                        {sgLocations.map(locations => (
-                                            <SelectItem key={locations} title={locations}/>
-                                        ))}
-
-                                    </Select>
-
+                            {/*// LOCATION ------------------------------------------------------------------------*/}
+                            <View style={{...styles.selectionItem, marginTop: 0}}>
+                                <Text style={{fontSize:15, marginLeft:8}}>ZONE :</Text>
+                                <View style={{width: '97%',marginTop: 5}}>
+                                    <LocationSearch
+                                        changeText = {(val) => props.setFieldValue('location', val)}
+                                        placeholder='Select a zone'
+                                        select = {(val) => props.setFieldValue('location', val)}
+                                        onBlur = {props.handleBlur('location')}
+                                    />
                                 </View>
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
+                                <Text style={{fontSize: 15, color: '#8B0000'}}>{props.touched.location && props.errors.location}</Text>
+                            </View>
+
+                            {/*// SPECIFIC LOCATION ------------------------------------------------------------------------*/}
+
+                            <View style={styles.selectionItem}>
+                                <Text style={{fontSize:15, marginLeft:8}}>SPECIFIC LOCATION  :</Text>
+                                <View style={{...styles.dropDown, padding:5}}>
+                                    <TextInput placeholder={"Input the specific location"}
+                                               style={{...styles.dropDownText, fontSize:16}}
+                                               onChangeText={props.handleChange('specificLocation')}
+                                               value={props.values.specificLocation}
+                                               onBlur = {props.handleBlur('specificLocation')}
+                                    />
+                                </View>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.specificLocation && props.errors.specificLocation}</Text>
                             </View>
 
 
@@ -372,7 +419,6 @@ const HostGameScreen = props => {
                                     </Select>
 
                                 </View>
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
 
                             {props.values.referee == "YES"
@@ -450,7 +496,6 @@ const styles = StyleSheet.create({
         alignItems:"center",
         height: 40,
         width: "97%",
-        borderColor:"rgba(106,120,146,0.98)",
     },
     dropDownNotesText: {
         flexDirection:"row",

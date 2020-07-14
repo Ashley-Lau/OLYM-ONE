@@ -14,10 +14,12 @@ const LocationSearchBar = (props) => {
 
     const onSelect = (index) => {
         setValue(data[index].title);
+        props.select(data[index].title)
     };
 
     const onChangeText = (query) => {
         setValue(query);
+        props.changeText(query)
         setData(mrtStations.filter(item => filter(item, query)));
     };
 
@@ -43,6 +45,10 @@ const LocationSearchBar = (props) => {
                 props.onPress()
                 return;
             }
+            if(value === '') {
+                props.onPress()
+                return;
+            }
             alertMessage()
         }}>
             <MaterialCommunityIcons name="magnify" size={25} style={{color:"#414141"}}/>
@@ -56,7 +62,8 @@ const LocationSearchBar = (props) => {
                 value={value}
                 accessoryRight={renderIcon}
                 onChangeText={onChangeText}
-                onSelect={onSelect}>
+                onSelect={onSelect}
+    >
                 {data.map(renderOption)}
             </Autocomplete>
 }

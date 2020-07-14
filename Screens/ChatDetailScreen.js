@@ -144,7 +144,7 @@ const ChatDetailScreen = (props) => {
                                               activeOpacity = {0.85}
                                               onPress={() => navigation.navigate('ChatScreen', {chat: item.value, userId: userId})}>
                                 {/*========================================image of the other user===========================================*/}
-                                <View style = {{width: '20%'}}>
+                                <View style = {{width: '20%', alignItems: 'center'}}>
                                     <Image source = {{uri: item.value.smallerId[0] === userId ? item.value.largerId[2] : item.value.smallerId[2]}}
                                            style = {style.image}/>
                                 </View>
@@ -165,7 +165,7 @@ const ChatDetailScreen = (props) => {
                                         </Text>
                                     </View>
                                     {/*======================================unread messages and time============================================*/}
-                                    <View style = {{color: 'black', justifyContent: 'center', marginRight: 9, alignItems: 'flex-end'}}>
+                                    <View style = {{color: 'black', justifyContent: 'center', alignItems: 'flex-end', marginRight: 9}}>
                                         <Text style = {{fontSize: 16}}>{displayTime(item.value.lastMessageTime)}</Text>
                                         {item.value.lastMessageFrom === userId || item.value.notificationStack === 0
                                             ? <View>
@@ -222,7 +222,6 @@ const style = StyleSheet.create({
         width: 60,
         height: 60,
         borderRadius: 120,
-        marginLeft: 12,
         borderWidth: 0.5,
         borderColor: 'grey'
     }

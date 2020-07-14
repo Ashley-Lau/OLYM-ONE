@@ -22,3 +22,4 @@
 # finished general ui ux of profile screen
 # changed modal of referee application button
 # added preliminary search bar
+# finished game screen
