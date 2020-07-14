@@ -1,21 +1,15 @@
 import React, { useState } from 'react';
-import {View, TouchableOpacity} from 'react-native';
+import {Alert, TouchableOpacity} from 'react-native';
 import { Autocomplete, AutocompleteItem } from '@ui-kitten/components';
 
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import {mrtStations} from "./SearchBarFunctions";
 
-const renderIcon = () => (
-    <TouchableOpacity style={{elevation:5}} onPress={props.searchMe}>
-        <MaterialCommunityIcons name="magnify" size={25} style={{color:"#414141"}}/>
-    </TouchableOpacity>
-)
-
 const filter = (item, query) => item.title.toLowerCase().includes(query.toLowerCase());
 
 const LocationSearchBar = (props) => {
-    const [value, setValue] = useState(null);
+    const [value, setValue] = useState('');
     const [data, setData] = useState(mrtStations);
 
     const onSelect = (index) => {
@@ -34,8 +28,31 @@ const LocationSearchBar = (props) => {
         />
     );
 
+    const alertMessage = () => Alert.alert(
+        "Invalid zone!",
+        "Please select a valid zone.",
+        [
+            {text:"Confirm", onPress: () => {},  style:'cancel'}
+        ],
+        {cancelable: false}
+    )
+
+    const renderIcon = () => (
+        <TouchableOpacity style={{elevation:5}} onPress={() => {
+            if (mrtStations.filter(item => item.title.toLowerCase() === value.toLowerCase()).length === 1) {
+                props.onPress()
+                return;
+            }
+            alertMessage()
+        }}>
+            <MaterialCommunityIcons name="magnify" size={25} style={{color:"#414141"}}/>
+        </TouchableOpacity>
+    )
+
+
     return <Autocomplete
-                placeholder='Place your Text'
+                placeholder='Select a zone'
+                placement = {'bottom start'}
                 value={value}
                 accessoryRight={renderIcon}
                 onChangeText={onChangeText}

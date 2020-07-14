@@ -1,21 +1,18 @@
 import React, {useEffect, useState} from 'react';
 
-import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, SafeAreaView} from 'react-native';
-import firebase from 'firebase';
+import {View, Image, StyleSheet, FlatList, Keyboard, TouchableWithoutFeedback, Text, TouchableOpacity, Dimensions} from 'react-native';
+
 import {useNavigation} from "@react-navigation/native";
-import {Select, SelectItem,} from "@ui-kitten/components";
-import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo'
 
 import Background from "../views/Background";
-import SearchButtons from "../Components/SearchButtons";
 import GameItem from "../Components/GameItem";
 import GameScreenItem from "../Components/GameScreenItem";
+import LocationSearchBar from "../Components/LocationSeachBar";
 
 import firebaseDb from "../firebaseDb";
 
-
-
+const sHeight = Dimensions.get('window').height
 
 const GameScreen = (props) => {
     const navigation = useNavigation()
@@ -114,14 +111,14 @@ const GameScreen = (props) => {
     }, [])
 
     return (
-        <Background style = {styles.container}>
-
+        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+            <Background>
                 {/*==================================== Title and hosting a game ======================================*/}
-                <View style = {{marginTop:"5%", justifyContent: 'space-between',height: "8%", width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                    <Text style = {styles.text}> Games </Text>
+                <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
+                    <Text style = {styles.text}>Games </Text>
                     <View style = {{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
                         <Text style = {{...styles.text, fontSize: 25}}> Host </Text>
-                        <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 30, alignItems: 'center', justifyContent: 'center',}}
+                        <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 20, alignItems: 'center', justifyContent: 'center',height: 40, width: 40 }}
                                           activeOpacity={ 0.9}
                                           onPress={() => {
                                               navigation.navigate('HostGameScreen',
@@ -138,30 +135,11 @@ const GameScreen = (props) => {
 
                 {/*==================================SEARCH BAR ==============================================*/}
                 <View style={styles.searchSpace}>
-                    <View style={styles.searchBar}>
-                        <Select
-                            style = {{width: "90%", justifyContent:"space-between"}}
-                            placeholder='Select Sport'
-                            value ={sports[sportsIndex - 1]}
-                            onSelect={index => {
-                                setSportsIndex(index)
-                                setSportValue(sports[index.row])
-                            }}
-                            selectedIndex={sportsIndex}>
-                            {sports.map(sport => (
-                                <SelectItem key={sport} title={sport}/>
-                            ))}
-
-                        </Select>
-                        <SearchButtons style={{flex: 1, elevation: 5}} searchMe={searchSport}/>
-                    </View>
+                    <LocationSearchBar onPress = {() => {}}/>
                 </View>
-
-
-
                 {/*===============================Sport Selection ===========================================*/}
 
-                <View style={{height:"15%"}}>
+                <View style={{height: sHeight * 0.14}}>
                     <FlatList showsHorizontalScrollIndicator={false}
                               horizontal={true}
                               contentContainerStyle= {{justifyContent:"space-between"}}
@@ -208,17 +186,14 @@ const GameScreen = (props) => {
                               }
 
                     >
-
-
-
                     </FlatList>
                 </View>
 
-                <View style={{height:"68%", paddingVertical:"4%"}}>
+                <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
                     <FlatList
                         showsHorizontalScrollIndicator={false}
                         horizontal={true}
-                        contentContainerStyle= {{ paddingHorizontal:"6%", alignItems:"center"}}
+                        contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
                         keyExtractor={(item) => item.key.toString()}
                         data = {game}
                         renderItem= {({item}) => <GameScreenItem  gameDetails={item.value}
@@ -231,52 +206,17 @@ const GameScreen = (props) => {
                     </FlatList>
 
                 </View>
-
-
-
-
             </Background>
+        </TouchableWithoutFeedback>
     )
 }
 
 const styles = StyleSheet.create({
-    container: {
-        // flex: 1,
-        // backgroundColor:"transparent",
-        // top:-24
-        // justifyContent: 'flex-start',
-        // flexDirection:"column",
-        // backgroundColor:"grey"
-
-    },
-    searchBar:{
-        flexDirection: "row",
-        justifyContent:"space-around",
-        alignItems:"center",
-        borderBottomWidth:1,
-        borderRadius:4,
-        width:"98%",
-        // marginTop:30,
-        marginBottom:10,
-        borderColor:"black",
-        backgroundColor:"transparent"
-    },
-    searchInput:{
-        width:"85%",
-        height:"100%",
-        fontSize:20,
-        left: 10
-    },
     searchSpace:{
-        width:"98%",
-        height:"10%",
-        // flex:1,
-        flexDirection:"column",
-        justifyContent:"space-around",
-        alignItems:"flex-end",
-        marginLeft:"2%"
-        // borderBottomWidth:1,
-        // borderBottomColor:"rgba(177,177,177,0.78)",
+        width:"96%",
+        height: sHeight * 0.1,
+        justifyContent: 'center',
+        alignSelf: 'center'
     },
     sportItem:{
         // height:"80%",
@@ -295,7 +235,14 @@ const styles = StyleSheet.create({
         height:70,
         width:100,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2.27,
 
     },
     sportSelected:{
@@ -305,7 +252,14 @@ const styles = StyleSheet.create({
         height:75,
         width:110,
         justifyContent:"center",
-        alignItems:"center"
+        alignItems:"center",
+        shadowColor: "#000",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.2,
+        shadowRadius: 2.27,
     },
     sportImageShadow:{
         width: 50,
@@ -327,7 +281,7 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        fontSize: 30,
+        fontSize: 27,
         fontWeight: "bold",
     },
 })

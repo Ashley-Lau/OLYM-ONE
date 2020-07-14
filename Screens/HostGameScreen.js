@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import {Text,TextInput, StyleSheet, Modal, View, ScrollView} from 'react-native';
+import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
@@ -14,6 +14,7 @@ import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
 import { Select, SelectItem } from '@ui-kitten/components';
 
+const sHeight = Dimensions.get('window').height
 
 const reviewSchema = yup.object({
     location: yup.string().label('Location').test('selectLocation', 'Please select a location!', (location) => location != ''),
@@ -96,6 +97,7 @@ const HostGameScreen = props => {
     }
 
     return(<ScrollView>
+        <Background >
                 <Formik initialValues={{
                     location: 'Select',
                     sport:'Select',
@@ -116,11 +118,9 @@ const HostGameScreen = props => {
                 >
                     {/*// LOCATION ------------------------------------------------------------------------*/}
                     {(props) => (
-
                         <View>
-                            <Background />
-                            <View style={{width: '100%', height: 50, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
-                                <Text style={{fontSize:30, color:"white", fontWeight: 'bold'}}> HOST A GAME</Text>
+                            <View style={{width: '100%', height: sHeight * 0.08, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
+                                <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}> Host a game</Text>
                             </View>
                             <View style={styles.selectionItem}>
                                 <Text style={{fontSize:15, marginLeft:8}}>LOCATION:</Text>
@@ -412,15 +412,12 @@ const HostGameScreen = props => {
                                     <Text>Host</Text>
                                 </GradientButton>
                             </View>
-                            <View style={{backgroundColor:"transparent", height:50}}>
+                                <View style={{backgroundColor:"transparent", height:50}}>
                             </View>
-
                         </View>
-
                     )}
-
                 </Formik>
-
+            </Background>
             </ScrollView>
     )
 }
