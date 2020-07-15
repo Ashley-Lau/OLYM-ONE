@@ -95,6 +95,7 @@ const GameScreen = (props) => {
                         } else if(d.hostId === currentUser){}
                         else if( parseInt(d.availability) <= 0){}
                         else if(d.players.includes(currentUser)){}
+                        else if(d.refereeList.includes(currentUser)){}
                         else {
                             filteredGames.push({key:doc.id, value:doc.data()});
                         }
@@ -121,6 +122,7 @@ const GameScreen = (props) => {
                             } else if(d.hostId === currentUser){}
                             else if( parseInt(d.availability) <= 0){}
                             else if(d.players.includes(currentUser)){}
+                            else if(d.refereeList.includes(currentUser)){}
                             else {
                                 filteredGames.push({key:doc.id, value:doc.data()});
                             }
@@ -148,6 +150,7 @@ const GameScreen = (props) => {
                             } else if(d.hostId === currentUser){}
                             else if( parseInt(d.availability) <= 0){}
                             else if(d.players.includes(currentUser)){}
+                            else if(d.refereeList.includes(currentUser)){}
                             else {
                                 filteredGames.push({key:doc.id, value:doc.data()});
                             }

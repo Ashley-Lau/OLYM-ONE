@@ -29,7 +29,7 @@ const RefereeItem = props => {
 
 
     return (
-        <GradientButton style={{...Styles.buttonSize}}
+        <GradientButton style={{...props.style}}
                         onPress={() => {
                             requestApp();
                             props.closeGame();
