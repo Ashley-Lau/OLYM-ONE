@@ -13,7 +13,8 @@ const UpcomingGameItem = props => {
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
 
     const quitGame = () => {
-        gameRef.update({referee: firebase.firestore.FieldValue.arrayRemove(props.user.id)}).then(()=>{})
+        const refSlots = parseInt(props.gameDetails.refereeSlots) + 1;
+        gameRef.update({refereeSlots: refSlots, refereeList: firebase.firestore.FieldValue.arrayRemove(props.user.id)}).then(()=>{})
     }
 
     const confirmQuit = () => {
@@ -38,7 +39,7 @@ const UpcomingGameItem = props => {
     }
 
     return (
-        <GradientButton style={{...Styles.buttonSize}}
+        <GradientButton style={{...props.style}}
                         onPress={() => {
                             confirmQuit();
                             props.closeGame();
