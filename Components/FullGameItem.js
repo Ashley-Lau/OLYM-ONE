@@ -22,8 +22,10 @@ const FullGameItem = props => {
         gameDate = gameDate.toDate().toString().slice(4,15);
     }
 
-    // LIST OF PLAYERS ================================================================================================
+
+    // LIST OF PLAYERS AND REFEREE ================================================================================================
     const [playerUser, setPlayerUser] = useState([]);
+    const [refereeUser, setRefereeUser] = useState([]);
 
     const username = () => {
         setPlayerUser([]);
@@ -32,7 +34,7 @@ const FullGameItem = props => {
             firebaseDb.firestore().collection('users')
                 .doc(uid)
                 .onSnapshot(doc => {
-                    playerList.push(doc.data().username);
+                    playerList.push(doc.data());
                 }, error => {
                     console.log(error.message);
                 })
@@ -40,10 +42,30 @@ const FullGameItem = props => {
         setPlayerUser(playerList);
     }
 
+    const getRef = () => {
+        setRefereeUser([]);
+        let refList = [];
+        props.gameDetails.refereeList.map(uid => {
+            firebaseDb.firestore().collection('users')
+                .doc(uid)
+                .onSnapshot(doc => {
+                    refList.push(doc.data());
+                }, error => {
+                    console.log(error.message);
+                })
+        })
+        setRefereeUser(refList);
+    }
+
     useEffect(() => {
         const unsubscribe = username();
+        const unsubscribe2 = getRef();
 
-        return () => unsubscribe;
+        return () => {
+            unsubscribe;
+            unsubscribe2;
+        }
+
     }, [])
 
 
@@ -51,42 +73,54 @@ const FullGameItem = props => {
 
     //MODAL STATES ================================================================================================================
     const [playerDetails, openPlayerDetails] = useState(false);
+    const [refereeDetails, openRefereeDetails] = useState([]);
     const [gameDetails, openGameDetails] = useState(false);
 
 
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/BballBG.png");
     let sportColor = "rgba(0,0,0,1)"
+    let lightColor = "rgb(255,255,255)"
     if(props.gameDetails.sport.toLowerCase() === "basketball" && props.itemType === "Referee"){
         sportBG = require("../assets/BballRefereeBG.png");
         sportColor = "rgba(200,98,57,1)";
+        lightColor = "rgb(252,238,184)"
     } else if(props.gameDetails.sport.toLowerCase() === "soccer" && props.itemType === "Referee"){
         sportBG = require("../assets/SoccerRefereeBG.png");
         sportColor = "rgba(134,119,198,1)";
+        lightColor = "rgb(195,185,206)"
     } else if(props.gameDetails.sport.toLowerCase() === "floorball" && props.itemType === "Referee"){
         sportBG = require("../assets/floorballRefereeBG.png");
         sportColor = "rgba(58,204,255,1)";
+        lightColor = "rgb(228,235,255)"
     } else if(props.gameDetails.sport.toLowerCase() === "tennis" && props.itemType === "Referee"){
         sportBG = require("../assets/TennisRefereeBG.png");
         sportColor = "rgba(212,242,102,1)";
+        lightColor = "rgb(196,172,19)"
     } else if(props.gameDetails.sport.toLowerCase() === "badminton" && props.itemType === "Referee") {
         sportBG = require("../assets/BadmintonRefereeBG.png");
         sportColor = "rgba(211,55,64,1)";
+        lightColor = "rgb(218,138,158)"
     } else if(props.gameDetails.sport.toLowerCase() === "basketball"){
         sportBG = require("../assets/BballBG.png");
         sportColor = "rgba(200,98,57,1)";
+        lightColor = "rgb(252,238,184)"
     } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
         sportBG = require("../assets/SoccerBG.png");
         sportColor = "rgba(134,119,198,1)";
+        lightColor = "rgb(195,185,206)"
     } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
         sportBG = require("../assets/floorballBG.png");
         sportColor = "rgba(58,204,255,1)";
+        lightColor = "rgb(228,235,255)"
     } else if(props.gameDetails.sport.toLowerCase() === "tennis"){
         sportBG = require("../assets/TennisBG.png");
         sportColor = "rgba(212,242,102,1)";
+        lightColor = "rgb(196,172,19)"
     } else if(props.gameDetails.sport.toLowerCase() === "badminton") {
         sportBG = require("../assets/BadmintonBG.png");
         sportColor = "rgba(211,55,64,1)";
+        lightColor = "rgb(218,138,158)"
     }
 
 
@@ -209,13 +243,28 @@ const FullGameItem = props => {
     return (
         <View>
             <ViewPlayerItem visible={playerDetails}
-                            username={playerUser}
-                            closePlayer ={() => {openPlayerDetails(false)}}/>
+                            playerDetails={playerUser}
+                            closePlayer ={() => {openPlayerDetails(false)}}
+                            backGround = {sportBG}
+                            sportColor = {sportColor}
+                            lightColor = {lightColor}
+                            typeCheck = {"Player"}
+            />
+
+            <ViewPlayerItem visible={refereeDetails}
+                            playerDetails={refereeUser}
+                            closePlayer ={() => {openRefereeDetails(false)}}
+                            backGround = {sportBG}
+                            sportColor = {sportColor}
+                            lightColor = {lightColor}
+                            typeCheck = {"Referee"}
+            />
 
             <GameDetailsModal visible={gameDetails}
                               gameDetails={props.gameDetails}
                               closeGame={() => {openGameDetails(false)}}
                               openPlayer ={() => {openPlayerDetails(true)}}
+                              openReferee = {() => {openRefereeDetails(true)}}
                               itemType = {props.itemType}
                               chatFunction ={chatWithHost}
                               gameId ={props.gameId}

@@ -159,17 +159,15 @@ const GameDetailsModal = props => {
 
                                             <Text style={{fontSize:30, color:"grey"}}>   |   </Text>
 
-                                            <TouchableOpacity style={{flexDirection:"column", justifyContent:"center", alignItems:"center", width: '27%', marginLeft: 20}}>
+                                            <TouchableOpacity style={{flexDirection:"column", justifyContent:"center", alignItems:"center", width: '27%', marginLeft: 20}}
+                                                              onPress={() => {
+                                                                  props.openReferee();}}
+                                            >
                                                 <Text style={{fontSize:20}}>{props.gameDetails.refereeList.length}</Text>
                                                 {/*<MaterialCommunityIcons name="whistle" size={35}/>*/}
                                                 <Text style={{fontSize:20}}>Referees</Text>
 
                                             </TouchableOpacity>
-                                            {/*<GradientButton style={{width: '27%', marginLeft: 20}}*/}
-                                            {/*                onPress={props.chatFunction}*/}
-                                            {/*                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>*/}
-                                            {/*    View Referee*/}
-                                            {/*</GradientButton>*/}
                                         </View>
 
 
