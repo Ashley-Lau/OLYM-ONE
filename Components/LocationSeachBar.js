@@ -19,7 +19,6 @@ const LocationSearchBar = (props) => {
 
     const onChangeText = (query) => {
         setValue(query);
-        props.changeText(query)
         setData(mrtStations.filter(item => filter(item, query)));
     };
 
@@ -32,7 +31,7 @@ const LocationSearchBar = (props) => {
 
     const alertMessage = () => Alert.alert(
         "Invalid zone!",
-        "Please select a valid zone.",
+        "Please select a valid zone from the list.",
         [
             {text:"Confirm", onPress: () => {},  style:'cancel'}
         ],
@@ -41,7 +40,7 @@ const LocationSearchBar = (props) => {
 
     const renderIcon = () => (
         <TouchableOpacity style={{elevation:5}} onPress={() => {
-            if (mrtStations.filter(item => item.title.toLowerCase() === value.toLowerCase()).length === 1) {
+            if (mrtStations.filter(item => item.title === value).length === 1) {
                 props.onPress()
                 return;
             }

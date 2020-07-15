@@ -28,8 +28,8 @@ const Styles = StyleSheet.create({
 
     },
     logo:{
-        width:150,
-        height:150,
+        width:125,
+        height:125,
     },
     buttonContainer:{
         width:100,

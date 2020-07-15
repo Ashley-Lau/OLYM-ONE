@@ -23,3 +23,4 @@
 # changed modal of referee application button
 # added preliminary search bar
 # finished game screen
+# fixed bugs for android, improved design and finished referee tab 

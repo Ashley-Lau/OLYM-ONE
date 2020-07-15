@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {Keyboard, StyleSheet, View, Image, TouchableWithoutFeedback, ImageBackground, Text, Alert} from 'react-native';
+import {StyleSheet, View, Image, Text, Alert, } from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import {Sae} from 'react-native-textinput-effects';
@@ -11,6 +11,7 @@ import {Asset} from "expo-asset";
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
+import SkyscrapperBackground from "../views/SkyscrapperBackground";
 import {get} from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 const LoginScreen = (props) => {
@@ -67,11 +68,9 @@ const LoginScreen = (props) => {
 
     if(loaded){
         return (
-            <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                <ImageBackground source={require("../assets/BrownSkyline.png")} style={{...Styles.container, justifyContent:'space-around'}}>
-                {/*<ImageBackground source = {backSunset} style={Styles.container}>*/}
-                    <View style={{flexDirection:"column", justifyContent:"center", alignItems:'center'}}>
-                        <Image style={{...Styles.logo, marginTop: 40}} source={logo}/>
+                <SkyscrapperBackground>
+                    <View style={{justifyContent:"center", alignItems:'center', flex :1}}>
+                        <Image style={{...Styles.logo, }} source={logo}/>
                         <View style = {style.inputContainer}>
                             <Sae label= {'Email:'}
                                  iconClass = {FontAwesome5}
@@ -103,32 +102,29 @@ const LoginScreen = (props) => {
                                  onChangeText={pw => setPassword(pw)}
                                  value = {password}
                             />
-                            <View style={{...Styles.buttonContainer, flexDirection:"row"}}>
+                            <View style={{width: '100%', marginTop: 20}}>
+                                <GradientButton onPress={signInUser}
+                                                style={style.button}
+                                                colors={['#ff8400','#e56d02']}>
+                                    LOGIN
+                                </GradientButton>
                                 <GradientButton onPress={() => navigation.navigate('SignupScreen')}
                                                 style={style.button}
-                                                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
-                                    Sign up
-                                </GradientButton>
-
-                                <GradientButton onPress={signInUser}
-                                                style={{...style.button, marginLeft:125}}
-                                                colors={['rgba(32,151,83,0.85)', 'rgba(12,78,41,0.85)']}>
-                                    Sign in
+                                                colors={['#e52d27', '#b31217']}>
+                                    SIGN UP
                                 </GradientButton>
 
                             </View>
 
                         </View>
+                        <View style={{position: "absolute", bottom: 3}}>
+                            <Text style = {{fontSize: 14, fontWeight: 'bold',}}> Forgot password?
+                                <Text style = {{color: 'maroon'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
+                            </Text>
+                        </View>
                     </View>
-
-                    <View style={{paddingTop:20}}>
-                        <Text style = {{fontSize: 14, fontWeight: 'bold', top: 25}}> Forgot password?
-                            <Text style = {{color: 'blue'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
-                        </Text>
-                    </View>
-
-                </ImageBackground>
-            </TouchableWithoutFeedback>);
+                </SkyscrapperBackground>
+        );
     } else {
         return (
         <AppLoading
@@ -144,11 +140,8 @@ const LoginScreen = (props) => {
 
 const style = StyleSheet.create({
     inputContainer: {
-        // backgroundColor: 'rgba(255,255,255,0.42)',
-
         width: 300,
         height: 320,
-        borderRadius: 10,
         textAlign: 'center',
         alignItems: 'center',
     },
@@ -166,8 +159,9 @@ const style = StyleSheet.create({
         color: 'black',
     },
     button: {
-        width: 100,
-        height: 45,
+        width: 250,
+        height: 50,
+        marginTop: 20
     }
 })
 

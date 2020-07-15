@@ -31,14 +31,18 @@ const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 const GameScreen = (props) => {
     const navigation = useNavigation()
-    const user = props.route.params.user
 
     //UID OF USER ================================================================================================
-    const currentUser = props.route.params.user.id;
+    const user = props.route.params.user
+    const currentUser = user.id;
 
-    //UPDATING AND QUERYING OF GAME DETAILS ================================================================================================
+    // Array for available games ==============================================================================================
+    const [game, setGame] = useState ([]);
+
+    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
+    let listener = null
 
     useEffect(() => {
         // deleting of expired games
@@ -62,109 +66,6 @@ const GameScreen = (props) => {
         {useNativeDriver:true,
         });
 
-    // SEARCH BAR FUNCTIONS AND PARAMS ===========================================================================================
-    const [zone, setZone] = useState('')
-    const [searchedBefore, setSearchedBefore] = useState(false)
-
-    const noFieldsSelected = () => Alert.alert(
-        "No Fields selected!",
-        "Please select a zone or location or both.",
-        [
-            {text:"Confirm", onPress: () => {},  style:'cancel'}
-        ],
-        {cancelable: false}
-    )
-
-    const search = (sportValue) => {
-        console.log(sportValue)
-        if (sportValue !== '' && zone !== '') {
-            console.log('got both')
-            const filteredGames = []
-            gamesRef
-                .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
-                .where('location', '==', zone)
-                .get()
-                .then(documents => {
-                    const now = new Date().getTime()
-                    documents.forEach( doc => {
-                        console.log('fker')
-                        const d = doc.data();
-                        if(d.date.toMillis() < now){
-                            doc.ref.delete().then(()=>{});
-                        } else if(d.hostId === currentUser){}
-                        else if( parseInt(d.availability) <= 0){}
-                        else if(d.players.includes(currentUser)){}
-                        else if(d.refereeList.includes(currentUser)){}
-                        else {
-                            filteredGames.push({key:doc.id, value:doc.data()});
-                        }
-                    })
-                    setGame(filteredGames)
-                    setSearchedBefore(true)
-                })
-                .catch(error => console.log(error))
-            return;
-        }
-        if (sportValue !== '') {
-            console.log('got sport')
-            const filteredGames = []
-            gamesRef
-                .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
-                .get()
-                .then(documents => {
-                    const now = new Date().getTime()
-                    documents.forEach( doc => {
-                            const d = doc.data();
-                            if(d.date.toMillis() < now){
-                                doc.ref.delete().then(()=>{});
-                            } else if(d.hostId === currentUser){}
-                            else if( parseInt(d.availability) <= 0){}
-                            else if(d.players.includes(currentUser)){}
-                            else if(d.refereeList.includes(currentUser)){}
-                            else {
-                                filteredGames.push({key:doc.id, value:doc.data()});
-                            }
-                        }
-                    )
-                    setGame(filteredGames)
-                    setSearchedBefore(true)
-                })
-                .catch(error => console.log(error))
-            return;
-        }
-        if (zone !== '') {
-            console.log('got zone')
-            const filteredGames = []
-            gamesRef
-                .orderBy("date", "asc")
-                .where('location', '==', zone)
-                .get()
-                .then(documents => {
-                    const now = new Date().getTime()
-                    documents.forEach( doc => {
-                            const d = doc.data();
-                            if(d.date.toMillis() < now){
-                                doc.ref.delete().then(()=>{});
-                            } else if(d.hostId === currentUser){}
-                            else if( parseInt(d.availability) <= 0){}
-                            else if(d.players.includes(currentUser)){}
-                            else if(d.refereeList.includes(currentUser)){}
-                            else {
-                                filteredGames.push({key:doc.id, value:doc.data()});
-                            }
-                        }
-                    )
-                    setGame(filteredGames)
-                    setSearchedBefore(true)
-                })
-                .catch(error => console.log(error))
-            return
-        }
-        noFieldsSelected()
-    }
-
     // ARRAY FOR SPORT SELECTION BELOW SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportValue, setSportValue] = useState('');
@@ -186,8 +87,109 @@ const GameScreen = (props) => {
         }
     }
 
-    // Array for available games ==============================================================================================
-    const [game, setGame] = useState ([]);
+    // SEARCH BAR FUNCTIONS AND PARAMS ===========================================================================================
+    const [zone, setZone] = useState('')
+    const [searchedBefore, setSearchedBefore] = useState(false)
+
+    const noFieldsSelected = () => Alert.alert(
+        "No Fields selected!",
+        "Please select a zone or location or both.",
+        [
+            {text:"Confirm", onPress: () => {},  style:'cancel'}
+        ],
+        {cancelable: false}
+    )
+
+    // searching function on pressing search or any of the sport ==============================================
+    // will only go through when a valid zone is selected =============================
+    const search = (sportValue) => {
+        if (sportValue === '' && zone === '') {
+            noFieldsSelected()
+            return
+        }
+        if (listener !== null) {
+            // unsubscribing from current listener
+            listener()
+        }
+        if (sportValue !== '' && zone !== '') {
+            listener = gamesRef
+                            .orderBy("date", "asc")
+                            .where('sport', '==', sportValue)
+                            .where('location', '==', zone)
+                            .onSnapshot(documents => {
+                                const now = new Date().getTime()
+                                const filteredGames = []
+                                documents.forEach( doc => {
+                                    const d = doc.data();
+                                    if(d.date.toMillis() < now){
+                                        doc.ref.delete().then(()=>{});
+                                    } else if(d.hostId === currentUser){}
+                                    else if( parseInt(d.availability) <= 0){}
+                                    else if(d.players.includes(currentUser)){}
+                                    else {
+                                        filteredGames.push({key:doc.id, value:doc.data()});
+                                    }
+                                })
+                                setGame(filteredGames)
+                                setSearchedBefore(true)
+                            } , err => {
+                                console.log(err.message);
+                            })
+            return;
+        }
+        if (sportValue !== '') {
+            listener = gamesRef
+                            .orderBy("date", "asc")
+                            .where('sport', '==', sportValue)
+                            .onSnapshot(documents => {
+                                const now = new Date().getTime()
+                                const filteredGames = []
+                                documents.forEach( doc => {
+                                        const d = doc.data();
+                                        if(d.date.toMillis() < now){
+                                            doc.ref.delete().then(()=>{});
+                                        } else if(d.hostId === currentUser){}
+                                        else if( parseInt(d.availability) <= 0){}
+                                        else if(d.players.includes(currentUser)){}
+                                        else {
+                                            filteredGames.push({key:doc.id, value:doc.data()});
+                                        }
+                                    }
+                                )
+                                setGame(filteredGames)
+                                console.log(filteredGames.length)
+                                setSearchedBefore(true)
+                            }, err => {
+                                console.log(err.message);
+                            })
+            return;
+        }
+        if (zone !== '') {
+            listener = gamesRef
+                            .orderBy("date", "asc")
+                            .where('location', '==', zone)
+                            .onSnapshot(documents => {
+                                const now = new Date().getTime()
+                                const filteredGames = []
+                                documents.forEach( doc => {
+                                        const d = doc.data();
+                                        if(d.date.toMillis() < now){
+                                            doc.ref.delete().then(()=>{});
+                                        } else if(d.hostId === currentUser){}
+                                        else if( parseInt(d.availability) <= 0){}
+                                        else if(d.players.includes(currentUser)){}
+                                        else {
+                                            filteredGames.push({key:doc.id, value:doc.data()});
+                                        }
+                                    }
+                                )
+                                setGame(filteredGames)
+                                setSearchedBefore(true)
+                            } , err => {
+                                console.log(err.message);
+                            })
+        }
+    }
 
     // picture shown when the users have not inputted zone or sport yet ==========================================
     const noInput = (
@@ -232,7 +234,6 @@ const GameScreen = (props) => {
                 {/*==================================SEARCH BAR ==============================================*/}
                 <View style={styles.searchSpace}>
                     <LocationSearchBar select = {val => setZone(val)}
-                                       changeText = {val => setZone(val)}
                                        onPress = {() => search(sportValue)}/>
                 </View>
                 {/*===============================Sport Selection ===========================================*/}
@@ -327,10 +328,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     sportItem:{
-        // height:"80%",
-        // width:"40%",
         flex:1,
-        // marginTop:10,
         marginHorizontal:10,
         justifyContent:"flex-start",
         alignItems:"center",
@@ -381,8 +379,6 @@ const styles = StyleSheet.create({
         width: 50,
         height: 50,
         borderRadius: 27.5,
-        // borderWidth: 1,
-        // borderColor: "rgba(46,44,47,0.83)",
         backgroundColor: "transparent",
         alignItems: "center",
         paddingTop: 7

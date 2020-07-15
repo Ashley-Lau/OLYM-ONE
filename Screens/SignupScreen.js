@@ -5,11 +5,7 @@ import {
     Text,
     View,
     TextInput,
-    Picker,
     Alert,
-    ImageBackground,
-    Keyboard,
-    TouchableWithoutFeedback,
     Modal
 } from 'react-native';
 
@@ -20,9 +16,9 @@ import {Formik} from 'formik';
 import * as yup from 'yup';
 import { Select, SelectItem } from '@ui-kitten/components';
 
-import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton"
+import SkyscrapperBackground from "../views/SkyscrapperBackground";
 
 import firebaseDb from "../firebaseDb"
 
@@ -104,14 +100,9 @@ const SignupScreen = props => {
         navigation.goBack();
     }
 
-    return (
-        <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <ImageBackground source = {require('../assets/BrownSkyline.png')} style={Styles.container}>
+    return (<SkyscrapperBackground>
                 <View style = {{flex: 1}}/>
                 <Animatable.View style = {style.popout} animation = "fadeInUpBig">
-                    <Text style = {{fontSize: 30, fontWeight: 'bold', borderBottomWidth: 4, borderBottomColor: 'black'}}>
-                        Sign Up
-                    </Text>
                     <ScrollView showsVerticalScrollIndicator={false}>
                         <Formik
                             initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: new Date(), showTime: false}}
@@ -123,6 +114,12 @@ const SignupScreen = props => {
                         >
                             {(props) => (
                                 <View>
+                                    <Text style = {{fontSize: 30, fontWeight: 'bold', marginTop: 20, }}>
+                                        Create Account,
+                                    </Text>
+                                    <Text style = {{fontSize: 17, fontWeight: 'bold', marginTop: 0, marginBottom: 30, color: '#4e4e4e'}}>
+                                        Sign up to get started!
+                                    </Text>
                                     <SignUpComponent title = 'First Name:'
                                                      placeholder = "First Name"
                                                      onChangeText = {props.handleChange('firstName')}
@@ -238,12 +235,12 @@ const SignupScreen = props => {
                                                             cancelledPress()
                                                             props.handleReset()}}
                                                         style={style.button}
-                                                        colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
+                                                        colors={['#e52d27', '#b31217']}>
                                             Cancel
                                         </GradientButton>
                                         <GradientButton onPress={props.handleSubmit}
                                                         style={style.button}
-                                                        colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                                        colors={['#ff8400','#e56d02']}>
                                             Register
                                         </GradientButton>
                                     </View>
@@ -252,8 +249,7 @@ const SignupScreen = props => {
                         </Formik>
                     </ScrollView>
                 </Animatable.View>
-            </ImageBackground>
-        </TouchableWithoutFeedback>
+            </SkyscrapperBackground>
     )
 };
 
@@ -271,7 +267,8 @@ const style = StyleSheet.create({
     },
 
     button: {
-        width: 100,
-        height: 45
+        width: 120,
+        height: 50,
+        borderRadius: 25,
     }
 })

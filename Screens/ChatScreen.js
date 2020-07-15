@@ -16,8 +16,6 @@ import { GiftedChat, Day, Bubble } from 'react-native-gifted-chat'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from "@react-navigation/native";
 
-import Background from "../views/Background";
-
 import firebaseDb from "../firebaseDb";
 
 
@@ -92,14 +90,6 @@ const ChatScreen = props => {
         return (
             <Bubble
                 {...props}
-                textStyle={{
-                    right: {
-                        // color: "white"
-                    },
-                    left: {
-                        // color: "white"
-                    }
-                }}
                 wrapperStyle={{
                     right: {
                         backgroundColor: '#ff6600'
@@ -136,7 +126,6 @@ const ChatScreen = props => {
                             <GiftedChat messages = {data.messages}
                                             onSend = {messages => onSend(messages)}
                                             user={{_id: userInformation[0], name: userInformation[1], avatar: null}}
-                                            // renderUsernameOnMessage={true}
                                             renderDay={renderDay}
                                             renderBubble={renderBubble}
                                             renderAvatar={() => {return null}}
