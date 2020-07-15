@@ -1,5 +1,5 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions, Alert, TouchableOpacity} from 'react-native';
+import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions, Alert, TouchableOpacity, SafeAreaView} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
@@ -14,6 +14,7 @@ import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
 import {Autocomplete, AutocompleteItem, Select, SelectItem, Input} from '@ui-kitten/components';
 import {mrtStations} from "../Components/SearchBarFunctions";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const sHeight = Dimensions.get('window').height
 
@@ -29,7 +30,6 @@ const LocationSearch = (props) => {
     };
 
     const onChangeText = (query) => {
-        props.changeText(query)
         setValue(query);
         setData(mrtStations.filter(item => filter(item, query)));
     };
@@ -55,7 +55,7 @@ const LocationSearch = (props) => {
 const reviewSchema = yup.object({
     location: yup.string().label('Zone')
         .test('InputZone', 'Please select a valid zone!', (location) => location === undefined ? false :
-            mrtStations.filter(item => item.title.toLowerCase() === location.toLowerCase()).length === 1)
+            mrtStations.filter(item => item.title === location).length === 1)
     ,
     specificLocation: yup.string().label('Specific Location').required(),
     sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != ''),
@@ -137,7 +137,8 @@ const HostGameScreen = props => {
 
     }
 
-    return(<ScrollView>
+    return( <SafeAreaView>
+        <ScrollView>
         <Background >
                 <Formik initialValues={{
                     location: '',
@@ -161,9 +162,18 @@ const HostGameScreen = props => {
                 >
                     {(props) => (
                         <View>
-                            {console.log(props.values)}
-                            <View style={{width: '100%', height: sHeight * 0.08, flexDirection: 'row', alignItems: 'flex-end', paddingLeft: 5}}>
-                                <Text style={{fontSize:27, color:"white", fontWeight: 'bold'}}> Host a game</Text>
+                            <View style = {{width: '100%', height: 50, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom:15}}>
+                                {/*==================================================back button==========================================*/}
+                                <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', left: 10, position: 'absolute'}}
+                                                  onPress={() => {
+                                                      props.handleReset();
+                                                      registeredPress();}}
+                                                  activeOpacity= {0.8}>
+                                    <Ionicons name="ios-arrow-back" color={'white'} size={30} />
+                                    <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
+                                </TouchableOpacity>
+                                <Text style = {{...styles.titleStyle, }}> Host Game </Text>
+                                {/*=============================================profile picture of other user====================================================*/}
                             </View>
 
                             {/*// LOCATION ------------------------------------------------------------------------*/}
@@ -171,13 +181,12 @@ const HostGameScreen = props => {
                                 <Text style={{fontSize:15, marginLeft:8}}>ZONE :</Text>
                                 <View style={{width: '97%',marginTop: 5}}>
                                     <LocationSearch
-                                        changeText = {(val) => props.setFieldValue('location', val)}
                                         placeholder='Select a zone'
                                         select = {(val) => props.setFieldValue('location', val)}
                                         onBlur = {props.handleBlur('location')}
                                     />
                                 </View>
-                                <Text style={{fontSize: 15, color: '#8B0000'}}>{props.touched.location && props.errors.location}</Text>
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
 
                             {/*// SPECIFIC LOCATION ------------------------------------------------------------------------*/}
@@ -388,7 +397,7 @@ const HostGameScreen = props => {
                                 <View style ={{...styles.dropDownNotes}}>
                                     <TextInput
                                         multiline={true}
-                                        placeholder={"Things You Want the Players to Take Note of"}
+                                        placeholder={"Additional information for players"}
                                         style={{...styles.dropDownNotesText}}
                                         onChangeText = {props.handleChange('notes')}
                                         value = {props.values.notes}
@@ -445,33 +454,28 @@ const HostGameScreen = props => {
 
 
                             {/*//BUTTONS at the Bottom------------------------------------------------------------------------*/}
-
-                            <View style={{...Styles.horizontalbuttonContainer, right:-150}}>
-                                <GradientButton style={{...Styles.buttonSize, marginRight:75}}
-                                                onPress={() => {
-                                                    props.handleReset();
-                                                    registeredPress();}}
-                                                colors={["red", "maroon"]}>
-                                    <Text>Cancel</Text>
-                                </GradientButton>
-
-                                <GradientButton onPress={props.handleSubmit}
-                                                colors={['#1bb479','#026c45']}
-                                                style={{...Styles.buttonSize}}>
-                                    <Text>Host</Text>
-                                </GradientButton>
-                            </View>
-                                <View style={{backgroundColor:"transparent", height:50}}>
-                            </View>
+                            <GradientButton onPress={props.handleSubmit}
+                                            colors ={['#ff8400','#e56d02']}
+                                            style={{...styles.button,}}>
+                                <Text>Host</Text>
+                            </GradientButton>
                         </View>
                     )}
                 </Formik>
             </Background>
             </ScrollView>
+        </SafeAreaView>
     )
 }
 
 const styles = StyleSheet.create({
+    titleStyle: {
+        color: 'white',
+        justifyContent: 'center',
+        fontSize: 25,
+        fontWeight: "bold",
+        marginRight: 2
+    },
     dropDownCopy:{
         flexDirection:"row",
         marginTop: 5,
@@ -529,8 +533,11 @@ const styles = StyleSheet.create({
         marginTop:10
     },
     button: {
-        width: 100,
-        height: 45
+        width: '80%',
+        height: 50,
+        borderRadius: 25,
+        marginTop: 20,
+        marginBottom: 50,
     }
 })
 

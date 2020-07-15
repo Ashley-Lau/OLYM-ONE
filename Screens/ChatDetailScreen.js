@@ -121,19 +121,19 @@ const ChatDetailScreen = (props) => {
                         <Text style = {style.text}> Chats</Text>
                     </View>
                     <View style={{...style.searchBar, }}>
-                        <View style = {{ width: '9%', alignItems: 'center'}}>
-                        <SearchButtons style={{flex: 1, elevation: 5}}
-                                       searchMe={() => {
-                                           Keyboard.dismiss()
-                                           getKeywordsChatList()
-                                       }}/>
-                        </View>
                         <TextInput style={{...style.searchInput, }}
-                                   placeholder= "Username, Group"
+                                   placeholder= "Username "
                                    placeholderTextColor="#414141"
                                    onChangeText={(value) => {setKeywords(value.toLowerCase())}}
                                    value={keywords}
                         />
+                        <View style = {{ width: '10%', alignItems: 'center', justifyContent: 'center'}}>
+                            <SearchButtons style={{flex: 1, }}
+                                           searchMe={() => {
+                                               Keyboard.dismiss()
+                                               getKeywordsChatList()
+                                           }}/>
+                        </View>
                     </View>
                     <FlatList
                         contentContainerStyle={{width: '100%', height: '100%',borderTopWidth: 0.3, borderColor: 'grey', backgroundColor: 'white'}}
@@ -210,11 +210,12 @@ const style = StyleSheet.create({
         height: 40,
         marginTop:10,
         marginBottom:10,
+        paddingLeft: 10,
         alignSelf: 'center',
-        backgroundColor: '#E5E4E2',
+        backgroundColor: '#f3f3f1',
     },
     searchInput:{
-        width:"95%",
+        width:"90%",
         height:45,
         fontSize:17,
     },

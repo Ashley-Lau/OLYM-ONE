@@ -9,7 +9,7 @@ import {
     Alert,
     Image,
     TouchableOpacity,
-    Picker, TextInput
+    SafeAreaView
 } from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
@@ -25,6 +25,7 @@ import GradientButton from "../Components/GradientButton";
 import SignUpComponent from "../Components/SignUpComponent";
 import {setFormikInitialValue} from "react-native-formik";
 import { Select, SelectItem } from '@ui-kitten/components';
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 
 const reviewSchema = (password) => yup.object({
@@ -55,13 +56,11 @@ const UpdateDetailScreen = (props) => {
         navigation.navigate('ProfileScreen');
     }
 
-    return (
+    return (<SafeAreaView>
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <ScrollView showsVerticalScrollIndicator={false}>
             <Background>
-                <View style = {{marginTop: 20, alignItems: 'center'}}>
-                            <Text style = {style.titleStyle} >Update Details</Text>
-                        <Formik
+                    <Formik
                             initialValues = {{
                                 uri: props.route.params.data.uri,
                                 firstName: props.route.params.data.firstName,
@@ -85,124 +84,131 @@ const UpdateDetailScreen = (props) => {
                             }}
                         >
                             {(props) => (
-                                <View style = {{width: 300}}>
-                                    <View style = {{...style.photoFrame, marginBottom: 15}}>
-                                        <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
-                                            uri: props.values.uri
-                                        }}/>
-                                    </View>
-                                    {/*======================================change profile picture button=========================*/}
-                                    <View style = {{alignSelf: 'center', justifyContent: 'center'}}>
-                                        <TouchableOpacity style={{width: 75, height: 25, justifyContent: 'center', alignSelf: 'center'}}
-                                                          onPress={ async () => {
-                                                              let result = await ImagePicker.launchImageLibraryAsync({
-                                                                  mediaTypes: ImagePicker.MediaTypeOptions.All,
-                                                                  allowsEditing: true,
-                                                                  aspect: [4, 3],
-                                                                  quality: 1,
-                                                                  base64: true,
-                                                              });
-
-                                                              if (!result.cancelled) {
-                                                                  let base64Img = `data:image/jpg;base64,${result.base64}`
-
-                                                                  let apiUrl = 'https://api.cloudinary.com/v1_1/ashley451/image/upload';
-
-                                                                  let data = {
-                                                                      "file": base64Img,
-                                                                      "upload_preset": "tv5hjb8n",
-                                                                  }
-
-                                                                  fetch(apiUrl, {
-                                                                      body: JSON.stringify(data),
-                                                                      headers: {
-                                                                          'content-type': 'application/json'
-                                                                      },
-                                                                      method: 'POST',
-                                                                  }).then(async r => {
-                                                                      let data = await r.json()
-                                                                      props.setFieldValue('uri', data.url);
-                                                                  }).catch(err=>console.log(err))
-                                                              }
-                                                          }}
-                                                          activeOpacity={.9}>
-                                            <LinearGradient style = {{borderRadius: 4, flex: 1, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 10,}} colors ={['#1bb479','#026c45']}>
-                                                <Text style={{fontSize: 15, color: 'white', }}>Change</Text>
-                                            </LinearGradient>
+                                <View style = {{alignItems: 'center'}}>
+                                    <View style = {{width: '100%', height: 50, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom: 30}}>
+                                        {/*==================================================back button==========================================*/}
+                                        <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', left: 10, position: 'absolute'}}
+                                                          onPress = {() => {registeredPress(); props.handleReset()}}
+                                                          activeOpacity= {0.8}>
+                                            <Ionicons name="ios-arrow-back" color={'white'} size={30} />
+                                            <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
                                         </TouchableOpacity>
+                                        <Text style = {{...style.titleStyle, }}> Update Details </Text>
+                                        {/*=============================================profile picture of other user====================================================*/}
                                     </View>
-                                    <SignUpComponent title = 'First Name:'
-                                                     placeholder = "First Name"
-                                                     onChangeText = {props.handleChange('firstName')}
-                                                     value = {props.values.firstName}
-                                                     onBlur = {props.handleBlur('firstName')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.firstName && props.errors.firstName}</Text>
-                                    <SignUpComponent title = 'Last Name:'
-                                                     placeholder = "Last Name"
-                                                     onChangeText = {props.handleChange('lastName')}
-                                                     value = {props.values.lastName}
-                                                     onBlur = {props.handleBlur('lastName')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.lastName && props.errors.lastName}</Text>
-                                    <SignUpComponent title = 'Username:'
-                                                     placeholder = "6 - 16 characters"
-                                                     onChangeText = {props.handleChange('username')}
-                                                     value = {props.values.username}
-                                                     onBlur = {props.handleBlur('username')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.username && props.errors.username}</Text>
-                                    <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section to update your password(Optional).</Text>
-                                    <SignUpComponent title = 'Current Password:'
-                                                     placeholder = "Current Password"
-                                                     secureTextEntry = {true}
-                                                     onChangeText = {props.handleChange('currentPassword')}
-                                                     value = {props.values.currentPassword}
-                                                     onBlur = {props.handleBlur('password')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.currentPassword && props.errors.currentPassword}</Text>
-                                    <SignUpComponent title = 'New Password:'
-                                                     placeholder = "New Password"
-                                                     secureTextEntry = {true}
-                                                     onChangeText = {props.handleChange('newPassword')}
-                                                     value = {props.values.newPassword}
-                                                     onBlur = {props.handleBlur('password')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.newPassword && props.errors.newPassword}</Text>
-                                    <SignUpComponent title = 'Confirm New Password:'
-                                                     placeholder = "Re-Enter Password"
-                                                     secureTextEntry = {true}
-                                                     onChangeText = {props.handleChange('confirmPassword')}
-                                                     value = {props.values.confirmPassword}
-                                                     onBlur = {props.handleBlur('confirmPassword')}/>
-                                    <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
+                                    <View style = {{width: 300}}>
+                                        <View style = {{...style.photoFrame, marginBottom: 15}}>
+                                            <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                                uri: props.values.uri
+                                            }}/>
+                                        </View>
+                                        {/*======================================change profile picture button=========================*/}
+                                        <View style = {{alignSelf: 'center', justifyContent: 'center'}}>
+                                            <TouchableOpacity style={{width: 75, height: 30, justifyContent: 'center', alignSelf: 'center',}}
+                                                              onPress={ async () => {
+                                                                  let result = await ImagePicker.launchImageLibraryAsync({
+                                                                      mediaTypes: ImagePicker.MediaTypeOptions.All,
+                                                                      allowsEditing: true,
+                                                                      aspect: [4, 3],
+                                                                      quality: 1,
+                                                                      base64: true,
+                                                                  });
 
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: 100}}>
-                                        <GradientButton onPress={() => { registeredPress(); props.handleReset();}}
-                                                        style={style.button}
-                                                        colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
-                                            Cancel
-                                        </GradientButton>
-                                        <GradientButton onPress={() => {
-                                            props.handleSubmit()
-                                        }}
-                                                        style={style.button}
-                                                        colors={['#1bb479','#026c45']}>
-                                            Update
-                                        </GradientButton>
+                                                                  if (!result.cancelled) {
+                                                                      let base64Img = `data:image/jpg;base64,${result.base64}`
+
+                                                                      let apiUrl = 'https://api.cloudinary.com/v1_1/ashley451/image/upload';
+
+                                                                      let data = {
+                                                                          "file": base64Img,
+                                                                          "upload_preset": "tv5hjb8n",
+                                                                      }
+
+                                                                      fetch(apiUrl, {
+                                                                          body: JSON.stringify(data),
+                                                                          headers: {
+                                                                              'content-type': 'application/json'
+                                                                          },
+                                                                          method: 'POST',
+                                                                      }).then(async r => {
+                                                                          let data = await r.json()
+                                                                          props.setFieldValue('uri', data.url);
+                                                                      }).catch(err=>console.log(err))
+                                                                  }
+                                                              }}
+                                                              activeOpacity={.9}>
+                                                <LinearGradient style = {{borderRadius: 15, flex: 1, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 10,}} colors ={['#ff8400','#e56d02']}>
+                                                    <Text style={{fontSize: 15, color: 'white', }}>Change</Text>
+                                                </LinearGradient>
+                                            </TouchableOpacity>
+                                        </View>
+                                        <SignUpComponent title = 'First Name:'
+                                                         placeholder = "First Name"
+                                                         onChangeText = {props.handleChange('firstName')}
+                                                         value = {props.values.firstName}
+                                                         onBlur = {props.handleBlur('firstName')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.firstName && props.errors.firstName}</Text>
+                                        <SignUpComponent title = 'Last Name:'
+                                                         placeholder = "Last Name"
+                                                         onChangeText = {props.handleChange('lastName')}
+                                                         value = {props.values.lastName}
+                                                         onBlur = {props.handleBlur('lastName')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.lastName && props.errors.lastName}</Text>
+                                        <SignUpComponent title = 'Username:'
+                                                         placeholder = "6 - 16 characters"
+                                                         onChangeText = {props.handleChange('username')}
+                                                         value = {props.values.username}
+                                                         onBlur = {props.handleBlur('username')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.username && props.errors.username}</Text>
+                                        <Text style={{fontSize: 20, color: 'black', fontWeight: 'bold', marginBottom: 10,}}>Fill in this section to update your password(Optional).</Text>
+                                        <SignUpComponent title = 'Current Password:'
+                                                         placeholder = "Current Password"
+                                                         secureTextEntry = {true}
+                                                         onChangeText = {props.handleChange('currentPassword')}
+                                                         value = {props.values.currentPassword}
+                                                         onBlur = {props.handleBlur('password')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.currentPassword && props.errors.currentPassword}</Text>
+                                        <SignUpComponent title = 'New Password:'
+                                                         placeholder = "New Password"
+                                                         secureTextEntry = {true}
+                                                         onChangeText = {props.handleChange('newPassword')}
+                                                         value = {props.values.newPassword}
+                                                         onBlur = {props.handleBlur('password')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.newPassword && props.errors.newPassword}</Text>
+                                        <SignUpComponent title = 'Confirm New Password:'
+                                                         placeholder = "Re-Enter Password"
+                                                         secureTextEntry = {true}
+                                                         onChangeText = {props.handleChange('confirmPassword')}
+                                                         value = {props.values.confirmPassword}
+                                                         onBlur = {props.handleBlur('confirmPassword')}/>
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
+
+                                        <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: 50}}>
+                                            <GradientButton onPress={() => {
+                                                props.handleSubmit()
+                                            }}
+                                                            style={style.button}
+                                                            colors ={['#ff8400','#e56d02']}>
+                                                Update
+                                            </GradientButton>
+                                        </View>
                                     </View>
                                 </View>
                             )}
                             </Formik>
-
-                </View>
             </Background>
             </ScrollView>
-        </TouchableWithoutFeedback>)
+        </TouchableWithoutFeedback>
+    </SafeAreaView>)
 }
 
 const style = StyleSheet.create({
     titleStyle: {
-        fontWeight: "bold",
-        fontSize: 30,
         color: 'white',
-        alignSelf: 'center',
-        marginBottom: 20,
+        justifyContent: 'center',
+        fontSize: 25,
+        fontWeight: "bold",
+        marginRight: 2
     },
     photoFrame: {
         height: 85,
@@ -235,6 +241,11 @@ const style = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 4,
         width: "95%",
+    },
+    button: {
+        width: '100%',
+        height: 50,
+        borderRadius: 25
     }
 })
 

@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import {
-  View,
-  StyleSheet,
-  FlatList,
-  Text,
-  TouchableOpacity,
-  Image,
-  Animated,
-  Dimensions,
-  Keyboard,
-  TouchableWithoutFeedback
+    View,
+    StyleSheet,
+    FlatList,
+    Text,
+    TouchableOpacity,
+    Image,
+    Animated,
+    Dimensions,
+    Keyboard,
+    TouchableWithoutFeedback, Alert
 } from 'react-native';
 
 import Background from "../views/Background";
@@ -23,22 +23,52 @@ import LocationSearchBar from "../Components/LocationSeachBar";
 const sHeight = Dimensions.get('window').height
 
 import FullGameItem from "../Components/FullGameItem";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
 
 const RefereeScreen = (props) => {
 
-    // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
-    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
-    const [sportsIndex, setSportsIndex] = useState();
-    const [sportValue, setSportValue] = useState();
+    // CURRENT USER ===========================================================================================
+    const user = props.route.params.user
+    const userId = user.id
+
+    // Referee array to show list of available referee games =============================================================================================
+    const [refereeList, setRefereeList] = useState([])
+
+    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================    let listener = null
+    let listener = null
+    const gamesRef = firebaseDb.firestore().collection("game_details")
+
+
+    useEffect(() => {
+        // deleting of expired games
+        const now = new Date().getTime() / 1000;
+        gamesRef.where('date', '<', now)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = gamesRef.doc(doc.id)
+                    batch.delete(docRef)
+                })
+                batch.commit().catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
+    }, [])
 
     //ANIMATED COMPONENTS =========================================================================================
     const x = new Animated.Value(0);
     const onScroll = Animated.event([{ nativeEvent: {contentOffset: { x } } }],
         {useNativeDriver:true,
         });
+
+    // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
+    const [sportValue, setSportValue] = useState();
+
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -57,56 +87,127 @@ const RefereeScreen = (props) => {
         }
     }
 
-    // SEARCH BAR FUNCTION =============================================================================================
+    // SEARCH BAR FUNCTIONS AND PARAMS ===========================================================================================
+    const [zone, setZone] = useState('')
+    const [searchedBefore, setSearchedBefore] = useState(false)
 
-    const gamesRef = firebaseDb.firestore().collection("game_details")
-    const searchSport = (sport) => {
-        let searched = [];
-        gamesRef.where('sport', '==', sport)
-            .get()
-            .then(snapshot => {
-                snapshot.forEach(doc => {
-                    if(doc.data().hostId === userId){}
-                    else if(doc.data().players.includes(userId)){}
-                    else if(doc.data().refereeList.includes(userId)){}
-                    else if(parseInt(doc.data().refereeSlots) <= 0){}
-                    else if(doc.data().referee[0] === "Yes") {
-                        searched.push({key:doc.id, value:doc.data()})
-                    }
+    const noFieldsSelected = () => Alert.alert(
+        "No Fields selected!",
+        "Please select a zone or location or both.",
+        [
+            {text:"Confirm", onPress: () => {},  style:'cancel'}
+        ],
+        {cancelable: false}
+    )
+
+    // searching function on pressing search or any of the sport ==============================================
+    // will only go through when a valid zone is selected =============================
+    const search = (sportValue) => {
+        if (sportValue === '' && zone === '') {
+            noFieldsSelected()
+            return
+        }
+        if (listener !== null) {
+            // unsubscribing from current listener
+            listener()
+        }
+        if (sportValue !== '' && zone !== '') {
+            listener = gamesRef
+                .orderBy("date", "asc")
+                .where('sport', '==', sportValue)
+                .where('location', '==', zone)
+                .onSnapshot(documents => {
+                    const now = new Date().getTime()
+                    const filteredGames = []
+                    documents.forEach( doc => {
+                        const data = doc.data();
+                        if(data.date.toMillis() < now){
+                            doc.ref.delete().then(()=>{});}
+                        else if(data.hostId === userId){}
+                        else if(data.players.includes(userId)){}
+                        else if(data.refereeList.includes(userId)){}
+                        else if(parseInt(data.refereeSlots) <= 0){}
+                        else if(data.referee[0] === "YES"){
+                            filteredGames.push({key:doc.id, value:doc.data()});
+                        }
+                    })
+                    setRefereeList(filteredGames)
+                    setSearchedBefore(true)
+                } , err => {
+                    console.log(err.message);
                 })
-                setRefereeList(searched);
-            })
+            return;
+        }
+        if (sportValue !== '') {
+            listener = gamesRef
+                .orderBy("date", "asc")
+                .where('sport', '==', sportValue)
+                .onSnapshot(documents => {
+                    const now = new Date().getTime()
+                    const filteredGames = []
+                    documents.forEach( doc => {
+                        const data = doc.data();
+                        if(data.date.toMillis() < now){
+                            doc.ref.delete().then(()=>{});}
+                        else if(data.hostId === userId){}
+                        else if(data.players.includes(userId)){}
+                        else if(data.refereeList.includes(userId)){}
+                        else if(parseInt(data.refereeSlots) <= 0){}
+                        else if(data.referee[0] === "YES"){
+                            filteredGames.push({key:doc.id, value:doc.data()});
+                        }
+                    })
+                    setRefereeList(filteredGames)
+                    console.log(filteredGames.length)
+                    setSearchedBefore(true)
+                }, err => {
+                    console.log(err.message);
+                })
+            return;
+        }
+        if (zone !== '') {
+            listener = gamesRef
+                .orderBy("date", "asc")
+                .where('location', '==', zone)
+                .onSnapshot(documents => {
+                    const now = new Date().getTime()
+                    const filteredGames = []
+                    documents.forEach( doc => {
+                        const data = doc.data();
+                        if(data.date.toMillis() < now){
+                            doc.ref.delete().then(()=>{});}
+                        else if(data.hostId === userId){}
+                        else if(data.players.includes(userId)){}
+                        else if(data.refereeList.includes(userId)){}
+                        else if(parseInt(data.refereeSlots) <= 0){}
+                        else if(data.referee[0] === "YES"){
+                            filteredGames.push({key:doc.id, value:doc.data()});
+                        }
+                    })
+                    setRefereeList(filteredGames)
+                    setSearchedBefore(true)
+                } , err => {
+                    console.log(err.message);
+                })
+        }
     }
 
-    // CURRENT USER ===========================================================================================
-    const user = props.route.params.user
-    const userId = props.route.params.user.id
+    // picture shown when the users have not inputted zone or sport yet ==========================================
+    const noInput = (
+        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
+            <FontAwesome name = 'search-plus' size={100} color={'#5c5c5c'}/>
+            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No sport or zone selected</Text>
+            <Text style = {{...styles.noApplication, fontSize: 15,}}>Search for games or sport by filling the fields above!</Text>
+        </View>
+    )
 
-    // GETTING REFEREE DETAILS ======================================================================================
-    const [refereeList, setRefereeList] = useState([])
-
-    useEffect(() => {
-        const unsubscribe = gamesRef
-            .limit(15)
-            .onSnapshot(snapshot => {
-                let gameList = [];
-                snapshot.forEach(doc => {
-                    if(doc.data().hostId === userId){}
-                    else if(doc.data().players.includes(userId)){}
-                    else if(doc.data().refereeList.includes(userId)){}
-                    else if(parseInt(doc.data().refereeSlots) <= 0){}
-                    else if(doc.data().referee[0] === "YES"){
-                        gameList.push({key:doc.id, value:doc.data()});
-                    }
-                })
-                setRefereeList(gameList)
-            },
-                err => {
-                console.log(err.message);
-                })
-
-        return () => unsubscribe()
-    }, [])
+    const noSport = (
+        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
+            <FontAwesome5 name = 'sad-tear' size={100} color={'#5c5c5c'}/>
+            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No games available</Text>
+            <Text style = {{...styles.noApplication, fontSize: 15}}>There are no games currently for the selected location and sport.</Text>
+        </View>
+    )
 
 
     return (
@@ -122,7 +223,8 @@ const RefereeScreen = (props) => {
             {/*================================== SEARCH BAR ==============================================*/}
 
             <View style={styles.searchSpace}>
-                <LocationSearchBar onPress = {() => {}}/>
+                <LocationSearchBar select = {val => setZone(val)}
+                                   onPress = {() => search(sportValue)}/>
             </View>
 
 
@@ -143,9 +245,7 @@ const RefereeScreen = (props) => {
                                                         style={{...styles.sportSelected}}
                                                         onPress ={ () => {
                                                             setSportValue(item);
-                                                            searchSport(item);
-
-
+                                                            search(item);
                                                         }}
                                       >
                                           <View style={styles.sportImageSelected}>
@@ -160,9 +260,7 @@ const RefereeScreen = (props) => {
                                                         style={{...styles.sportSelection}}
                                                         onPress ={ () => {
                                                             setSportValue(item);
-                                                            searchSport(item);
-
-
+                                                            search(item);
                                                         }}
                                       >
                                           <View style={styles.sportImageShadow}>
@@ -177,30 +275,32 @@ const RefereeScreen = (props) => {
 
                 >
 
-
-
                 </FlatList>
             </View>
 
             <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-                <AnimatedFlatList
-                    scrollEventThrottle={16}
-                    {...{onScroll}}
-                    showsHorizontalScrollIndicator={false}
-                    horizontal={true}
-                    contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
-                    keyExtractor={(item) => item.key.toString()}
-                    data = {refereeList}
-                    renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
-                                                           gameId={item.key}
-                                                           user={user}
-                                                           itemType={"Referee"}
-                                                           index = {index}
-                                                           translateX = {x}
-                    />}
-                >
+                {!searchedBefore
+                    ? noInput
+                    : refereeList.length === 0
+                        ? noSport
+                        :   <AnimatedFlatList
+                                scrollEventThrottle={16}
+                                {...{onScroll}}
+                                showsHorizontalScrollIndicator={false}
+                                horizontal={true}
+                                contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
+                                keyExtractor={(item) => item.key.toString()}
+                                data = {refereeList}
+                                renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
+                                                                       gameId={item.key}
+                                                                       user={user}
+                                                                       itemType={"Referee"}
+                                                                       index = {index}
+                                                                       translateX = {x}
+                            />}
+                            >
 
-                </AnimatedFlatList>
+                            </AnimatedFlatList>}
 
             </View>
         </Background>
@@ -216,10 +316,7 @@ const styles = StyleSheet.create({
         alignSelf: 'center'
     },
     sportItem:{
-        // height:"80%",
-        // width:"40%",
         flex:1,
-        // marginTop:10,
         marginHorizontal:10,
         justifyContent:"flex-start",
         alignItems:"center",
@@ -276,11 +373,17 @@ const styles = StyleSheet.create({
     },
     text: {
         color: 'white',
-        justifyContent: 'center',
         fontSize: 27,
         fontWeight: "bold",
     },
-
+    noApplication: {
+        fontSize: 33,
+        alignSelf: 'center',
+        color: '#5a5959',
+        top: 20,
+        textAlign:'center',
+        width: Dimensions.get('window').width * 0.8
+    },
 })
 
 export default RefereeScreen;

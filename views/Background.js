@@ -1,8 +1,9 @@
 import React from 'react';
 import {View, StyleSheet, Image, Dimensions, ImageBackground, SafeAreaView} from 'react-native';
+import { heightPercentageToDP as hp } from "react-native-responsive-screen";
 
 const Background = props => {
-    return (<SafeAreaView style = {{flex: 1}}>
+    return (<SafeAreaView style = {{flex: 1, minHeight: Platform.OS === 'android' ? hp("97%") : hp("100%"),}}>
             <ImageBackground style={[styles.container, props.style]} source={require('../assets/whiteBackground.jpg')}>
                 <View style={styles.topView}>
                     <Image source={require('../assets/OrangeBackground.jpg')}

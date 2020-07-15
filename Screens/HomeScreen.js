@@ -12,19 +12,17 @@ import {
     Dimensions,
 
 } from 'react-native';
-import {Popover, Modal} from '@ui-kitten/components';
+import {Popover} from '@ui-kitten/components';
 import {useNavigation} from "@react-navigation/native";
 
-import firebase from 'firebase';
 import * as Animatable from 'react-native-animatable';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import FontAwesome from 'react-native-vector-icons/FontAwesome'
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
+import Ionicons from 'react-native-vector-icons/Ionicons'
 import RBSheet from "react-native-raw-bottom-sheet";
 
 
-import Background from "../views/Background";
-import GradientButton from "../Components/GradientButton";
 import RefereeApplicationItem from "../Components/RefereeApplicationItem";
 import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
@@ -370,9 +368,9 @@ const HomeScreen = props => {
                                          style = {style.orangeImage}
                                          imageStyle={{borderBottomLeftRadius: 40,}}
                         >
-                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly'}}>
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 15}}>
                                 <View>
-                                    <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, marginRight: 40}}>
+                                    <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, }}>
                                         Welcome back,
                                     </Text>
                                     <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 25,}}>
@@ -380,12 +378,13 @@ const HomeScreen = props => {
                                     </Text>
                                 </View>
                                 <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 15, position: 'absolute', bottom: 0}}>
-                                    These are your upcoming events...
+                                    Your upcoming events...
                                 </Text>
                             </View>
-                            <View style = {{flexDirection: 'row', alignItems: 'flex-end'}}>
-                            {/*====================================================Profile Picture================================*/}
-                                <View style = {{...style.photoFrame, right: 10}}>
+                            <View style = {{flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', width: '30%', right: 15}}>
+                                <Ionicons name = 'ios-notifications' size = {35} color = {color}/>
+                                {/*====================================================Profile Picture================================*/}
+                                <View style = {{...style.photoFrame, }}>
                                     <Image style = {{height: 50, width: 50, borderRadius: 170}} source = {{
                                         uri: data.uri
                                     }}/>
