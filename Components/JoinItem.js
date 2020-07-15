@@ -1,5 +1,5 @@
 import React from 'react';
-import {Text, Alert} from 'react-native';
+import {Text, Alert, TouchableOpacity} from 'react-native';
 import * as firebase from 'firebase';
 
 import GradientButton from "./GradientButton";
@@ -48,6 +48,14 @@ const JoinItem = props => {
 
 
     return (
+
+        // <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
+        //                   onPress={() => {
+        //                       alreadyJoined();
+        //                       props.closeGame();}}
+        // >
+        //     <Text style ={{fontSize:20, color:"rgb(12,78,41)"}}>Join</Text>
+        // </TouchableOpacity>
         <GradientButton style={{...props.style}}
                         onPress={() => {
                             alreadyJoined();
