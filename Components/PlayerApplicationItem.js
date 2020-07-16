@@ -129,15 +129,15 @@ const PlayerApplicationItem = props => {
     // PROFILE CARD BACKGROUND ===========================================================================================
     let refBack = require("../assets/BballBG.png");
     if(props.playerDetails.sport.toLowerCase() === "tennis"){
-        refBack = require("../assets/TennisBG.png");
+        refBack = require("../assets/TennisApp.png");
     } else if(props.playerDetails.sport.toLowerCase() === "floorball"){
-        refBack = require("../assets/floorballBG.png");
+        refBack = require("../assets/floorballApp.png");
     } else if(props.playerDetails.sport.toLowerCase() === "basketball"){
-        refBack = require("../assets/BballBG.png");
+        refBack = require("../assets/BballApp.png");
     } else if(props.playerDetails.sport.toLowerCase() === "soccer"){
-        refBack = require("../assets/SoccerBG.png");
+        refBack = require("../assets/SoccerApp.png");
     } else if(props.playerDetails.sport.toLowerCase() === "badminton"){
-        refBack = require("../assets/BadmintonBG.png");
+        refBack = require("../assets/BadmintonApp.png");
     }
 
 

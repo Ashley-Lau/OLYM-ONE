@@ -74,47 +74,37 @@ const GameItem = props => {
 
 
     //SPORT BG and colour================================================================================================================================
-    let sportBG = require("../assets/BballBG.png");
+    let playerBG = require("../assets/BballApp.png");
+    let refereeBG = require("../assets/BballRefereeApp.png");
     let sportColor = "rgba(0,0,0,1)"
     let lightColor = "rgb(255,255,255)"
-    if(props.gameDetails.sport.toLowerCase() === "basketball" && props.itemType === "Referee"){
-        sportBG = require("../assets/BballRefereeBG.png");
+    if(props.gameDetails.sport.toLowerCase() === "basketball" ){
+        refereeBG = require("../assets/BballRefereeApp.png");
+        playerBG = require("../assets/BballApp.png");
         sportColor = "rgba(200,98,57,1)";
         lightColor = "rgb(252,238,184)"
-    } else if(props.gameDetails.sport.toLowerCase() === "soccer" && props.itemType === "Referee"){
-        sportBG = require("../assets/SoccerRefereeBG.png");
+
+    } else if(props.gameDetails.sport.toLowerCase() === "soccer" ){
+        refereeBG = require("../assets/SoccerRefereeApp.png");
+        playerBG = require("../assets/SoccerApp.png");
         sportColor = "rgba(134,119,198,1)";
         lightColor = "rgb(195,185,206)"
-    } else if(props.gameDetails.sport.toLowerCase() === "floorball" && props.itemType === "Referee"){
-        sportBG = require("../assets/floorballRefereeBG.png");
+
+    } else if(props.gameDetails.sport.toLowerCase() === "floorball" ){
+        refereeBG = require("../assets/floorballRefereeApp.png");
+        playerBG = require("../assets/floorballApp.png");
         sportColor = "rgba(58,204,255,1)";
         lightColor = "rgb(228,235,255)"
-    } else if(props.gameDetails.sport.toLowerCase() === "tennis" && props.itemType === "Referee"){
-        sportBG = require("../assets/TennisRefereeBG.png");
+
+    } else if(props.gameDetails.sport.toLowerCase() === "tennis" ){
+        refereeBG = require("../assets/TennisRefereeApp.png");
+        playerBG = require("../assets/TennisApp.png");
         sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)"
-    } else if(props.gameDetails.sport.toLowerCase() === "badminton" && props.itemType === "Referee") {
-        sportBG = require("../assets/BadmintonRefereeBG.png");
-        sportColor = "rgba(211,55,64,1)";
-        lightColor = "rgb(218,138,158)"
-    } else if(props.gameDetails.sport.toLowerCase() === "basketball"){
-        sportBG = require("../assets/BballBG.png");
-        sportColor = "rgba(200,98,57,1)";
-        lightColor = "rgb(252,238,184)"
-    } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
-        sportBG = require("../assets/SoccerBG.png");
-        sportColor = "rgba(134,119,198,1)";
-        lightColor = "rgb(195,185,206)"
-    } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
-        sportBG = require("../assets/floorballBG.png");
-        sportColor = "rgba(58,204,255,1)";
-        lightColor = "rgb(228,235,255)"
-    } else if(props.gameDetails.sport.toLowerCase() === "tennis"){
-        sportBG = require("../assets/TennisBG.png");
-        sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)"
-    } else if(props.gameDetails.sport.toLowerCase() === "badminton") {
-        sportBG = require("../assets/BadmintonBG.png");
+        lightColor = "rgb(196,172,19)";
+
+    } else if(props.gameDetails.sport.toLowerCase() === "badminton" ){
+        refereeBG = require("../assets/BadmintonRefereeApp.png");
+        playerBG = require("../assets/BadmintonApp.png");
         sportColor = "rgba(211,55,64,1)";
         lightColor = "rgb(218,138,158)"
     }
@@ -204,7 +194,7 @@ const GameItem = props => {
             <ViewPlayerItem visible={playerDetails}
                               playerDetails={playerUser}
                               closePlayer ={() => {openPlayerDetails(false)}}
-                              backGround = {sportBG}
+                              backGround = {playerBG}
                               sportColor = {sportColor}
                               lightColor = {lightColor}
                               typeCheck = {"Player"}
@@ -213,7 +203,7 @@ const GameItem = props => {
             <ViewPlayerItem visible={refereeDetails}
                             playerDetails={refereeUser}
                             closePlayer ={() => {openRefereeDetails(false)}}
-                            backGround = {sportBG}
+                            backGround = {refereeBG}
                             sportColor = {sportColor}
                             lightColor = {lightColor}
                             typeCheck = {"Referee"}
