@@ -1,9 +1,7 @@
 import React,{useEffect} from 'react';
-import {Text,  Alert} from 'react-native';
+import {Text, Alert, TouchableOpacity} from 'react-native';
 import * as firebase from 'firebase';
 
-import GradientButton from "./GradientButton";
-import Styles from "../../OLYM-ONE/styling/Styles";
 import firebaseDb from "../firebaseDb"
 
 
@@ -66,13 +64,14 @@ const UpcomingGameItem = props => {
     }, [])
 
     return (
-        <GradientButton style={{...props.style}}
-                        onPress={() => {
-                            confirmQuitAlert();
-                        }}
-                        colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-            <Text>Quit</Text>
-        </GradientButton>
+        <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
+                          onPress={() => {
+                              confirmQuitAlert();
+                          }}
+        >
+            <Text style ={{fontSize:20, color:props.textColor}}>Quit</Text>
+        </TouchableOpacity>
+
     )
 }
 
