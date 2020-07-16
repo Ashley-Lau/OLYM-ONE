@@ -2,8 +2,6 @@ import React from 'react';
 import {Text, Alert, TouchableOpacity} from 'react-native';
 import * as firebase from 'firebase';
 
-import GradientButton from "./GradientButton";
-import Styles from "../../OLYM-ONE/styling/Styles";
 import firebaseDb from "../firebaseDb"
 
 
@@ -49,21 +47,14 @@ const JoinItem = props => {
 
     return (
 
-        // <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
-        //                   onPress={() => {
-        //                       alreadyJoined();
-        //                       props.closeGame();}}
-        // >
-        //     <Text style ={{fontSize:20, color:"rgb(12,78,41)"}}>Join</Text>
-        // </TouchableOpacity>
-        <GradientButton style={{...props.style}}
-                        onPress={() => {
-                            alreadyJoined();
-                            props.closeGame();
-                        }}
-                        colors={["rgba(25,224,32,0.6)","rgba(12,78,41,0.85)"]}>
-            <Text>Join</Text>
-        </GradientButton>
+        <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
+                          onPress={() => {
+                              alreadyJoined();
+                              props.closeGame();}}
+        >
+            <Text style ={{fontSize:20, color:props.textColor}}>Enter Game</Text>
+        </TouchableOpacity>
+
     )
 }
 

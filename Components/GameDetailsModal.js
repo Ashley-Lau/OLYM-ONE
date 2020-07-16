@@ -1,7 +1,8 @@
 import React from 'react';
-import {Text, StyleSheet, Modal, View, ScrollView, Image, ImageBackground, TouchableOpacity} from 'react-native';
+import {Text, StyleSheet, Modal, View, ScrollView, Image, ImageBackground, TouchableOpacity, Dimensions} from 'react-native';
 import * as firebase from 'firebase';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import Ionicons from 'react-native-vector-icons/Ionicons';
 
 
 import GradientButton from "./GradientButton";
@@ -15,50 +16,58 @@ import UpcomingGameItem from "./UpcomingGameItem";
 
 const GameDetailsModal = props => {
 
+    // DEVICE WIDTH AND HEIGHT===========================================================================================
+    const width = Dimensions.get("window").width;
+    const height = Dimensions.get("window").height;
+
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/BballBG.png");
     let sportColor = "rgba(0,0,0,1)"
     let lightColor = "rgb(255,255,255)"
-    if(props.gameDetails.sport.toLowerCase() === "basketball" && props.itemType === "Referee"){
-        sportBG = require("../assets/BballRefereeBG.png");
+    if(props.gameDetails.sport.toLowerCase() === "basketball"){
+        if(props.itemType === "Referee" || props.itemType === "Resign"){
+            sportBG = require("../assets/BballRefereeApp.png");
+        } else {
+            sportBG = require("../assets/BballApp.png");
+        }
         sportColor = "rgba(200,98,57,1)";
         lightColor = "rgb(252,238,184)"
-    } else if(props.gameDetails.sport.toLowerCase() === "soccer" && props.itemType === "Referee"){
-        sportBG = require("../assets/SoccerRefereeBG.png");
-        sportColor = "rgba(134,119,198,1)";
-        lightColor = "rgb(195,185,206)"
-    } else if(props.gameDetails.sport.toLowerCase() === "floorball" && props.itemType === "Referee"){
-        sportBG = require("../assets/floorballRefereeBG.png");
-        sportColor = "rgba(58,204,255,1)";
-        lightColor = "rgb(228,235,255)"
-    } else if(props.gameDetails.sport.toLowerCase() === "tennis" && props.itemType === "Referee"){
-        sportBG = require("../assets/TennisRefereeBG.png");
-        sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)"
-    } else if(props.gameDetails.sport.toLowerCase() === "badminton" && props.itemType === "Referee") {
-        sportBG = require("../assets/BadmintonRefereeBG.png");
-        sportColor = "rgba(211,55,64,1)";
-        lightColor = "rgb(218,138,158)"
-    } else if(props.gameDetails.sport.toLowerCase() === "basketball"){
-        sportBG = require("../assets/BballBG.png");
-        sportColor = "rgba(200,98,57,1)";
-        lightColor = "rgb(252,238,184)"
+
     } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
-        sportBG = require("../assets/SoccerBG.png");
+        if(props.itemType === "Referee" || props.itemType === "Resign"){
+            sportBG = require("../assets/SoccerRefereeApp.png");
+        } else {
+            sportBG = require("../assets/SoccerApp.png");
+        }
         sportColor = "rgba(134,119,198,1)";
         lightColor = "rgb(195,185,206)"
+
     } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
-        sportBG = require("../assets/floorballBG.png");
+        if(props.itemType === "Referee" || props.itemType === "Resign"){
+            sportBG = require("../assets/floorballRefereeApp.png");
+        } else {
+            sportBG = require("../assets/floorballApp.png");
+        }
         sportColor = "rgba(58,204,255,1)";
         lightColor = "rgb(228,235,255)"
-    } else if(props.gameDetails.sport.toLowerCase() === "tennis"){
-        sportBG = require("../assets/TennisBG.png");
+
+    } else if(props.gameDetails.sport.toLowerCase() === "tennis" ){
+        if(props.itemType === "Referee" || props.itemType === "Resign"){
+            sportBG = require("../assets/TennisRefereeApp.png");
+        } else {
+            sportBG = require("../assets/TennisApp.png");
+        }
         sportColor = "rgba(212,242,102,1)";
         lightColor = "rgb(196,172,19)"
-    } else if(props.gameDetails.sport.toLowerCase() === "badminton") {
-        sportBG = require("../assets/BadmintonBG.png");
+    } else if(props.gameDetails.sport.toLowerCase() === "badminton" ) {
+        if(props.itemType === "Referee" || props.itemType === "Resign"){
+            sportBG = require("../assets/BadmintonRefereeApp.png");
+        } else {
+            sportBG = require("../assets/BadmintonApp.png");
+        }
         sportColor = "rgba(211,55,64,1)";
         lightColor = "rgb(218,138,158)"
+
     }
 
     //DATE AND TIME STRING ================================================================================================
@@ -74,166 +83,189 @@ const GameDetailsModal = props => {
         <View>
 
             <Modal visible = {props.visible} animationType="slide">
+                <View style={{...styles.header, backgroundColor:sportColor, width:width}}>
+                    <TouchableOpacity activeOpacity={0.6} style={{flexDirection:"row",justifyContent:"center", alignItems:"center", marginLeft:5}}
+                                      onPress={props.closeGame}
+                    >
+                        <Ionicons name="ios-arrow-back" size={40} style={{color:lightColor}}/>
+                        <Text style = {{fontSize: 30, marginLeft: 6, color: lightColor}}>Back</Text>
+                    </TouchableOpacity>
 
-                <ImageBackground source={sportBG} style={{flexDirection:"column", flex:1}}>
+                    <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={props.chatFunction}>
+                        <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
+                    </TouchableOpacity>
+
+                </View>
+
+                <View style={{flexDirection:"column", flex:1, backgroundColor:lightColor}}>
 
                     <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
-                        <View style={{flexDirection:"row", height:50, width:"100%", backgroundColor:sportColor, elevation:10, justifyContent:"space-between", alignItems:"center"}}>
-                            <TouchableOpacity activeOpacity={0.6} style={{marginLeft:5}} onPress={props.closeGame}>
-                                <MaterialCommunityIcons name="arrow-left" size={40} style={{color:lightColor}}/>
-                            </TouchableOpacity>
-
-                            <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={props.chatFunction}>
-                                <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
-                            </TouchableOpacity>
-
-
-
-                        </View>
 
                         <View style={styles.scrollBox}>
 
-                            <ScrollView style={{flex:1}}>
+                            <ScrollView contentContainerStyle={{marginLeft:5, marginBottom:20}}>
 
-                                <View style = {{alignItems: 'flex-start', marginLeft:5, marginBottom:20}}>
                                     <View>
                                         <Text style={{fontWeight:"bold", fontSize:35}}>{props.gameDetails.sport.toUpperCase()}</Text>
 
+                                        {/*Game Details*/}
 
-                                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                            <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                <MaterialCommunityIcons name="account" size={25} color="grey"/>
-                                                <Text style={{fontSize:20, color:"grey"}}>  Hosted By:</Text>
-                                            </View>
-                                            <Text style={{fontSize:20, color:"black", marginLeft:25}}>  {props.gameDetails.host}</Text>
-                                        </View>
+                                        <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
 
-                                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                            <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                <MaterialCommunityIcons name="map-marker" size={25} color="grey"/>
-                                                <Text style={{fontSize:20, color:"grey"}}>  Location:</Text>
-                                            </View>
-                                            <Text style={{fontSize:20, color:"black", marginLeft:25}}>  {props.gameDetails.location}</Text>
-                                        </View>
+                                            <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>GAME DETAILS</Text>
 
-                                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                            <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                <MaterialCommunityIcons name="clock" size={25} color="grey"/>
-                                                <Text style={{fontSize:20, color:"grey"}}>  Date:</Text>
-                                            </View>
-                                            <Text style={{fontSize:20, color:"black",marginLeft:25}}>  {gameDate}</Text>
-                                            <Text style={{fontSize:20, color:"black", marginLeft:25}}>  {gameTime}</Text>
-                                        </View>
-
-
-                                        {props.itemType === "Join" || props.itemType === "Quit"
-                                        ?
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                    <MaterialCommunityIcons name="account-group-outline" size={25} color="grey"/>
-                                                    <Text style={{fontSize:20, color:"grey"}}>  Slots Left:</Text>
+                                            <View style = {{ width:0.95 * width, ...styles.gameDetails}}>
+                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                        <MaterialCommunityIcons name="account" size={25} color={"black"}/>
+                                                        <Text style={{fontSize:20, color:"black"}}>  Hosted By:</Text>
+                                                    </View>
+                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.gameDetails.host}</Text>
                                                 </View>
-                                                <Text style={{fontSize:20, color:"black", marginLeft:25}}>  {props.gameDetails.availability}</Text>
-                                            </View>
-                                        :
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                    <MaterialCommunityIcons name="whistle" size={25} color="grey"/>
-                                                    <Text style={{fontSize:20, color:"grey"}}>  Referees Required:</Text>
+
+                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                        <MaterialCommunityIcons name="map-marker" size={25} color={"black"}/>
+                                                        <Text style={{fontSize:20, color:"black"}}>  Location:</Text>
+                                                    </View>
+                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.gameDetails.specificLocation} @ {props.gameDetails.location}</Text>
                                                 </View>
-                                                <Text style={{fontSize:20, color:"black", marginLeft:25}}>  {props.gameDetails.refereeSlots}</Text>
+
+                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                        <MaterialCommunityIcons name="clock" size={25} color={"black"}/>
+                                                        <Text style={{fontSize:20, color:"black"}}>  Date:</Text>
+                                                    </View>
+                                                    <Text style={{fontSize:20, color:"grey",marginLeft:25}}>  {gameDate} @ {gameTime}</Text>
+                                                </View>
+
                                             </View>
 
-                                        }
-
-                                        <View style = {styles.playerReferee}>
-                                            <TouchableOpacity style={{flexDirection:"column", justifyContent:"center", alignItems:"center", width: '27%'}}
-                                                              onPress={() => {
-                                                                  props.openPlayer();}}
-                                            >
-                                                <Text style={{fontSize:20}}>{props.gameDetails.players.length}</Text>
-                                                {/*<MaterialCommunityIcons name="account-group" size={35}/>*/}
-                                                <Text style={{fontSize:20}}>Players</Text>
-
-                                            </TouchableOpacity>
-
-                                            <Text style={{fontSize:30, color:"grey"}}>   |   </Text>
-
-                                            <TouchableOpacity style={{flexDirection:"column", justifyContent:"center", alignItems:"center", width: '27%', marginLeft: 20}}
-                                                              onPress={() => {
-                                                                  props.openReferee();}}
-                                            >
-                                                <Text style={{fontSize:20}}>{props.gameDetails.refereeList.length}</Text>
-                                                {/*<MaterialCommunityIcons name="whistle" size={35}/>*/}
-                                                <Text style={{fontSize:20}}>Referees</Text>
-
-                                            </TouchableOpacity>
                                         </View>
 
+                                        {/*Attendees*/}
+
+                                        <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
+                                            <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>ATTENDEES</Text>
+
+                                            <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:10}}>
+                                                <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.5}}
+                                                                  onPress={() => {
+                                                                      props.openPlayer();}}
+                                                >
+                                                    <Text style={{fontSize:20}}>{props.gameDetails.players.length} Players</Text>
+
+                                                    <Ionicons name="ios-arrow-forward" size={20}/>
+
+                                                </TouchableOpacity>
+
+
+                                                <TouchableOpacity style={styles.viewPlayer}
+                                                                  onPress={() => {
+                                                                      props.openReferee();}}
+                                                >
+                                                    <Text style={{fontSize:20}}>{props.gameDetails.refereeList.length} Referees</Text>
+
+                                                    <Ionicons name="ios-arrow-forward" size={20}/>
+
+                                                </TouchableOpacity>
+                                            </View>
+
+                                        </View>
+
+                                        {/*NOTES*/}
 
 
                                         {props.gameDetails.notes !== ''
                                         ?
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                <View style={{flexDirection:"row", alignItems:"flex-start"}}>
-                                                    <Text style={{fontWeight:"bold",fontSize:30, color:"grey"}}>To Take Note:</Text>
+                                            <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, marginBottom:10}}>
+                                                <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>TO TAKE NOTE:</Text>
+
+                                                <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:15}}
+                                                            nestedScrollEnabled={true}
+                                                >
+                                                    <Text style={{fontSize:20, color:"grey"}}>{props.gameDetails.notes}</Text>
                                                 </View>
-                                                <Text style={{fontSize:20, color:"black"}}>{props.gameDetails.notes}</Text>
                                             </View>
                                         :
                                             <View/>
                                         }
 
-
                                     </View>
-                                </View>
+
 
                             </ScrollView>
                         </View>
 
-                        <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
 
-                            <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.gameDetails.price).toFixed(2)}</Text>
-
-
-                            {props.itemType === "Join"
-                                ?
-                                <JoinItem gameDetails ={props.gameDetails}
-                                          gameId ={props.gameId}
-                                          user = {props.user}
-                                          closeGame = {props.closeGame}
-                                          style = {{...styles.bottomButtons}}
-                                />
-                                : props.itemType === "Referee"
-                                    ?
-                                    <RefereeItem gameDetails ={props.gameDetails}
-                                                 gameId ={props.gameId}
-                                                 user = {props.user}
-                                                 closeGame = {props.closeGame}
-                                                 style = {styles.bottomButtons}
-                                    />
-                                    :  props.itemType === "Quit"
-                                        ?
-                                        <UpcomingGameItem gameDetails ={props.gameDetails}
-                                                          gameId ={props.gameId}
-                                                          user = {props.user}
-                                                          closeGame = {props.closeGame}
-                                                          style = {styles.bottomButtons}
-                                        />
-                                        :
-                                        <UpcomingRefereeItem gameDetails ={props.gameDetails}
-                                                             gameId ={props.gameId}
-                                                             user = {props.user}
-                                                             closeGame = {props.closeGame}
-                                                             style = {styles.bottomButtons}
-                                        />
-                            }
+                    </View>
+                </View>
 
 
-                        </View>
+                <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
+
+                    <View>
+                        <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.gameDetails.price).toFixed(2)}</Text>
+
+                        {props.itemType === "Join" || props.itemType === "Quit"
+                            ?
+                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.gameDetails.availability} Slots Left!</Text>
+                            </View>
+                            :
+                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.gameDetails.refereeSlots} Slots Left!</Text>
+                            </View>
+
+                        }
                     </View>
 
-                </ImageBackground>
+
+
+                    {props.itemType === "Join"
+                        ?
+                        <JoinItem gameDetails ={props.gameDetails}
+                                  gameId ={props.gameId}
+                                  user = {props.user}
+                                  closeGame = {props.closeGame}
+                                  textColor = {sportColor}
+                                  style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+                        />
+                        : props.itemType === "Referee"
+                            ?
+                            <RefereeItem gameDetails ={props.gameDetails}
+                                         gameId ={props.gameId}
+                                         user = {props.user}
+                                         closeGame = {props.closeGame}
+                                         textColor = {sportColor}
+                                         style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+
+                            />
+                            :  props.itemType === "Quit"
+                                ?
+                                <UpcomingGameItem gameDetails ={props.gameDetails}
+                                                  gameId ={props.gameId}
+                                                  user = {props.user}
+                                                  closeGame = {props.closeGame}
+                                                  textColor = {sportColor}
+                                                  style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+
+                                />
+                                :
+                                <UpcomingRefereeItem gameDetails ={props.gameDetails}
+                                                     gameId ={props.gameId}
+                                                     user = {props.user}
+                                                     closeGame = {props.closeGame}
+                                                     textColor = {sportColor}
+                                                     style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+
+                                />
+                    }
+
+
+                </View>
+
+
 
             </Modal>
 
@@ -244,6 +276,13 @@ const GameDetailsModal = props => {
 
 
 const styles = StyleSheet.create({
+    header:{
+        flexDirection:"row",
+        height:50,
+        elevation:10,
+        justifyContent:"space-between",
+        alignItems:"center"
+    },
     scrollBox:{
         flex:1,
         // borderWidth: 1,
@@ -255,27 +294,42 @@ const styles = StyleSheet.create({
     bottomButtons:{
         height:50,
         width:"40%",
-        marginRight:5
+        marginRight:15,
+        borderRadius:10,
+        borderWidth:1,
+
 
     },
     bottomOptions:{
         width:"100%",
-        height:100,
+        height:105,
         flexDirection:"row",
         justifyContent:"space-between",
         alignItems:"center",
-        marginBottom:3,
-
-
 
     },
     playerReferee: {
-        flexDirection: 'row',
-        justifyContent: 'center',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        alignItems:"flex-start",
+        backgroundColor:"rgb(226,226,226)",
+        elevation:5,
+        borderRadius:5,
+        paddingHorizontal:5
+    },
+    viewPlayer: {
+        flexDirection:"row",
+        justifyContent:"space-between",
         alignItems:"center",
-        marginVertical: 20,
-        width:"100%"
-
+        width: '100%',
+        height:50
+    },
+    gameDetails:{
+        backgroundColor:"rgb(226,226,226)",
+        elevation:5,
+        borderRadius:5,
+        paddingHorizontal:5,
+        paddingVertical:10
     }
 })
 

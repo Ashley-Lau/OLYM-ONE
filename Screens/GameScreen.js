@@ -23,6 +23,7 @@ import FullGameItem from "../Components/FullGameItem";
 import firebaseDb from "../firebaseDb";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import GameDetailsModal from "../Components/GameDetailsModal";
 
 
 const sHeight = Dimensions.get('window').height
@@ -67,7 +68,7 @@ const GameScreen = (props) => {
         });
 
     // ARRAY FOR SPORT SELECTION BELOW SEARCH BAR ==============================================================================
-    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis"];
     const [sportValue, setSportValue] = useState('');
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
@@ -82,8 +83,6 @@ const GameScreen = (props) => {
             return require("../assets/badminton_icon.png");
         } else if(sport === "Tennis"){
             return require("../assets/tennis_coloured.png");
-        } else {
-            return require("../assets/other_games.png")
         }
     }
 
@@ -307,6 +306,7 @@ const GameScreen = (props) => {
                                                                            itemType={"Join"}
                                                                            translateX = {x}
                                                                            index = {index}
+
 
                                     />}
                                 >
