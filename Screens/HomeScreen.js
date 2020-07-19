@@ -294,7 +294,7 @@ const HomeScreen = props => {
         <TouchableOpacity style = {{backgroundColor: 'transparent', alignItems: 'center'}}
                           activeOpacity= {0.9}
                           onPress={() => {setButtonVisible(true); setColor('white');}}>
-            <Ionicons name = "ios-menu" color={'white'} size={40} />
+            <AntDesign name="caretdown" color={color} size={20} />
         </TouchableOpacity>
     );
 
@@ -368,7 +368,7 @@ const HomeScreen = props => {
                                          style = {style.orangeImage}
                                          imageStyle={{borderBottomLeftRadius: 40,}}
                         >
-                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '65%', left: 15}}>
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 15}}>
                                 <View>
                                     <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, }}>
                                         Welcome back,
@@ -381,15 +381,14 @@ const HomeScreen = props => {
                                     Your upcoming events...
                                 </Text>
                             </View>
-                            <View style = {{flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', width: '35%', right: 15}}>
-                                <Ionicons name = 'ios-notifications' size = {40} color = {color}/>
+                            <View style = {{flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', width: '30%', right: 15}}>
+                                <Ionicons name = 'ios-notifications' size = {35} color = {color}/>
                                 {/*====================================================Profile Picture================================*/}
                                 <View style = {{...style.photoFrame, }}>
                                     <Image style = {{height: 50, width: 50, borderRadius: 170}} source = {{
                                         uri: data.uri
                                     }}/>
                                 </View>
-
                                 {/*==========================================Button beside profile picture============================*/}
                                 <Popover
                                     backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
