@@ -11,7 +11,6 @@ import {
 } from 'react-native';
 import * as firebase from 'firebase';
 
-import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
 import GameItemBackGround from "../views/GameItemBackGround";
@@ -46,11 +45,22 @@ const RefereeApplicationItem = props => {
     const deleteReq = () => {
         applRef.delete().then(()=>{})
     }
-
+    console.log(props)
     const acceptReq = () => {
         const slots = parseInt(details.refereeSlots) - 1
         gameRef.update({refereeSlots:slots.toString(), refereeList: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
             .then(()=>{deleteReq()});
+        firebaseDb.firestore().collection('notifications')
+            .add({
+                playerId: props.refDetails.refereeId,
+                hostName: details.host,
+                timeStamp: new Date(),
+                unread: true,
+                isPlayer: false,
+                gameId: props.refDetails.gameId
+            })
+            .then(() => {})
+            .catch(error => console.log(error))
     }
 
     const confirmDecline = () => {

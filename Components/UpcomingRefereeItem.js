@@ -23,7 +23,6 @@ const UpcomingGameItem = props => {
                 {
                     text:'Cancel',
                     onPress:() => {},
-                    style:'cancel'
                 },
                 {
                     text:'Confirm',
@@ -40,7 +39,6 @@ const UpcomingGameItem = props => {
         <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
                           onPress={() => {
                               confirmQuit();
-                              props.closeGame();
                           }}
         >
             <Text style ={{fontSize:20, color:props.textColor}}>Resign</Text>
