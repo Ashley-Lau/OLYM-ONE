@@ -489,7 +489,7 @@ const HomeScreen = props => {
                                          style = {style.orangeImage}
                                          imageStyle={{borderBottomLeftRadius: 40,}}
                         >
-                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '65%', left: 15}}>
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 15}}>
                                 <View>
                                     <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, }}>
                                         Welcome back,

@@ -41,6 +41,8 @@ const GameScreen = (props) => {
     //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================
 
     const gamesRef = firebaseDb.firestore().collection('game_details');
+    const refApplRef = firebaseDb.firestore().collection('application_details');
+    const playerApplRef = firebaseDb.firestore().collection('player_application_details');
     let listener = null
 
     useEffect(() => {
@@ -61,10 +63,8 @@ const GameScreen = (props) => {
     }, [])
 
     const deletePlayerAppl = (gameId) => {
-        console.log('deleted')
-        console.log(gameId)
-        const applRef = firebaseDb.firestore().collection("player_application_details")
-        applRef.where('gameId', '==' , gameId)
+        const playerApplRef = firebaseDb.firestore().collection("player_application_details")
+        playerApplRef.where('gameId', '==' , gameId)
             .get()
             .then(response => {
                 let batch = firebaseDb.firestore().batch()
@@ -75,6 +75,18 @@ const GameScreen = (props) => {
                 batch.commit().catch(error => console.log(error))
             })
             .catch(error => console.log(error))
+        const applRef = firebaseDb.firestore().collection("application_details")
+          applRef.where('gameId', '==' , gameId)
+              .get()
+              .then(response => {
+                  let batch = firebaseDb.firestore().batch()
+                  response.docs.forEach((doc) => {
+                      const docRef = applRef.doc(doc.id)
+                      batch.delete(docRef)
+                  })
+                  batch.commit().catch(error => console.log(error))
+              })
+              .catch(error => console.log(error))
     }
 
     //ANIMATED COMPONENTS =========================================================================================
@@ -164,6 +176,20 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                         const d = doc.data();
                                         if(d.date.toMillis() < now){
+                                            playerApplRef.where("gameId", "==", doc.ref)
+                                                .get()
+                                                .then(snapShot => {
+                                                    snapShot.forEach(doc => {
+                                                        doc.ref.delete().then(()=>{});
+                                                    })
+                                                });
+                                            refApplRef.where("gameId", "==", doc.ref)
+                                                .get()
+                                                .then(snapShot => {
+                                                    snapShot.forEach(doc => {
+                                                        doc.ref.delete().then(()=>{});
+                                                    })
+                                                });
                                             doc.ref.delete().then(()=>{});
                                             deletePlayerAppl(doc.id)
                                         } else if(d.hostId === currentUser){}
@@ -192,6 +218,20 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                         const d = doc.data();
                                         if(d.date.toMillis() < now){
+                                            playerApplRef.where("gameId", "==", doc.ref)
+                                                .get()
+                                                .then(snapShot => {
+                                                    snapShot.forEach(doc => {
+                                                        doc.ref.delete().then(()=>{});
+                                                    })
+                                                });
+                                            refApplRef.where("gameId", "==", doc.ref)
+                                                .get()
+                                                .then(snapShot => {
+                                                    snapShot.forEach(doc => {
+                                                        doc.ref.delete().then(()=>{});
+                                                    })
+                                                });
                                             doc.ref.delete().then(()=>{});
                                             deletePlayerAppl(doc.id)
                                         } else if(d.hostId === currentUser){}

@@ -29,11 +29,13 @@ const ViewPlayerItem = props => {
                     <View style = {{width:"100%"}}>
                         { props.playerDetails.length !== 0
                             ?
-                            <FlatList contentContainerStyle={{width:"100%"}}
-                                      keyExtractor={( item ) => {item.id}}
+                            <FlatList
+                                      contentContainerStyle={{width:"100%"}}
+                                      keyExtractor={( item,index ) => index.toString()}
                                       data={props.playerDetails}
-                                      renderItem={({ item,index}) =>
-                                          <View key={index} style={{
+                                      renderItem={({ item}) =>
+                                          <View
+                                              style={{
                                               flexDirection:"row",
                                               borderBottomWidth:0.5,
                                               justifyContent:"flex-start",

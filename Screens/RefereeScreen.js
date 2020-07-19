@@ -37,7 +37,9 @@ const RefereeScreen = (props) => {
 
     //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================    let listener = null
     let listener = null
-    const gamesRef = firebaseDb.firestore().collection("game_details")
+    const gamesRef = firebaseDb.firestore().collection("game_details");
+    const refApplRef = firebaseDb.firestore().collection('application_details');
+    const playerApplRef = firebaseDb.firestore().collection('player_application_details');
 
 
     useEffect(() => {
@@ -58,8 +60,8 @@ const RefereeScreen = (props) => {
     }, [])
 
     const deleteRefAppl = (gameId) => {
-        const applRef = firebaseDb.firestore().collection("application_details")
-        applRef.where('gameId', '==' , gameId)
+        const playerApplRef = firebaseDb.firestore().collection("player_application_details")
+        playerApplRef.where('gameId', '==' , gameId)
             .get()
             .then(response => {
                 let batch = firebaseDb.firestore().batch()
@@ -70,6 +72,18 @@ const RefereeScreen = (props) => {
                 batch.commit().catch(error => console.log(error))
             })
             .catch(error => console.log(error))
+        const applRef = firebaseDb.firestore().collection("application_details")
+          applRef.where('gameId', '==' , gameId)
+              .get()
+              .then(response => {
+                  let batch = firebaseDb.firestore().batch()
+                  response.docs.forEach((doc) => {
+                      const docRef = applRef.doc(doc.id)
+                      batch.delete(docRef)
+                  })
+                  batch.commit().catch(error => console.log(error))
+              })
+              .catch(error => console.log(error))
     }
 
     //ANIMATED COMPONENTS =========================================================================================

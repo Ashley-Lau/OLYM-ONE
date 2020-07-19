@@ -204,21 +204,22 @@ const GameDetailsModal = props => {
 
                 <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
 
-                    <View>
-                        <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.gameDetails.price).toFixed(2)}</Text>
-
-                        {props.itemType === "Join" || props.itemType === "Quit"
-                            ?
+                    {props.itemType === "Join" || "Quit"
+                    ?
+                        <View>
                             <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.gameDetails.price).toFixed(2)}</Text>
                                 <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.gameDetails.availability} Slots Left!</Text>
                             </View>
-                            :
-                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.gameDetails.refereeSlots} Slots Left!</Text>
-                            </View>
 
-                        }
-                    </View>
+                        </View>
+
+                    :
+                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                            <Text style={{fontSize:25, color:lightColor, marginLeft:15}}> {props.gameDetails.refereeSlots} Slots Left!</Text>
+                        </View>
+
+                    }
 
 
 
