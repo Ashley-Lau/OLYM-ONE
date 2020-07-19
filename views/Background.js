@@ -1,9 +1,12 @@
 import React from 'react';
-import {View, StyleSheet, Image, Dimensions, ImageBackground, SafeAreaView} from 'react-native';
+import {View, StyleSheet, Image, Dimensions, ImageBackground, } from 'react-native';
 import { heightPercentageToDP as hp } from "react-native-responsive-screen";
+import { getStatusBarHeight } from 'react-native-status-bar-height';
+
+const statusBarHeight = getStatusBarHeight(true)
 
 const Background = props => {
-    return (<SafeAreaView style = {{flex: 1, minHeight: Platform.OS === 'android' ? hp("97%") : hp("100%"),}}>
+    return (<View style = {{flex: 1, minHeight: Platform.OS === 'android' ? hp("97%") : hp("100%"),}}>
             <ImageBackground style={[styles.container, props.style]} source={require('../assets/whiteBackground.jpg')}>
                 <View style={styles.topView}>
                     <Image source={require('../assets/OrangeBackground.jpg')}
@@ -13,7 +16,7 @@ const Background = props => {
                 </View>
                 {props.children}
             </ImageBackground>
-        </SafeAreaView>
+        </View>
     );
 }
 
@@ -27,13 +30,7 @@ const styles = StyleSheet.create({
         flex:1,
     },
     topView:{
-        // width:winWidth * 1.2,
-        // height:winWidth * 1.2,
-        // backgroundColor:"rgb(239,239,239)",
-        // top:-5 * heightRatio,
-        // right: -25 * widthRatio,
-        height: 150,
-        // width: '100%',
+        height: 150 + statusBarHeight,
         position:"absolute",
         shadowColor: "#000",
         shadowOffset: {
