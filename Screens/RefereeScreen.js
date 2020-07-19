@@ -40,7 +40,9 @@ const RefereeScreen = (props) => {
 
     //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================    let listener = null
     let listener = null
-    const gamesRef = firebaseDb.firestore().collection("game_details")
+    const gamesRef = firebaseDb.firestore().collection("game_details");
+    const refApplRef = firebaseDb.firestore().collection('application_details');
+    const playerApplRef = firebaseDb.firestore().collection('player_application_details');
 
 
     useEffect(() => {
@@ -122,7 +124,22 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            doc.ref.delete().then(()=>{});}
+                            playerApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            refApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            doc.ref.delete().then(()=>{});
+                        }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
@@ -148,7 +165,22 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            doc.ref.delete().then(()=>{});}
+                            playerApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            refApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            doc.ref.delete().then(()=>{});
+                        }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
@@ -175,7 +207,22 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            doc.ref.delete().then(()=>{});}
+                            playerApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            refApplRef.where("gameId", "==", doc.ref)
+                                .get()
+                                .then(snapShot => {
+                                    snapShot.forEach(doc => {
+                                        doc.ref.delete().then(()=>{});
+                                    })
+                                });
+                            doc.ref.delete().then(()=>{});
+                        }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}

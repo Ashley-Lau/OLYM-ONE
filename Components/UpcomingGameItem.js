@@ -9,7 +9,8 @@ const UpcomingGameItem = props => {
 
     //UPDATING QUIT GAMES ================================================================================================
     const gameRef = firebaseDb.firestore().collection('game_details').doc(props.gameId);
-    const userRef = firebaseDb.firestore().collection('users').doc(props.user.id);
+    const refApplRef = firebaseDb.firestore().collection('application_details');
+    const playerApplRef = firebaseDb.firestore().collection('player_application_details');
 
     let host = '';
     const getNewHost = () => {
@@ -23,8 +24,25 @@ const UpcomingGameItem = props => {
         }
 
     }
+    const deleteGame = () => {
+        gameRef.delete().then(()=>{});
+    }
     const gameQuit = () => {
         if(props.gameDetails.players.length === 1){
+            refApplRef.where("gameId", "==", props.gameId)
+                .get()
+                .then(snapshot => {
+                    snapshot.forEach(doc => {
+                        doc.ref.delete().then(()=>{})
+                    })
+                })
+            playerApplRef.where("gameId", "==", props.gameId)
+                .get()
+                .then(snapshot => {
+                    snapshot.forEach(doc => {
+                        doc.ref.delete().then(()=>{})
+                    })
+                })
             gameRef.delete().then(() => {})
         } else if(props.gameDetails.hostId === props.user.id){
             const slots = parseInt(props.gameDetails.availability) + 1
@@ -34,13 +52,15 @@ const UpcomingGameItem = props => {
             const slots = parseInt(props.gameDetails.availability) + 1
             gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayRemove(props.user.id)}).then(() => {})
         }
-        userRef.update({upcoming_games: firebase.firestore.FieldValue.arrayRemove(props.gameId)}).then(() => {});
     }
 
-    //CONFIRM QUIT GAME ================================================================================================================
+    //CONFIRM QUIT ALERT =========================================================================================================
     const confirmQuitAlert = () =>{
+        props.gameDetails.hostId === props.user.id
+        ?
+
         Alert.alert("Confirm Quit",
-            "Are you sure you want to quit this game?\nYou might not be able to join this game again!",
+            "You are the host to this game!\nDo you want to make the next player in line host or delete this game?",
             [
                 {
                     text:'Cancel',
@@ -48,14 +68,42 @@ const UpcomingGameItem = props => {
                     style:'cancel'
                 },
                 {
-                    text:'Confirm',
+                    text:'Quit',
                     onPress:() => {
                         gameQuit();
                         props.closeGame();
-                    },
+                        },
+
+                },
+                {
+                    text:'Delete',
+                    onPress:() => {
+                        deleteGame();
+                        props.closeGame();
+                    }
                 }
             ]
         )
+
+        :
+            Alert.alert("Confirm Quit",
+                "Are you sure you want to quit this game?\nYou might not be able to join this game again!",
+                [
+                    {
+                        text:'Cancel',
+                        onPress:() => {},
+                        style:'cancel'
+                    },
+                    {
+                        text:'Confirm',
+                        onPress:() => {
+                            gameQuit();
+                            props.closeGame();
+                        },
+                    }
+                ]
+            )
+
     }
 
     //USE EFFECT TO GET THE NEW HOST===========================================================================================
@@ -65,9 +113,8 @@ const UpcomingGameItem = props => {
 
     return (
         <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
-                          onPress={() => {
-                              confirmQuitAlert();
-                          }}
+                          onPress={() => {confirmQuitAlert()}}
+
         >
             <Text style ={{fontSize:20, color:props.textColor}}>Quit</Text>
         </TouchableOpacity>
