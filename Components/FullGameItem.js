@@ -320,8 +320,6 @@ const FullGameItem = props => {
                                     <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.refereeList.length} </Text>
                                 </View>
                             }
-
-
                         </View>
                     </ImageBackground>
 

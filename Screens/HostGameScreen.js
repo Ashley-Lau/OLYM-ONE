@@ -1,5 +1,16 @@
 import React,{useState, useEffect} from 'react';
-import {Text, TextInput, StyleSheet, Modal, View, ScrollView, Dimensions, Alert, TouchableOpacity, SafeAreaView} from 'react-native';
+import {
+    Text,
+    TextInput,
+    StyleSheet,
+    Modal,
+    View,
+    ScrollView,
+    Dimensions,
+    Alert,
+    TouchableOpacity,
+    Animated,
+} from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
@@ -15,6 +26,7 @@ import firebaseDb from "../firebaseDb";
 import {Autocomplete, AutocompleteItem, Select, SelectItem, Input} from '@ui-kitten/components';
 import {mrtStations} from "../Components/SearchBarFunctions";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import {MaterialCommunityIcons} from "react-native-vector-icons";
 
 const sHeight = Dimensions.get('window').height
 
@@ -87,12 +99,17 @@ const HostGameScreen = props => {
         }
     , [])
 
+    // Animation for the header
+    const HEADER_MAX_HEIGHT = 45
+    const scrollY = new Animated.Value(0)
+    const diffClamp = Animated.diffClamp(scrollY, 0, HEADER_MAX_HEIGHT * 10)
+    const headerHeight = diffClamp.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT / 2,HEADER_MAX_HEIGHT],
+        outputRange: ['rgba(226,147,73,0)', 'rgba(226,147,73,0.5)' ,'rgba(226,147,73, 1.0)'],
+    })
+
     //NAVIGATION ===================================================================================================
     const navigation = useNavigation()
-
-    const registeredPress = () => {
-        navigation.goBack();
-    }
 
     //CHECKS FOR IOS PLATFORM ========================================================================================================================
     const isIos = Platform.OS === 'ios'
@@ -133,13 +150,49 @@ const HostGameScreen = props => {
                 refereeList: [],
                 applicants:[]
             })
-            .then(() => {registeredPress()})
+            .then(successfullyHostedGame)
             .catch(err => console.error(err))
 
     }
 
-    return( <SafeAreaView>
-        <ScrollView>
+    const successfullyHostedGame= () => {
+        navigation.goBack()
+        Alert.alert("Game has been hosted successfully",
+            "Refer to upcoming games section in Home page to view hosted game.",
+            [
+                {
+                    text: "Confirm",
+                    onPress: () => {}
+                }
+            ],
+            {cancelable: false}
+        )
+    }
+
+    return( <View>
+            {/*=================================header ===============================================*/}
+        <Animated.View style = {{
+            ...Styles.animatedHeaderStyle,
+            backgroundColor: headerHeight,
+        }}>
+            <View style = {{...Styles.innerHeaderStyle,}}>
+                {/*==================================================back button==========================================*/}
+                <TouchableOpacity style = {{alignItems: 'center', flexDirection: 'row',position: 'absolute', left: 10, bottom: Platform.OS === 'ios'? -2 : 0}}
+                                  onPress = {navigation.goBack}
+                                  activeOpacity= {0.8}>
+                    <Ionicons name="ios-arrow-back" color={'white'} size={27} />
+                    <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
+                </TouchableOpacity>
+                <Text style = {{...styles.titleStyle, }}> Host Game </Text>
+            </View>
+        </Animated.View>
+        <ScrollView showsVerticalScrollIndicator={false}
+                    bounces = {false}
+                    style = {{height: '100%', }}
+                    onScroll={Animated.event(
+                        [{nativeEvent: {contentOffset: {y: scrollY}}}]
+                    )}
+                    scrollEventThrottle={16}>
         <Background >
                 <Formik initialValues={{
                     location: '',
@@ -157,26 +210,11 @@ const HostGameScreen = props => {
                         validationSchema={reviewSchema}
                         onSubmit={(values, actions) => {
                             handleCreateGame(values);
-                            actions.resetForm();
                         }
                         }
                 >
                     {(props) => (
-                        <View>
-                            <View style = {{width: '100%', height: 50, backgroundColor: 'transparent', flexDirection: 'row', alignItems: 'center', justifyContent: 'center', marginBottom:15}}>
-                                {/*==================================================back button==========================================*/}
-                                <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', left: 10, position: 'absolute'}}
-                                                  onPress={() => {
-                                                      props.handleReset();
-                                                      registeredPress();}}
-                                                  activeOpacity= {0.8}>
-                                    <Ionicons name="ios-arrow-back" color={'white'} size={30} />
-                                    <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
-                                </TouchableOpacity>
-                                <Text style = {{...styles.titleStyle, }}> Host Game </Text>
-                                {/*=============================================profile picture of other user====================================================*/}
-                            </View>
-
+                        <View style = {{top: Styles.statusBarHeight.height + 60, paddingBottom: Styles.statusBarHeight.height + 60}}>
                             {/*// LOCATION ------------------------------------------------------------------------*/}
                             <View style={{...styles.selectionItem, marginTop: 0}}>
                                 <Text style={{fontSize:15, marginLeft:8}}>ZONE :</Text>
@@ -187,7 +225,7 @@ const HostGameScreen = props => {
                                         onBlur = {props.handleBlur('location')}
                                     />
                                 </View>
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
+                                <Text style={{fontSize: 15, color: '#630000'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
 
                             {/*// SPECIFIC LOCATION ------------------------------------------------------------------------*/}
@@ -465,7 +503,7 @@ const HostGameScreen = props => {
                 </Formik>
             </Background>
             </ScrollView>
-        </SafeAreaView>
+        </View>
     )
 }
 
@@ -473,9 +511,8 @@ const styles = StyleSheet.create({
     titleStyle: {
         color: 'white',
         justifyContent: 'center',
-        fontSize: 25,
+        fontSize: 21,
         fontWeight: "bold",
-        marginRight: 2
     },
     dropDownCopy:{
         flexDirection:"row",

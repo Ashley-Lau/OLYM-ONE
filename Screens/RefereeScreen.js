@@ -11,20 +11,17 @@ import {
     Keyboard,
     TouchableWithoutFeedback, Alert
 } from 'react-native';
+import {Select, SelectItem} from "@ui-kitten/components";
 
 import Background from "../views/Background";
-import SearchButtons from "../Components/SearchButtons";
-import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
-import {Select, SelectItem} from "@ui-kitten/components";
-import Entypo from "react-native-vector-icons/Entypo";
 import LocationSearchBar from "../Components/LocationSeachBar";
+import Styles from "../styling/Styles";
+import FullGameItem from "../Components/FullGameItem";
+import {noInput, noSport} from "../Components/NoDataMessages";
+
 
 const sHeight = Dimensions.get('window').height
-
-import FullGameItem from "../Components/FullGameItem";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 
@@ -55,11 +52,39 @@ const RefereeScreen = (props) => {
                 response.docs.forEach((doc) => {
                     const docRef = gamesRef.doc(doc.id)
                     batch.delete(docRef)
+                    deleteRefAppl(doc.id)
                 })
                 batch.commit().catch(error => console.log(error))
             })
             .catch(error => console.log(error))
     }, [])
+
+    const deleteRefAppl = (gameId) => {
+        const playerApplRef = firebaseDb.firestore().collection("player_application_details")
+        playerApplRef.where('gameId', '==' , gameId)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = applRef.doc(doc.id)
+                    batch.delete(docRef)
+                })
+                batch.commit().catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
+        const applRef = firebaseDb.firestore().collection("application_details")
+          applRef.where('gameId', '==' , gameId)
+              .get()
+              .then(response => {
+                  let batch = firebaseDb.firestore().batch()
+                  response.docs.forEach((doc) => {
+                      const docRef = applRef.doc(doc.id)
+                      batch.delete(docRef)
+                  })
+                  batch.commit().catch(error => console.log(error))
+              })
+              .catch(error => console.log(error))
+    }
 
     //ANIMATED COMPONENTS =========================================================================================
     const x = new Animated.Value(0);
@@ -124,21 +149,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -166,21 +178,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -209,21 +208,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -242,116 +228,99 @@ const RefereeScreen = (props) => {
         }
     }
 
-    // picture shown when the users have not inputted zone or sport yet ==========================================
-    const noInput = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome name = 'search-plus' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No sport or zone selected</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15,}}>Search for games or sport by filling the fields above!</Text>
-        </View>
-    )
-
-    const noSport = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome5 name = 'sad-tear' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No games available</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15}}>There are no games currently for the selected location and sport.</Text>
-        </View>
-    )
-
-
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
         <Background style = {styles.container}>
-
+            <View style = {{top: Styles.statusBarHeight.height}}>
             {/*==================================== Title and hosting a game ======================================*/}
-            <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                <Text style = {styles.text}>Referable Games</Text>
+                <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
+                    <Text style = {styles.text}>Referable Games</Text>
 
-            </View>
+                </View>
 
-            {/*================================== SEARCH BAR ==============================================*/}
+                {/*================================== SEARCH BAR ==============================================*/}
 
-            <View style={styles.searchSpace}>
-                <LocationSearchBar select = {val => setZone(val)}
-                                   onPress = {() => search(sportValue)}/>
-            </View>
+                <View style={styles.searchSpace}>
+                    <LocationSearchBar select = {val => setZone(val)}
+                                       onPress = {() => search(sportValue)}/>
+                </View>
 
 
 
-            {/*===============================Sport Selection ===========================================*/}
+                {/*===============================Sport Selection ===========================================*/}
 
-            <View style={{height: sHeight * 0.14}}>
-                <FlatList showsHorizontalScrollIndicator={false}
-                          horizontal={true}
-                          contentContainerStyle= {{justifyContent:"space-between"}}
-                          keyExtractor={(item) => item.toString()}
-                          data = {sports}
-                          renderItem= {({item}) =>
-                              item === sportValue
-                                  ?
-                                  <View style={styles.sportItem}>
-                                      <TouchableOpacity activeOpacity={0.6}
-                                                        style={{...styles.sportSelected}}
-                                                        onPress ={ () => {
-                                                            setSportValue(item);
-                                                            search(item);
-                                                        }}
-                                      >
-                                          <View style={styles.sportImageSelected}>
-                                              <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
-                                          </View>
+                <View style={{height: sHeight * 0.14}}>
+                    <FlatList showsHorizontalScrollIndicator={false}
+                              horizontal={true}
+                              contentContainerStyle= {{justifyContent:"space-between"}}
+                              keyExtractor={(item) => item.toString()}
+                              data = {sports}
+                              renderItem= {({item}) =>
+                                  item === sportValue
+                                      ?
+                                      <View style={styles.sportItem}>
+                                          <TouchableOpacity activeOpacity={0.6}
+                                                            style={{...styles.sportSelected}}
+                                                            onPress ={ () => {
+                                                                setSportValue(item);
+                                                                search(item);
+                                                            }}
+                                          >
+                                              <View style={styles.sportImageSelected}>
+                                                  <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
+                                              </View>
 
-                                      </TouchableOpacity>
-                                      <Text>{item}</Text>
-                                  </View>
-                                  : <View style={styles.sportItem}>
-                                      <TouchableOpacity activeOpacity={0.6}
-                                                        style={{...styles.sportSelection}}
-                                                        onPress ={ () => {
-                                                            setSportValue(item);
-                                                            search(item);
-                                                        }}
-                                      >
-                                          <View style={styles.sportImageShadow}>
-                                              <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
-                                          </View>
+                                          </TouchableOpacity>
+                                          <Text>{item}</Text>
+                                      </View>
+                                      : <View style={styles.sportItem}>
+                                          <TouchableOpacity activeOpacity={0.6}
+                                                            style={{...styles.sportSelection}}
+                                                            onPress ={ () => {
+                                                                setSportValue(item);
+                                                                search(item);
+                                                            }}
+                                          >
+                                              <View style={styles.sportImageShadow}>
+                                                  <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
+                                              </View>
 
-                                      </TouchableOpacity>
-                                      <Text style={{opacity:0.3}}>{item}</Text>
-                                  </View>
+                                          </TouchableOpacity>
+                                          <Text style={{opacity:0.3}}>{item}</Text>
+                                      </View>
 
-                          }
+                              }
 
-                >
+                    >
 
-                </FlatList>
-            </View>
+                    </FlatList>
+                </View>
 
-            <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-                {!searchedBefore
-                    ? noInput
-                    : refereeList.length === 0
-                        ? noSport
-                        :   <AnimatedFlatList
-                                scrollEventThrottle={16}
-                                {...{onScroll}}
-                                showsHorizontalScrollIndicator={false}
-                                horizontal={true}
-                                contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
-                                keyExtractor={(item) => item.key.toString()}
-                                data = {refereeList}
-                                renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
-                                                                       gameId={item.key}
-                                                                       user={user}
-                                                                       itemType={"Referee"}
-                                                                       index = {index}
-                                                                       translateX = {x}
-                            />}
-                            >
+                <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
+                    {!searchedBefore
+                        ? noInput
+                        : refereeList.length === 0
+                            ? noSport
+                            :   <AnimatedFlatList
+                                    scrollEventThrottle={16}
+                                    {...{onScroll}}
+                                    showsHorizontalScrollIndicator={false}
+                                    horizontal={true}
+                                    contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
+                                    keyExtractor={(item) => item.key.toString()}
+                                    data = {refereeList}
+                                    renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
+                                                                           gameId={item.key}
+                                                                           user={user}
+                                                                           itemType={"Referee"}
+                                                                           index = {index}
+                                                                           translateX = {x}
+                                />}
+                                >
 
-                            </AnimatedFlatList>}
+                                </AnimatedFlatList>}
 
+                </View>
             </View>
         </Background>
         </TouchableWithoutFeedback>
@@ -425,14 +394,6 @@ const styles = StyleSheet.create({
         color: 'white',
         fontSize: 27,
         fontWeight: "bold",
-    },
-    noApplication: {
-        fontSize: 33,
-        alignSelf: 'center',
-        color: '#5a5959',
-        top: 20,
-        textAlign:'center',
-        width: Dimensions.get('window').width * 0.8
     },
 })
 

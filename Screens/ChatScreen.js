@@ -16,6 +16,7 @@ import { GiftedChat, Day, Bubble } from 'react-native-gifted-chat'
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import {useNavigation} from "@react-navigation/native";
 
+import Styles from "../styling/Styles";
 import firebaseDb from "../firebaseDb";
 
 
@@ -103,16 +104,15 @@ const ChatScreen = props => {
     }
 
     return <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-            <SafeAreaView style = {{flex: 1}}>
                 <ImageBackground source={require("../assets/BrownSkylineChat.png")} style = {{width: '100%', height: '100%',}}>
 
-                            <View style = {{width: '100%', height: 50, backgroundColor: 'rgb(226,147,73)', flexDirection: 'row', alignItems: 'center', justifyContent:'space-between'}}>
+                            <View style = {{width: '100%', height: Styles.statusBarHeight.height + 45, backgroundColor: 'rgb(226,147,73)', flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', paddingTop: Platform.OS === 'ios' ? Styles.statusBarHeight.height : 0}}>
                                 {/*==================================================back button==========================================*/}
                                 <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
                                                   onPress = {() => navigation.navigate('ChatDetailScreen')}
                                                   activeOpacity= {0.8}>
                                     <Ionicons name="ios-arrow-back" color={'white'} size={30} />
-                                    <Text style = {{fontSize: 22, marginLeft: 6, color: 'white'}}>Back</Text>
+                                    <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
                                 </TouchableOpacity>
 
                                 <Text style = {{...style.text}}> {otherUserInformation[1]} </Text>
@@ -131,7 +131,6 @@ const ChatScreen = props => {
                                             renderAvatar={() => {return null}}
                             />
                 </ImageBackground>
-            </SafeAreaView>
         </TouchableWithoutFeedback>
 }
 
@@ -144,7 +143,7 @@ const style = StyleSheet.create({
     text: {
         color: 'white',
         justifyContent: 'center',
-        fontSize: 25,
+        fontSize: 21,
         fontWeight: "bold",
         alignSelf: 'center',
         marginRight: 2
