@@ -155,6 +155,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});
@@ -183,6 +184,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});
@@ -212,6 +214,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});

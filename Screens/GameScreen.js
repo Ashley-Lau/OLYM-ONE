@@ -149,12 +149,14 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                     const d = doc.data();
                                     if(d.date.toMillis() < now){
+
                                         doc.ref.delete().then(()=>{}
                                         );
-                                        deletePlayerAppl(doc.id)
+                                        deletePlayerAppl(doc.id);
                                     } else if(d.hostId === currentUser){}
                                     else if( parseInt(d.availability) <= 0){}
                                     else if(d.players.includes(currentUser)){}
+                                    else if(d.applicants.includes(currentUser)){}
                                     else {
                                         filteredGames.push({key:doc.id, value:doc.data()});
                                     }
@@ -176,25 +178,27 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                         const d = doc.data();
                                         if(d.date.toMillis() < now){
-                                            playerApplRef.where("gameId", "==", doc.ref)
+                                            playerApplRef.where("gameId", "==", doc.id)
                                                 .get()
                                                 .then(snapShot => {
-                                                    snapShot.forEach(doc => {
-                                                        doc.ref.delete().then(()=>{});
+                                                    snapShot.forEach(value => {
+                                                        value.ref.delete().then(()=>{});
                                                     })
                                                 });
-                                            refApplRef.where("gameId", "==", doc.ref)
+                                            refApplRef.where("gameId", "==", doc.id)
                                                 .get()
                                                 .then(snapShot => {
-                                                    snapShot.forEach(doc => {
-                                                        doc.ref.delete().then(()=>{});
+                                                    snapShot.forEach(value => {
+                                                        value.ref.delete().then(()=>{});
                                                     })
                                                 });
                                             doc.ref.delete().then(()=>{});
+
                                             deletePlayerAppl(doc.id)
                                         } else if(d.hostId === currentUser){}
                                         else if( parseInt(d.availability) <= 0){}
                                         else if(d.players.includes(currentUser)){}
+                                        else if(d.applicants.includes(currentUser)){}
                                         else {
                                             filteredGames.push({key:doc.id, value:doc.data()});
                                         }
@@ -218,18 +222,18 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                         const d = doc.data();
                                         if(d.date.toMillis() < now){
-                                            playerApplRef.where("gameId", "==", doc.ref)
+                                            playerApplRef.where("gameId", "==", doc.id)
                                                 .get()
                                                 .then(snapShot => {
-                                                    snapShot.forEach(doc => {
-                                                        doc.ref.delete().then(()=>{});
+                                                    snapShot.forEach(value => {
+                                                        value.ref.delete().then(()=>{});
                                                     })
                                                 });
-                                            refApplRef.where("gameId", "==", doc.ref)
+                                            refApplRef.where("gameId", "==", doc.id)
                                                 .get()
                                                 .then(snapShot => {
-                                                    snapShot.forEach(doc => {
-                                                        doc.ref.delete().then(()=>{});
+                                                    snapShot.forEach(value => {
+                                                        value.ref.delete().then(()=>{});
                                                     })
                                                 });
                                             doc.ref.delete().then(()=>{});
@@ -237,6 +241,7 @@ const GameScreen = (props) => {
                                         } else if(d.hostId === currentUser){}
                                         else if( parseInt(d.availability) <= 0){}
                                         else if(d.players.includes(currentUser)){}
+                                        else if(d.applicants.includes(currentUser)){}
                                         else {
                                             filteredGames.push({key:doc.id, value:doc.data()});
                                         }

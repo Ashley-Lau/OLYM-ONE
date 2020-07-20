@@ -44,13 +44,18 @@ const PlayerApplicationItem = props => {
 
 
     const deleteReq = () => {
-        applRef.delete().then(()=>{})
+        applRef.delete().then(()=>{
+            gameRef.update({applicants: firebase.firestore.FieldValue.arrayRemove(props.playerDetails.playerId)})
+                .then(() => {});
+        })
     }
 
     const acceptReq = () => {
 
         const slots = parseInt(details.availability) - 1
-        gameRef.update({availability : slots.toString(), players: firebase.firestore.FieldValue.arrayUnion(props.playerDetails.playerId)})
+        gameRef.update({availability : slots.toString(),
+                              players: firebase.firestore.FieldValue.arrayUnion(props.playerDetails.playerId),
+                              applicants:firebase.firestore.FieldValue.arrayRemove(props.playerDetails.playerId)})
             .then(()=>{deleteReq()});
         firebaseDb.firestore().collection('notifications')
             .add({
