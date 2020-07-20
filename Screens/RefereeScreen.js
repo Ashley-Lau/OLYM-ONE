@@ -124,18 +124,18 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.ref)
+                            playerApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
-                            refApplRef.where("gameId", "==", doc.ref)
+                            refApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
                             doc.ref.delete().then(()=>{});
@@ -143,6 +143,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});
@@ -165,18 +166,18 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.ref)
+                            playerApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
-                            refApplRef.where("gameId", "==", doc.ref)
+                            refApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
                             doc.ref.delete().then(()=>{});
@@ -184,6 +185,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});
@@ -207,18 +209,18 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.ref)
+                            playerApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
-                            refApplRef.where("gameId", "==", doc.ref)
+                            refApplRef.where("gameId", "==", doc.id)
                                 .get()
                                 .then(snapShot => {
-                                    snapShot.forEach(doc => {
-                                        doc.ref.delete().then(()=>{});
+                                    snapShot.forEach(value => {
+                                        value.ref.delete().then(()=>{});
                                     })
                                 });
                             doc.ref.delete().then(()=>{});
@@ -226,6 +228,7 @@ const RefereeScreen = (props) => {
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
                         else if(data.refereeList.includes(userId)){}
+                        else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
                         else if(data.referee[0] === "YES"){
                             filteredGames.push({key:doc.id, value:doc.data()});

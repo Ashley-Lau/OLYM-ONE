@@ -130,7 +130,8 @@ const HostGameScreen = props => {
                 hostId: data.id,
                 referee: values.referee,
                 refereeSlots:values.refereeSlots,
-                refereeList: []
+                refereeList: [],
+                applicants:[]
             })
             .then(() => {registeredPress()})
             .catch(err => console.error(err))

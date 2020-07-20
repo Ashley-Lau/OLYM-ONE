@@ -9,7 +9,8 @@ const JoinItem = props => {
 
     // REQUESTING TO JOIN INSTEAD OF JOINING THE GAME STRAIGHT ====================================================
 
-    const playerAppRef = firebaseDb.firestore().collection("player_application_details")
+    const playerAppRef = firebaseDb.firestore().collection("player_application_details");
+    const gameRef = firebaseDb.firestore().collection("game_details").doc(props.gameId);
 
     const gameApp = () => {
         playerAppRef.add({
@@ -25,7 +26,10 @@ const JoinItem = props => {
             playerUri:props.user.uri
 
         })
-            .then(() => {})
+            .then(() => {
+                gameRef.update({applicants:firebase.firestore.FieldValue.arrayUnion(props.user.id)})
+                    .then(() => {})
+            })
             .catch(err => console.error(err))
     }
 

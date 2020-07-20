@@ -44,12 +44,17 @@ const RefereeApplicationItem = props => {
 
 
     const deleteReq = () => {
-        applRef.delete().then(()=>{})
+        applRef.delete().then(()=>{
+            gameRef.update({applicants: firebase.firestore.FieldValue.arrayRemove(props.refDetails.refereeId)})
+                .then(() => {});
+        })
     }
 
     const acceptReq = () => {
         const slots = parseInt(details.refereeSlots) - 1
-        gameRef.update({refereeSlots:slots.toString(), refereeList: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId)})
+        gameRef.update({refereeSlots:slots.toString(),
+                              refereeList: firebase.firestore.FieldValue.arrayUnion(props.refDetails.refereeId),
+                              applicants: firebase.firestore.FieldValue.arrayRemove(props.refDetails.refereeId)})
             .then(()=>{deleteReq()});
     }
 
