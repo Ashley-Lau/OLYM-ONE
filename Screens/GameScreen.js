@@ -10,11 +10,13 @@ import {
     Text,
     TouchableOpacity,
     Dimensions,
-    Alert
+    Alert,
+    TextInput,
 } from 'react-native';
 
 import {useNavigation} from "@react-navigation/native";
 import Entypo from 'react-native-vector-icons/Entypo';
+import SearchButtons from '../Components/SearchButtons';
 
 
 import Background from "../views/Background";
@@ -70,8 +72,11 @@ const GameScreen = (props) => {
         });
 
     // ARRAY FOR SPORT SELECTION BELOW SEARCH BAR ==============================================================================
-    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis"];
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportValue, setSportValue] = useState('');
+
+    const [specificSport, setSpecificSport] = useState('');
+
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -85,6 +90,8 @@ const GameScreen = (props) => {
             return require("../assets/badminton_icon.png");
         } else if(sport === "Tennis"){
             return require("../assets/tennis_coloured.png");
+        } else if(sport === "Others"){
+            return require("../assets/other_games.png")
         }
     }
 
@@ -104,6 +111,7 @@ const GameScreen = (props) => {
     // searching function on pressing search or any of the sport ==============================================
     // will only go through when a valid zone is selected =============================
     const search = (sportValue) => {
+
         if (sportValue === '' && zone === '') {
             noFieldsSelected()
             return
@@ -115,7 +123,7 @@ const GameScreen = (props) => {
         if (sportValue !== '' && zone !== '') {
             listener = gamesRef
                             .orderBy("date", "asc")
-                            .where('sport', '==', sportValue)
+                            .where('sport', '==', sportValue.toLowerCase())
                             .where('location', '==', zone)
                             .onSnapshot(documents => {
                                 const now = new Date().getTime()
@@ -156,7 +164,7 @@ const GameScreen = (props) => {
         if (sportValue !== '') {
             listener = gamesRef
                             .orderBy("date", "asc")
-                            .where('sport', '==', sportValue)
+                            .where('sport', '==', sportValue.toLowerCase())
                             .onSnapshot(documents => {
                                 const now = new Date().getTime()
                                 const filteredGames = []
@@ -298,7 +306,8 @@ const GameScreen = (props) => {
                                                             style={{...styles.sportSelected}}
                                                             onPress ={ () => {
                                                                 console.log(item)
-                                                                search(item);
+                                                                setSportValue("");
+                                                                // search(item);
                                                             }}
                                           >
                                               <View style={styles.sportImageSelected}>
@@ -331,28 +340,45 @@ const GameScreen = (props) => {
                     </FlatList>
                 </View>
 
+                {sportValue === "Others"
+                    ?
+                    <View style={{...styles.dropDown, paddingHorizontal:15}}>
+                        <TextInput
+                            placeholder={"Enter the sport you are searching for!"}
+                            style={{...styles.dropDownText, fontSize:16}}
+                            onChangeText={text => setSpecificSport(text)}
+                            value={specificSport}
+                        />
+                        <SearchButtons searchMe={() => search(specificSport)}/>
+
+
+                    </View>
+                    :
+                    <View/>
+                }
+
                 <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
 
                     {!searchedBefore
                         ? noInput
-                        : game.length === 0
-                            ? noSport
-                            : <AnimatedFlatList
+                        : game.length === 0 && sportValue === "Others"
+                            ? noInput
+                            : game.length === 0 && sportValue !== "Others"
+                                ? noSport
+                                : <AnimatedFlatList
                                     scrollEventThrottle={16}
                                     {...{onScroll}}
                                     showsHorizontalScrollIndicator={false}
-                                    //KIV need to do some Apploading for it to work
-                                    // initialScrollIndex={Math.floor(game.length/2)}
                                     horizontal={true}
                                     contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
                                     keyExtractor={(item) => item.key.toString()}
                                     data = {game}
                                     renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
-                                                                           gameId={item.key}
-                                                                           user={user}
-                                                                           itemType={"Join"}
-                                                                           translateX = {x}
-                                                                           index = {index}
+                                                                                  gameId={item.key}
+                                                                                  user={user}
+                                                                                  itemType={"Join"}
+                                                                                  translateX = {x}
+                                                                                  index = {index}
 
 
                                     />}
@@ -362,6 +388,8 @@ const GameScreen = (props) => {
                     }
 
                 </View>
+
+
             </Background>
         </TouchableWithoutFeedback>
     )
@@ -442,6 +470,25 @@ const styles = StyleSheet.create({
         top: 20,
         textAlign:'center',
         width: Dimensions.get('window').width * 0.8
+    },
+    dropDown: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        backgroundColor: 'ghostwhite',
+        height: 40,
+        borderWidth: 1,
+        borderRadius:4,
+        borderColor:"rgba(131,137,147,0.53)",
+        width: "97%",
+        marginLeft:"1.5%"
+    },
+    dropDownText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        height: 40,
+        width: "97%",
     },
 })
 
