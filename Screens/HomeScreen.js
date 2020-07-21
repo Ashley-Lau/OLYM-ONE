@@ -326,6 +326,17 @@ const HomeScreen = props => {
                                   gameId={game.key}
                                   user={user}
                                   itemType={"Quit"}
+                                  onPress = {() => {
+                                      navigation.navigate( "GameDetailsModal",
+                                              {
+                                                  uid: user.id,
+                                                  gameDetails: game.value,
+                                                  itemType: "Quit",
+                                                  user: user,
+                                                  gameId: game.key,
+                                              }
+
+                                  )}}
                         />
                     )
                 )}
@@ -350,6 +361,17 @@ const HomeScreen = props => {
                                 gameId={upcoming.key}
                                 user={user}
                                 itemType={"Resign"}
+                                onPress = {() => {
+                                    navigation.navigate("GameDetailsModal",
+                                            {
+                                                uid: user.id,
+                                                gameDetails: upcoming.value,
+                                                itemType: "Resign",
+                                                user: user,
+                                                gameId: upcoming.key,
+                                            }
+                                    )
+                                }}
                             />
                         )
                     )}

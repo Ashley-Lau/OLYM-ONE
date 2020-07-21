@@ -6,76 +6,14 @@ import { useNavigation } from '@react-navigation/native';
 import firebaseDb from "../firebaseDb"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import ViewPlayerItem from "../Components/ViewPlayerItem"
-import GameItemBackGround from "../views/GameItemBackGround";
-import GameDetailsModal from "./GameDetailsModal";
-import {keywordsMaker} from '../Components/SearchBarFunctions'
-
 const FullGameItem = props => {
     const navigation = useNavigation()
-
-
 
     //DATE AND TIME STRING ================================================================================================
     let gameDate = props.gameDetails.date
     if(props.gameDetails.date){
         gameDate = gameDate.toDate().toString().slice(4,15);
     }
-
-
-    // LIST OF PLAYERS AND REFEREE ================================================================================================
-    const [playerUser, setPlayerUser] = useState([]);
-    const [refereeUser, setRefereeUser] = useState([]);
-
-    const username = () => {
-        setPlayerUser([]);
-        let playerList = [];
-        props.gameDetails.players.map(uid => {
-            firebaseDb.firestore().collection('users')
-                .doc(uid)
-                .onSnapshot(doc => {
-                    console.log("players Loaded")
-                    playerList.push(doc.data());
-                }, error => {
-                    console.log(error.message);
-                })
-        })
-        setPlayerUser(playerList);
-    }
-
-    const getRef = () => {
-        setRefereeUser([]);
-        let refList = [];
-        props.gameDetails.refereeList.map(uid => {
-            firebaseDb.firestore().collection('users')
-                .doc(uid)
-                .onSnapshot(doc => {
-                    refList.push(doc.data());
-                }, error => {
-                    console.log(error.message);
-                })
-        })
-        setRefereeUser(refList);
-    }
-
-    useEffect(() => {
-        const unsubscribe = username();
-        const unsubscribe2 = getRef();
-
-        return () => {
-            unsubscribe;
-            unsubscribe2;
-        }
-
-    }, [])
-
-
-
-
-    //MODAL STATES ================================================================================================================
-    const [playerDetails, openPlayerDetails] = useState(false);
-    const [refereeDetails, openRefereeDetails] = useState([]);
-    const [gameDetails, openGameDetails] = useState(false);
 
 
     //SPORT BG and colour================================================================================================================================
@@ -140,84 +78,6 @@ const FullGameItem = props => {
         lightColor = "rgb(218,138,158)"
     }
 
-
-    //CHAT FUNCTION====================================================================================================
-
-    const chatWithHost = () => {
-        const hostId = props.gameDetails.hostId
-        const currentUserId = props.user.id
-        const smallerId = hostId < currentUserId ? hostId : currentUserId
-        const largerId = hostId < currentUserId ? currentUserId : hostId
-        const chatId = smallerId + '_' + largerId
-        const chatRef = firebaseDb
-            .firestore()
-            .collection('messages')
-        if (hostId === currentUserId) {
-            Alert.alert('You are The host!', 'Cannot talk to yourself')
-            return
-        }
-        chatRef
-            .doc(chatId)
-            .get()
-            .then(doc => {
-                if(!doc.exists) {
-                    let smallerIdData = null
-                    let largerIdData = null
-
-                    firebaseDb.firestore().collection('users').doc(smallerId).get()
-                        .then(doc => {
-                            smallerIdData = doc.data()
-                            firebaseDb.firestore().collection('users').doc(largerId).get()
-                                .then(doc2 => {
-                                    largerIdData = doc2.data()
-                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
-                                    const data = {
-                                        id: chatId,
-                                        idArray: [smallerId, largerId],
-                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
-                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
-                                        lastMessage: '',
-                                        lastMessageFrom: null,
-                                        lastMessageTime: '',
-                                        message: [],
-                                        notificationStack: 0,
-                                        messageCount: 0,
-                                        keywords: keywords,
-                                        smallId: smallerId,
-                                        largeId: largerId,
-                                    }
-                                    chatRef
-                                        .doc(chatId)
-                                        .set(data)
-                                        .then(() => {
-                                            openGameDetails(false)
-                                            navigation.navigate('ChatStack', {
-                                                screen: 'ChatScreen',
-                                                params : {
-                                                    chat: data,
-                                                    userId: currentUserId
-                                                }
-                                            })
-                                        })
-                                        .catch(error => console.log(error))
-                                })
-                                .catch(error => console.log(error))
-                        })
-                        .catch(error => console.log(error))
-                } else {
-                    openGameDetails(false)
-                    navigation.navigate('ChatStack', {
-                        screen: 'ChatScreen',
-                        params : {
-                            chat: doc.data(),
-                            userId: currentUserId
-                        }
-                    })
-                }
-            })
-            .catch(error => console.log(error))
-    }
-
     //ANIMATION PROPERTIES===========================================================================================
     const x = props.translateX;
     let index = props.index;
@@ -258,38 +118,12 @@ const FullGameItem = props => {
 
     return (
         <View>
-            <ViewPlayerItem visible={playerDetails}
-                            playerDetails={playerUser}
-                            closePlayer ={() => {openPlayerDetails(false)}}
-                            backGround = {playerBG}
-                            sportColor = {sportColor}
-                            lightColor = {lightColor}
-                            typeCheck = {"Player"}
-            />
-
-            <ViewPlayerItem visible={refereeDetails}
-                            playerDetails={refereeUser}
-                            closePlayer ={() => {openRefereeDetails(false)}}
-                            backGround = {refereeBG}
-                            sportColor = {sportColor}
-                            lightColor = {lightColor}
-                            typeCheck = {"Referee"}
-            />
-
-            <GameDetailsModal visible={gameDetails}
-                              gameDetails={props.gameDetails}
-                              closeGame={() => {openGameDetails(false)}}
-                              openPlayer ={() => {openPlayerDetails(true)}}
-                              openReferee = {() => {openRefereeDetails(true)}}
-                              itemType = {props.itemType}
-                              chatFunction ={chatWithHost}
-                              gameId ={props.gameId}
-                              user = {props.user}
-            />
 
             <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
                 <TouchableOpacity style={styles.games}
-                                  onPress={() => {openGameDetails(true);}}>
+                                  // onPress={() => {openGameDetails(true);}}
+                                  onPress = {() => props.onPress()}
+                >
                     <ImageBackground source={sportBG}
                                      style={styles.gameBG}
                                      imageStyle={{borderRadius:40}}
@@ -355,11 +189,8 @@ const styles = StyleSheet.create({
         width:350,
         height:"100%",
         overflow:"hidden",
-        // flex:1,
         justifyContent:"center",
         alignItems:"center",
-        // marginHorizontal:10,
-        // elevation:2,
         shadowColor: "#000",
         shadowOffset: {
             width: 5,

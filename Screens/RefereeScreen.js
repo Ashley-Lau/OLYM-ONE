@@ -9,27 +9,26 @@ import {
     Animated,
     Dimensions,
     Keyboard,
-    TouchableWithoutFeedback, Alert
+    TouchableWithoutFeedback, Alert, TextInput
 } from 'react-native';
 
 import Background from "../views/Background";
 import SearchButtons from "../Components/SearchButtons";
-import GameItem from "../Components/GameItem"
 import firebaseDb from '../firebaseDb';
-import {Select, SelectItem} from "@ui-kitten/components";
-import Entypo from "react-native-vector-icons/Entypo";
 import LocationSearchBar from "../Components/LocationSeachBar";
-
-const sHeight = Dimensions.get('window').height
-
 import FullGameItem from "../Components/FullGameItem";
+
+import {useNavigation} from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+const sHeight = Dimensions.get('window').height;
 
 
 const RefereeScreen = (props) => {
+
+    const navigation = useNavigation()
 
     // CURRENT USER ===========================================================================================
     const user = props.route.params.user
@@ -38,7 +37,7 @@ const RefereeScreen = (props) => {
     // Referee array to show list of available referee games =============================================================================================
     const [refereeList, setRefereeList] = useState([])
 
-    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================    let listener = null
+    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================
     let listener = null
     const gamesRef = firebaseDb.firestore().collection("game_details");
     const refApplRef = firebaseDb.firestore().collection('application_details');
@@ -70,6 +69,8 @@ const RefereeScreen = (props) => {
     // ARRAY FOR PICKER IN THE SEARCH BAR ==============================================================================
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportValue, setSportValue] = useState();
+
+    const [specificSport, setSpecificSport] = useState('');
 
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
@@ -116,7 +117,7 @@ const RefereeScreen = (props) => {
         if (sportValue !== '' && zone !== '') {
             listener = gamesRef
                 .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
+                .where('sport', '==', sportValue.toLowerCase())
                 .where('location', '==', zone)
                 .onSnapshot(documents => {
                     const now = new Date().getTime()
@@ -159,7 +160,7 @@ const RefereeScreen = (props) => {
         if (sportValue !== '') {
             listener = gamesRef
                 .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
+                .where('sport', '==', sportValue.toLowerCase())
                 .onSnapshot(documents => {
                     const now = new Date().getTime()
                     const filteredGames = []
@@ -328,6 +329,24 @@ const RefereeScreen = (props) => {
                 </FlatList>
             </View>
 
+
+            {sportValue === "Others"
+                ?
+                <View style={{...styles.dropDown, paddingHorizontal:15}}>
+                    <TextInput
+                        placeholder={"Enter the sport you are searching for!"}
+                        style={{...styles.dropDownText, fontSize:16}}
+                        onChangeText={text => setSpecificSport(text)}
+                        value={specificSport}
+                    />
+                    <SearchButtons searchMe={() => search(specificSport)}/>
+
+
+                </View>
+                :
+                <View/>
+            }
+
             <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
                 {!searchedBefore
                     ? noInput
@@ -347,6 +366,22 @@ const RefereeScreen = (props) => {
                                                                        itemType={"Referee"}
                                                                        index = {index}
                                                                        translateX = {x}
+                                                                       onPress ={() => {
+                                                                           navigation.navigate("GameDetailsModal",
+                                                                               {
+                                                                                   // uid: user.id,
+                                                                                   gameDetails: item.value,
+                                                                                   itemType: "Referee",
+                                                                                   user: user,
+                                                                                   gameId: item.key,
+                                                                               }
+
+                                                                           )}
+                                                                       }
+
+
+
+
                             />}
                             >
 
@@ -433,6 +468,25 @@ const styles = StyleSheet.create({
         top: 20,
         textAlign:'center',
         width: Dimensions.get('window').width * 0.8
+    },
+    dropDown: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        backgroundColor: 'ghostwhite',
+        height: 40,
+        borderWidth: 1,
+        borderRadius:4,
+        borderColor:"rgba(131,137,147,0.53)",
+        width: "97%",
+        marginLeft:"1.5%"
+    },
+    dropDownText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        height: 40,
+        width: "97%",
     },
 })
 

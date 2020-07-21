@@ -26,6 +26,7 @@ import firebaseDb from "../firebaseDb";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import GameDetailsModal from "../Components/GameDetailsModal";
+import {keywordsMaker} from "../Components/SearchBarFunctions";
 
 
 const sHeight = Dimensions.get('window').height
@@ -76,6 +77,8 @@ const GameScreen = (props) => {
     const [sportValue, setSportValue] = useState('');
 
     const [specificSport, setSpecificSport] = useState('');
+
+
 
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
@@ -379,6 +382,15 @@ const GameScreen = (props) => {
                                                                                   itemType={"Join"}
                                                                                   translateX = {x}
                                                                                   index = {index}
+                                                                                  onPress ={() => {navigation.navigate('GameDetailsModal',
+                                                                                      {
+                                                                                          uid: currentUser,
+                                                                                          gameDetails: item.value,
+                                                                                          itemType: "Join",
+                                                                                          user: user,
+                                                                                          gameId: item.key,
+                                                                                      })
+                                                                                  }}
 
 
                                     />}
