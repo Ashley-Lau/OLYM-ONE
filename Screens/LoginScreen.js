@@ -33,6 +33,21 @@ const LoginScreen = (props) => {
         {cancelable: false}
     )
 
+    const emailNotVerified = (user) => {
+        Alert.alert(
+            "Account requires verification!",
+            "Verification email has been send to " + user.email +
+            ". Please follow the instruction in the email to verify your account",
+            [
+                {
+                    text: "Confirm",
+                    onPress: () => {},
+                    style:'cancel'
+                }
+            ]
+        )
+    }
+
     const getImages = () => {
         return Asset.loadAsync(backSunset);
     }
@@ -42,29 +57,36 @@ const LoginScreen = (props) => {
             .signInWithEmailAndPassword(email, password)
             .then((response) => {
                 const uid = response.user.uid
-                const usersRef = firebaseDb.firestore().collection('users')
-                usersRef
-                    .doc(uid)
-                    .get()
-                    .then(firestoreDocument => {
-                        if (!firestoreDocument.exists) {
-                            alert("User does not exist anymore.")
-                            return;
-                        }
-                        if(password !== firestoreDocument.data().password) {
-                            usersRef.doc(uid).update({password: password}).catch(error => console.log(error))
-                        }
-                    })
-                    .catch(error => {
-                        alert(error)
-                    });
+                if (response.user.emailVerified) {
+                    const usersRef = firebaseDb.firestore().collection('users')
+                    usersRef
+                        .doc(uid)
+                        .get()
+                        .then(firestoreDocument => {
+                            if (!firestoreDocument.exists) {
+                                alert("User does not exist anymore.")
+                                return;
+                            }
+                            if (password !== firestoreDocument.data().password) {
+                                usersRef.doc(uid).update({password: password}).catch(error => console.log(error))
+                            }
+                        })
+                        .catch(error => {
+                            alert(error)
+                        });
+                } else {
+                    response.user
+                        .sendEmailVerification()
+                        .then((doc) => {})
+                        .catch((error) => alert(error));
+                    emailNotVerified(response.user)
+                    firebaseDb.auth().signOut().then(() => {})
+                }
             })
             .catch(error => {
                 alertMessage()
             })
     }
-
-
 
     if(loaded){
         return (

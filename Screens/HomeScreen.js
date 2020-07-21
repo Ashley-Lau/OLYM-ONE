@@ -188,6 +188,7 @@ const HomeScreen = props => {
                     // deleting documents that are read more than 2 days ago ==== prevents overloading of notifications
                     if (data.readTime !== undefined && now - data.readTime > 172800) {
                         doc.ref.delete().then(()=>{});
+                        return
                     }
                     notifications.push({key: doc.id, value: data});
                 })
@@ -197,8 +198,8 @@ const HomeScreen = props => {
             })
 
         return () => {
-            unsubscribe2();
             unsubscribe();
+            unsubscribe2();
             unsubscribe3();
             unsubscribe4();
             unsubscribe5();
@@ -363,7 +364,7 @@ const HomeScreen = props => {
                         : <MaterialCommunityIcons name= "whistle" color={color} size={35} />}
             </View>
             <View style = {{width: '80%', height: '100%', justifyContent: 'center', paddingRight: 6}}>
-                <Text>You have joined the game hosted by {props.value.host} as a {props.value.isPlayer ? 'player' : 'referee'}! Refer to upcoming events for more details.</Text>
+                <Text>You have joined the game hosted by {props.value.hostName} as a {props.value.isPlayer ? 'player' : 'referee'}! Refer to upcoming events for more details.</Text>
                 <Text style = {{fontWeight: 'bold'}}>{displayTime(props.value.timeStamp)}</Text>
             </View>
         </TouchableOpacity>
@@ -381,7 +382,7 @@ const HomeScreen = props => {
 
         // wanted to navigate user to the game details page but cannot be done coze too many nested modals
         // do for extension
-        // const upcomingGameItem.filter(doc => doc.key === gameId) ?
+        // const upcomingGameItem.filter(doc => doc.id === gameId) ?
     }
 
     const calcUnreadMessages = () => {
@@ -489,7 +490,7 @@ const HomeScreen = props => {
                                          style = {style.orangeImage}
                                          imageStyle={{borderBottomLeftRadius: 40,}}
                         >
-                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 15}}>
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 18}}>
                                 <View>
                                     <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, }}>
                                         Welcome back,
@@ -502,7 +503,7 @@ const HomeScreen = props => {
                                     Your upcoming events...
                                 </Text>
                             </View>
-                            <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '35%', right: 15, top: 10}}>
+                            <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '35%', right: 18, top: 10}}>
                                 {/*===notifications button when player is accepted into a game or referee game====*/}
                                 <Popover
                                     backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
@@ -520,6 +521,7 @@ const HomeScreen = props => {
                                             {notificationList.map(doc =>
                                                 (
                                                     <NotificationComponent
+                                                        key = {doc.key}
                                                         id = {doc.key}
                                                         value = {doc.value}
                                                     />
@@ -726,7 +728,7 @@ const style = StyleSheet.create({
         justifyContent: 'center'
     },
     orangeImageContainer: {
-        height: 150 + Styles.statusBarHeight.height,
+        height: Platform.OS === 'ios' ? sHeight * 0.25: sHeight * 0.22,
         width: '100%',
         borderBottomLeftRadius: 40,
         elevation: 10,
