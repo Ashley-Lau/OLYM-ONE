@@ -13,7 +13,6 @@ import {
     Alert,
     TextInput,
 } from 'react-native';
-
 import {useNavigation} from "@react-navigation/native";
 import Entypo from 'react-native-vector-icons/Entypo';
 import SearchButtons from '../Components/SearchButtons';
@@ -23,10 +22,11 @@ import Background from "../views/Background";
 import LocationSearchBar from "../Components/LocationSeachBar";
 import FullGameItem from "../Components/FullGameItem";
 import firebaseDb from "../firebaseDb";
-import FontAwesome from "react-native-vector-icons/FontAwesome";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Styles from "../styling/Styles";
 import GameDetailsModal from "../Components/GameDetailsModal";
+import {noInput, noSport} from "../Components/NoDataMessages";
 
+import {Entypo} from 'react-native-vector-icons';
 
 const sHeight = Dimensions.get('window').height
 
@@ -59,11 +59,39 @@ const GameScreen = (props) => {
                 response.docs.forEach((doc) => {
                     const docRef = gamesRef.doc(doc.id)
                     batch.delete(docRef)
+                    deletePlayerAppl(doc.id)
                 })
                 batch.commit().catch(error => console.log(error))
             })
             .catch(error => console.log(error))
     }, [])
+
+    const deletePlayerAppl = (gameId) => {
+        const playerApplRef = firebaseDb.firestore().collection("player_application_details")
+        playerApplRef.where('gameId', '==' , gameId)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = applRef.doc(doc.id)
+                    batch.delete(docRef)
+                })
+                batch.commit().catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
+        const applRef = firebaseDb.firestore().collection("application_details")
+          applRef.where('gameId', '==' , gameId)
+              .get()
+              .then(response => {
+                  let batch = firebaseDb.firestore().batch()
+                  response.docs.forEach((doc) => {
+                      const docRef = applRef.doc(doc.id)
+                      batch.delete(docRef)
+                  })
+                  batch.commit().catch(error => console.log(error))
+              })
+              .catch(error => console.log(error))
+    }
 
     //ANIMATED COMPONENTS =========================================================================================
     const [x,setX] = useState(new Animated.Value(0));
@@ -131,21 +159,10 @@ const GameScreen = (props) => {
                                 documents.forEach( doc => {
                                     const d = doc.data();
                                     if(d.date.toMillis() < now){
-                                        playerApplRef.where("gameId", "==", doc.id)
-                                            .get()
-                                            .then(snapShot => {
-                                                snapShot.forEach(value => {
-                                                    value.ref.delete().then(()=>{});
-                                                })
-                                            });
-                                        refApplRef.where("gameId", "==", doc.id)
-                                            .get()
-                                            .then(snapShot => {
-                                                snapShot.forEach(value => {
-                                                    value.ref.delete().then(()=>{});
-                                                })
-                                            });
-                                        doc.ref.delete().then(()=>{});
+
+                                        doc.ref.delete().then(()=>{}
+                                        );
+                                        deletePlayerAppl(doc.id);
                                     } else if(d.hostId === currentUser){}
                                     else if( parseInt(d.availability) <= 0){}
                                     else if(d.players.includes(currentUser)){}
@@ -186,7 +203,9 @@ const GameScreen = (props) => {
                                                     })
                                                 });
                                             doc.ref.delete().then(()=>{});
-                                        } else if(d.hostId === currentUser){console.log("1")}
+
+                                            deletePlayerAppl(doc.id)
+                                        } else if(d.hostId === currentUser){}
                                         else if( parseInt(d.availability) <= 0){}
                                         else if(d.players.includes(currentUser)){}
                                         else if(d.applicants.includes(currentUser)){}
@@ -228,6 +247,7 @@ const GameScreen = (props) => {
                                                     })
                                                 });
                                             doc.ref.delete().then(()=>{});
+                                            deletePlayerAppl(doc.id)
                                         } else if(d.hostId === currentUser){}
                                         else if( parseInt(d.availability) <= 0){}
                                         else if(d.players.includes(currentUser)){}
@@ -245,45 +265,30 @@ const GameScreen = (props) => {
         }
     }
 
-    // picture shown when the users have not inputted zone or sport yet ==========================================
-    const noInput = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome name = 'search-plus' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No sport or zone selected</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15,}}>Search for games or sport by filling the fields above!</Text>
-        </View>
-    )
-
-    const noSport = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome5 name = 'sad-tear' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No games available</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15}}>There are no games currently for the selected location and sport.</Text>
-        </View>
-    )
-
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
             <Background>
-                {/*==================================== Title and hosting a game ======================================*/}
-                <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                    <Text style = {styles.text}>Games </Text>
-                    <View style = {{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
-                        <Text style = {{...styles.text, fontSize: 25}}> Host </Text>
-                        <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)', borderRadius: 20, alignItems: 'center', justifyContent: 'center',height: 40, width: 40 }}
-                                          activeOpacity={ 0.9}
-                                          onPress={() => {
-                                              navigation.navigate('HostGameScreen',
-                                                  {
-                                                      uid: currentUser,
-                                                  }
-                                              )
-                                          }}
-                        >
-                            <Entypo name="plus" color={'white'} size={35}/>
-                        </TouchableOpacity>
+                <View style = {{top: Styles.statusBarHeight.height}}>
+                    {/*==================================== Title and hosting a game ======================================*/}
+                    <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
+                        <Text style = {styles.text}>Games</Text>
+                        <View style = {{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
+                            <Text style = {{...styles.text, fontSize: 23, top: 2}}> Host </Text>
+                            <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)',alignItems: 'center', justifyContent: 'center', borderRadius: 5}}
+                                              activeOpacity={ 0.9}
+                                              onPress={() => {
+                                                  navigation.navigate('HostGameScreen',
+                                                      {
+                                                          uid: currentUser,
+                                                      }
+                                                  )
+                                              }}
+                            >
+                                <Entypo name="squared-plus" style = {{top: Platform.OS === 'ios' ? 1 : 0}}color={'white'} size={35}/>
+                            </TouchableOpacity>
+                        </View>
                     </View>
-                </View>
+
 
                 {/*==================================SEARCH BAR ==============================================*/}
                 <View style={styles.searchSpace}>
@@ -387,7 +392,6 @@ const GameScreen = (props) => {
                                 </AnimatedFlatList>
                     }
 
-                </View>
 
 
             </Background>
@@ -463,6 +467,7 @@ const styles = StyleSheet.create({
         fontSize: 27,
         fontWeight: "bold",
     },
+
     noApplication: {
         fontSize: 33,
         alignSelf: 'center',
@@ -490,6 +495,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: "97%",
     },
+
 })
 
 export default GameScreen;

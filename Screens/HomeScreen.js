@@ -6,20 +6,19 @@ import {
     Alert,
     ScrollView,
     Image,
-    SafeAreaView,
     ImageBackground,
     TouchableOpacity,
     Dimensions,
+    Animated,
 
 } from 'react-native';
 import {Popover} from '@ui-kitten/components';
 import {useNavigation} from "@react-navigation/native";
 
 import * as Animatable from 'react-native-animatable';
-import AntDesign from 'react-native-vector-icons/AntDesign';
-import FontAwesome from 'react-native-vector-icons/FontAwesome'
-import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
-import Ionicons from 'react-native-vector-icons/Ionicons'
+import {FontAwesome, FontAwesome5, Ionicons, Fontisto, MaterialCommunityIcons} from 'react-native-vector-icons'
+
+
 import RBSheet from "react-native-raw-bottom-sheet";
 
 
@@ -28,14 +27,22 @@ import firebaseDb from "../firebaseDb";
 import GameItem from "../Components/GameItem";
 import {keywordsMaker} from "../Components/SearchBarFunctions";
 import PlayerApplicationItem from "../Components/PlayerApplicationItem";
+import Styles from "../styling/Styles";
+import {noApplications, noNotifications, noUpcomingReferee, noUpcomingGame} from "../Components/NoDataMessages";
 
+const sHeight = Dimensions.get('window').height
 
 const HomeScreen = props => {
     const navigation = useNavigation();
 
-    //for logout and change profile picture buttons
-    const [color, setColor] = useState('#5a5959')
-    const [buttonVisible, setButtonVisible] = React.useState(false);
+    // Animation for the header
+    const HEADER_MAX_HEIGHT = 45
+    const scrollY = new Animated.Value(0)
+    const diffClamp = Animated.diffClamp(scrollY, 0, HEADER_MAX_HEIGHT * 10)
+    const headerHeight = diffClamp.interpolate({
+        inputRange: [0, HEADER_MAX_HEIGHT / 2,HEADER_MAX_HEIGHT],
+        outputRange: ['rgba(226,147,73,0)', 'rgba(226,147,73,0.5)' ,'rgba(226,147,73, 1.0)'],
+    })
 
     // GETTING USER DATA ================================================================================================
     const user = props.route.params.user
@@ -105,13 +112,6 @@ const HomeScreen = props => {
         </TouchableOpacity>
     )
 
-    const noApplications = (
-        <View style = {{alignItems: 'center', top: Dimensions.get('window').height * 0.15}}>
-            <FontAwesome name = 'linux' size={100} color={'#5c5c5c'}/>
-            <Text style = {style.noApplication}>No Applications!</Text>
-        </View>
-    )
-
     //GETTING UPCOMING GAMES =========================================================================================================
     const [upcomingGameList, setList] = useState([]);
     const [upcomingRefList, setRefList] = useState([]);
@@ -120,27 +120,40 @@ const HomeScreen = props => {
 
     useEffect(() => {
 
-        const unsubscribe2 = appRef
+        // for player application
+        const unsubscribe = appRef
             .where("hostId", "==", data.id)
             .onSnapshot( snapshot => {
                     let apps = [];
                     snapshot.forEach(doc => {
-                        console.log("application loaded")
                         apps.push({key:doc.id, value:doc.data()});
                     })
                     setAppList(apps);
                 },error => {
-                    console.log("Upcoming Games " + error.message)
+                    console.log("Player applications " + error.message)
                 })
 
+        // referee applications
+        const unsubscribe2 = gameAppRef
+            .where("hostId", "==", data.id)
+            .onSnapshot(snapshot => {
+                let gameApps = [];
+                snapshot.forEach(doc => {
+                    gameApps.push({key:doc.id, value:doc.data()});
+                })
+                setGameAppList(gameApps);
+            },error => {
+                console.log("Referee applications" + error.message)
+            })
 
-        const unsubscribe = gameRef
+        // for upcoming games for players
+        const unsubscribe3 = gameRef
             .where("players", "array-contains", data.id)
+            .orderBy('date', "asc")
             .onSnapshot(
                 snapshot => {
                     let gameList = [];
                     snapshot.forEach(doc => {
-                        console.log("upcoming loaded")
                         gameList.push({key:doc.id, value:doc.data()});
                     })
                     setList(gameList)
@@ -148,40 +161,48 @@ const HomeScreen = props => {
                     console.log("Upcoming Games " + error.message)
                 })
 
-        const unsubscribe3 = gameRef
+        // for upcoming refereeing games
+        const unsubscribe4 = gameRef
             .where("refereeList", "array-contains", data.id)
+            .orderBy('date', "asc")
             .onSnapshot(
                 snapshot => {
                     let refList = [];
                     snapshot.forEach( doc => {
-                        console.log("ref loaded")
                         refList.push({key:doc.id, value:doc.data()});
                     })
                     setRefList(refList);
                 }, error => {
-            console.log("Refereeing Games " + error.message)
+            console.log("Upcoming refereeing Games " + error.message)
                 })
 
-        const unsubscribe4 = gameAppRef
-            .where("hostId", "==", data.id)
+        // for notifications
+        const unsubscribe5 = firebaseDb.firestore().collection('notifications')
+            .where("playerId", "==", data.id)
+            .orderBy('timeStamp', 'desc')
             .onSnapshot(snapshot => {
-                let gameApps = [];
+                let notifications = [];
                 snapshot.forEach(doc => {
-                    console.log("Game application loaded")
-                    gameApps.push({key:doc.id, value:doc.data()});
+                    const now = new Date().getTime() / 1000;
+                    const data = doc.data()
+                    // deleting documents that are read more than 2 days ago ==== prevents overloading of notifications
+                    if (data.readTime !== undefined && now - data.readTime > 172800) {
+                        doc.ref.delete().then(()=>{});
+                        return
+                    }
+                    notifications.push({key: doc.id, value: data});
                 })
-                setGameAppList(gameApps);
+                setNotificationList(notifications);
             },error => {
-                console.log("Upcoming Games " + error.message)
+                console.log("Notifications" + error.message)
             })
 
-
-
         return () => {
-            unsubscribe2();
             unsubscribe();
+            unsubscribe2();
             unsubscribe3();
             unsubscribe4();
+            unsubscribe5();
         }
 
     },[])
@@ -276,29 +297,129 @@ const HomeScreen = props => {
 
 
     //LOG OUT FUNCTION ================================================================================================
+    //for logout and change profile picture buttons ==================================================================
+    const [color, setColor] = useState('#5a5959')
+    const [buttonVisible, setButtonVisible] = React.useState(false);
+
     const logout = () => {
         Alert.alert("Confirm Log Out",
             "Do you want to log out?",
-            [{
-                text: "Yes",
-                onPress: () => firebaseDb.auth().signOut(),
-                style: 'cancel'
-            },
-                {text:"Cancel", onPress: () => {setColor('#5a5959')},  style:'cancel'}
+            [
+                {text:"Cancel", onPress: () => {setColor('#5a5959')}},
+                {
+                text: "Confirm",
+                onPress: () => firebaseDb.auth().signOut()}
             ],
             {cancelable: false}
         )
     }
 
     const renderToggleButton = () => (
-        <TouchableOpacity style = {{backgroundColor: 'transparent', alignItems: 'center'}}
+        <TouchableOpacity style = {{backgroundColor: 'transparent', alignItems: 'center', top: 3}}
                           activeOpacity= {0.9}
                           onPress={() => {setButtonVisible(true); setColor('white');}}>
-            <AntDesign name="caretdown" color={color} size={20} />
+            <Ionicons name = "ios-menu" color={color} size={40} />
         </TouchableOpacity>
     );
+    // notifications button ===============================================================================
+    const [notificationColor, setNotificationColor] = useState('#5a5959')
+    const [notificationButtonVisible, setNotificationButtonVisible] = React.useState(false);
+    const [notificationList, setNotificationList] = useState([])
 
-    // for game and referee tab =========================================================
+    const displayTime = (timestamp) => {
+        const temp = new Date();
+        const sgTimestamp = temp.getTime() + (temp.getTimezoneOffset() * 60000) + (3600000*8)
+        const sgTime = new Date(sgTimestamp)
+        const timestampToDate = timestamp.toDate()
+        const timestampDiff = sgTimestamp / 1000  - timestamp.seconds
+        const dayDiff = sgTime.getDate() - timestampToDate.getDate()
+        if(dayDiff === 0) {
+            const time = timestampToDate.toString().slice(16, 21)
+            // 24 hours
+            const fullHours = parseInt(time.slice(0,2), 10)
+            // conversion to 12 hours
+            const hours = fullHours > 12 ? fullHours % 12 : fullHours
+            const nicerHours = hours === 0 ? '0' + hours : hours
+            const suffix = (fullHours >= 12)? ' PM' : ' AM';
+            return nicerHours + time.slice(2,5) + suffix
+        }
+        if(dayDiff === 1 || ((sgTime.getMonth() - timestampToDate.getMonth() === 1) && timestampDiff < 172800)) {
+            return "Yesterday"
+        }
+
+        return timestampToDate.toLocaleDateString()
+    }
+
+    const NotificationComponent = props => (
+        <TouchableOpacity style = {{width: '100%', height: 100,
+            backgroundColor: props.value.unread ? 'white' : '#e0e0e0',
+            flexDirection: 'row', borderBottomWidth: 0.7, borderColor: '#868686'
+        }}
+                          activeOpacity= {1}
+                          onPress = {() => {readNotification(props.id, props.value.unread, props.value.gameId)}}
+        >
+            <View style = {{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
+                {props.value.isPlayer
+                        ? <Ionicons name="ios-football" color={color} size={35} />
+                        : <MaterialCommunityIcons name= "whistle" color={color} size={35} />}
+            </View>
+            <View style = {{width: '80%', height: '100%', justifyContent: 'center', paddingRight: 6}}>
+                <Text>You have joined the game hosted by {props.value.hostName} as a {props.value.isPlayer ? 'player' : 'referee'}! Refer to upcoming events for more details.</Text>
+                <Text style = {{fontWeight: 'bold'}}>{displayTime(props.value.timeStamp)}</Text>
+            </View>
+        </TouchableOpacity>
+    )
+
+    const readNotification = (notificationId, unread, gameId) => {
+        if (unread) {
+            firebaseDb.firestore().collection('notifications')
+                .doc(notificationId)
+                .update({unread: false, readTime: new Date()})
+                .then(() => {
+                })
+                .catch(error => console.log(error))
+        }
+
+        // wanted to navigate user to the game details page but cannot be done coze too many nested modals
+        // do for extension
+        // const upcomingGameItem.filter(doc => doc.id === gameId) ?
+    }
+
+    const calcUnreadMessages = () => {
+        return notificationList.filter(doc => doc.value.unread).length
+    }
+
+    const renderNotificationButton = () => {
+        const unreadMessages = calcUnreadMessages()
+        return (
+        <TouchableOpacity style={{backgroundColor: 'transparent', alignItems: 'center'}}
+                          activeOpacity={0.9}
+                          onPress={() => {
+                              setNotificationButtonVisible(true);
+                              setNotificationColor('white');
+                          }}>
+            {unreadMessages === 0 ?
+                <Text style={{color: 'transparent', fontWeight: 'bold', fontSize: 10, position: 'absolute'}}>
+                    {'  ' + 1 + '  '}
+                </Text>
+                :
+                <View style={{
+                    borderRadius: 60,
+                    backgroundColor: 'red',
+                    zIndex: 1,
+                    position: 'absolute',
+                    right: -5,
+                    top: -4
+                }}>
+                    <Text style={{color: 'white', fontWeight: 'bold', fontSize: 10,}}>
+                        {'  ' + unreadMessages + '  '}
+                    </Text>
+                </View>}
+            <Fontisto name='bell' size={30} color={notificationColor}/>
+        </TouchableOpacity>
+        )};
+
+    // for game and referee tab =======================================================================
     const [isGameTab, setIsGameTab] = useState('true')
 
     const changeTab = (gameTab) => {
@@ -310,17 +431,11 @@ const HomeScreen = props => {
 
     const gameTab = (
         upcomingGameList.length <= 0
-            ?<View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 10}}>
-                <FontAwesome name = 'soccer-ball-o' size={100} color={'#5c5c5c'}/>
-                <Text style = {{...style.noApplication, fontSize: 25, color: 'black'}}>No Upcoming Games</Text>
-                <Text style = {{...style.noApplication, fontSize: 15}}>Search for games to play in games tab!</Text>
-            </View>
-
+            ? noUpcomingGame
             :
             <ScrollView nestedScrollEnabled={true}>
                 {upcomingGameList.map(game =>
                     (
-
                         <GameItem key={game.key}
                                   gameDetails={game.value}
                                   gameId={game.key}
@@ -334,11 +449,7 @@ const HomeScreen = props => {
 
     const refereeTab = (
         upcomingRefList.length <= 0
-                ?<View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 10}}>
-                    <FontAwesome name = 'optin-monster' size={100} color={'#5c5c5c'}/>
-                    <Text style = {{...style.noApplication, fontSize: 25, color: 'black'}}>No Games to Referee</Text>
-                    <Text style = {{...style.noApplication, fontSize: 15}}>Search for games to referee in referee tab!</Text>
-                </View>
+                ? noUpcomingReferee
                 :
                 <ScrollView nestedScrollEnabled={true}>
                     {upcomingRefList.map(upcoming =>
@@ -356,19 +467,30 @@ const HomeScreen = props => {
                 </ScrollView>
     )
 
-    return <SafeAreaView>
-                <ScrollView showsVerticalScrollIndicator={false}>
-                    <ImageBackground source={require('../assets/whiteBackground.jpg')}
-                                     style = {{flex: 1}}
-                                     // imageStyle={{borderBottomLeftRadius: 40,}}
-                    >
+    return  (
+        <View>
+            <Animated.View style = {{
+                ...Styles.animatedHeaderStyle,
+                backgroundColor: headerHeight,
+                height: Styles.statusBarHeight.height
+            }}>
+            </Animated.View>
+            <ScrollView showsVerticalScrollIndicator={false}
+                        bounces = {false}
+                        style = {{height: '100%', }}
+                        onScroll={Animated.event(
+                            [{nativeEvent: {contentOffset: {y: scrollY}}}]
+                        )}
+                        scrollEventThrottle={16}>
+                <ImageBackground source={require('../assets/whiteBackground.jpg')}
+                                         style = {{flex: 1}}>
                     {/*============================================== orange thing at the top=========================================*/}
                     <Animatable.View style = {style.orangeImageContainer} animation = "fadeInDown">
                         <ImageBackground source={require('../assets/OrangeBackground.jpg')}
                                          style = {style.orangeImage}
                                          imageStyle={{borderBottomLeftRadius: 40,}}
                         >
-                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 15}}>
+                            <View style = {{marginTop: -30, height: '100%', justifyContent: 'space-evenly', width: '70%', left: 18}}>
                                 <View>
                                     <Text style = {{color: 'white', fontWeight: 'bold', fontSize: 30, }}>
                                         Welcome back,
@@ -381,15 +503,42 @@ const HomeScreen = props => {
                                     Your upcoming events...
                                 </Text>
                             </View>
-                            <View style = {{flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'space-between', width: '30%', right: 15}}>
-                                <Ionicons name = 'ios-notifications' size = {35} color = {color}/>
+                            <View style = {{flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', width: '35%', right: 18, top: 10}}>
+                                {/*===notifications button when player is accepted into a game or referee game====*/}
+                                <Popover
+                                    backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
+                                    visible={notificationButtonVisible}
+                                    anchor={renderNotificationButton}
+                                    onBackdropPress={() => {setNotificationButtonVisible(false); setNotificationColor('#5a5959')}}>
+                                    <View style = {{width: Dimensions.get('window').width * 0.65, height: sHeight * 0.6, backgroundColor: '#eeecec' }}>
+                                        <View style = {{borderBottomWidth: 0.7, borderColor: '#3b3b3b',}}>
+                                            <Text style = {{textAlign: 'center', color: '#3b3b3b', fontWeight: 'bold', fontSize: 27, paddingBottom: 10}}>
+                                                Notifications
+                                            </Text>
+                                        </View>
+                                        {notificationList.length === 0? noNotifications
+                                        :<ScrollView nestedScrollEnabled={true}>
+                                            {notificationList.map(doc =>
+                                                (
+                                                    <NotificationComponent
+                                                        key = {doc.key}
+                                                        id = {doc.key}
+                                                        value = {doc.value}
+                                                    />
+
+                                                )
+                                            )}
+                                        </ScrollView>}
+                                    </View>
+                                </Popover>
                                 {/*====================================================Profile Picture================================*/}
                                 <View style = {{...style.photoFrame, }}>
                                     <Image style = {{height: 50, width: 50, borderRadius: 170}} source = {{
                                         uri: data.uri
                                     }}/>
                                 </View>
-                                {/*==========================================Button beside profile picture============================*/}
+
+                                {/*==========================================Button on the right of profile picture============================*/}
                                 <Popover
                                     backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
                                     visible={buttonVisible}
@@ -404,7 +553,7 @@ const HomeScreen = props => {
                                                               navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)});
                                                           }}
                                         >
-                                            <Text style = {{fontWeight: 'bold'}}> Update Profile </Text>
+                                            <Text style = {{fontWeight: 'bold'}}> Profile </Text>
                                         </TouchableOpacity>
                                         <TouchableOpacity style={style.logoutButtonStyle}
                                                           activeOpacity={0.7}
@@ -425,7 +574,6 @@ const HomeScreen = props => {
                     {/*====================================================Player and Referee buttons===================================*/}
                         <View style = {{height: 130, width: '100%',marginTop: 10, flexDirection: 'row', justifyContent: 'space-between', }}>
                             {/*=========================================player button=========================================*/}
-                            {/*=======================================functionalities not inputted yet=================================*/}
                             {renderPlayerButton}
                             <RBSheet
                                 ref={playerRef}
@@ -447,7 +595,7 @@ const HomeScreen = props => {
                                 {gameAppList.length <= 0
                                     ? noApplications
                                     :
-                                    <ScrollView nestedScrollEnabled={true}>
+                                    <ScrollView nestedScrollEnabled={true} style ={{flex: 1}}>
                                         {gameAppList.map(appl =>
                                             (
                                                 <PlayerApplicationItem
@@ -542,10 +690,10 @@ const HomeScreen = props => {
                         </View>
 
                     </View>
-                    </ImageBackground>
-                </ScrollView>
-            </SafeAreaView>
-}
+                </ImageBackground>
+            </ScrollView>
+        </View>
+    )}
 
 const style = StyleSheet.create({
     container: {
@@ -580,7 +728,7 @@ const style = StyleSheet.create({
         justifyContent: 'center'
     },
     orangeImageContainer: {
-        height: 150,
+        height: Platform.OS === 'ios' ? sHeight * 0.25: sHeight * 0.22,
         width: '100%',
         borderBottomLeftRadius: 40,
         elevation: 10,
@@ -597,13 +745,6 @@ const style = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-around',
         alignItems: 'center',
-    },
-    noApplication: {
-        fontSize: 33,
-        alignSelf: 'center',
-        color: '#5a5959',
-        top: 20,
-        textAlign:'center'
     },
     middleButton: {
         height: '100%',
