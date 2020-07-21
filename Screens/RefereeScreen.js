@@ -11,8 +11,10 @@ import {
     Keyboard,
     TouchableWithoutFeedback, Alert, TextInput
 } from 'react-native';
+import {Select, SelectItem} from "@ui-kitten/components";
 
 import Background from "../views/Background";
+
 import SearchButtons from "../Components/SearchButtons";
 import firebaseDb from '../firebaseDb';
 import LocationSearchBar from "../Components/LocationSeachBar";
@@ -21,6 +23,10 @@ import FullGameItem from "../Components/FullGameItem";
 import {useNavigation} from "@react-navigation/native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+
+
+const sHeight = Dimensions.get('window').height
+
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const sHeight = Dimensions.get('window').height;
@@ -54,11 +60,39 @@ const RefereeScreen = (props) => {
                 response.docs.forEach((doc) => {
                     const docRef = gamesRef.doc(doc.id)
                     batch.delete(docRef)
+                    deleteRefAppl(doc.id)
                 })
                 batch.commit().catch(error => console.log(error))
             })
             .catch(error => console.log(error))
     }, [])
+
+    const deleteRefAppl = (gameId) => {
+        const playerApplRef = firebaseDb.firestore().collection("player_application_details")
+        playerApplRef.where('gameId', '==' , gameId)
+            .get()
+            .then(response => {
+                let batch = firebaseDb.firestore().batch()
+                response.docs.forEach((doc) => {
+                    const docRef = applRef.doc(doc.id)
+                    batch.delete(docRef)
+                })
+                batch.commit().catch(error => console.log(error))
+            })
+            .catch(error => console.log(error))
+        const applRef = firebaseDb.firestore().collection("application_details")
+          applRef.where('gameId', '==' , gameId)
+              .get()
+              .then(response => {
+                  let batch = firebaseDb.firestore().batch()
+                  response.docs.forEach((doc) => {
+                      const docRef = applRef.doc(doc.id)
+                      batch.delete(docRef)
+                  })
+                  batch.commit().catch(error => console.log(error))
+              })
+              .catch(error => console.log(error))
+    }
 
     //ANIMATED COMPONENTS =========================================================================================
     const x = new Animated.Value(0);
@@ -125,21 +159,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -167,21 +188,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -210,21 +218,8 @@ const RefereeScreen = (props) => {
                     documents.forEach( doc => {
                         const data = doc.data();
                         if(data.date.toMillis() < now){
-                            playerApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
-                            refApplRef.where("gameId", "==", doc.id)
-                                .get()
-                                .then(snapShot => {
-                                    snapShot.forEach(value => {
-                                        value.ref.delete().then(()=>{});
-                                    })
-                                });
                             doc.ref.delete().then(()=>{});
+                            deleteRefAppl(doc.id)
                         }
                         else if(data.hostId === userId){}
                         else if(data.players.includes(userId)){}
@@ -243,28 +238,10 @@ const RefereeScreen = (props) => {
         }
     }
 
-    // picture shown when the users have not inputted zone or sport yet ==========================================
-    const noInput = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome name = 'search-plus' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No sport or zone selected</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15,}}>Search for games or sport by filling the fields above!</Text>
-        </View>
-    )
-
-    const noSport = (
-        <View style = {{justifyContent: 'center', alignItems: 'center', flex: 1, bottom: 50}}>
-            <FontAwesome5 name = 'sad-tear' size={100} color={'#5c5c5c'}/>
-            <Text style = {{...styles.noApplication, fontSize: 25, color: 'black'}}>No games available</Text>
-            <Text style = {{...styles.noApplication, fontSize: 15}}>There are no games currently for the selected location and sport.</Text>
-        </View>
-    )
-
-
     return (
         <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
         <Background style = {styles.container}>
-
+            <View style = {{top: Styles.statusBarHeight.height}}>
             {/*==================================== Title and hosting a game ======================================*/}
             <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
                 <Text style = {styles.text}>Referable Games</Text>
@@ -380,12 +357,11 @@ const RefereeScreen = (props) => {
                                                                        }
 
 
-
-
                             />}
                             >
 
                             </AnimatedFlatList>}
+
 
             </View>
         </Background>
@@ -488,6 +464,7 @@ const styles = StyleSheet.create({
         height: 40,
         width: "97%",
     },
+
 })
 
 export default RefereeScreen;

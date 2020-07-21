@@ -24,3 +24,5 @@
 # added preliminary search bar
 # finished game screen
 # fixed bugs for android, improved design and finished referee tab 
+# fixed many bugs, improved profilescreen, completed notifications when players or referee successfully joins a game, formatting issues, completed headers for some pages, ordered games in ascending order, 
+# added email verification into the system, thus all current emails need to be verified

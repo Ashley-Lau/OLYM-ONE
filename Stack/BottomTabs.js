@@ -1,5 +1,5 @@
 import React from 'react';
-import {Dimensions} from 'react-native';
+import {Dimensions, StatusBar,} from 'react-native';
 
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from "@react-navigation/stack";
@@ -10,7 +10,7 @@ import Ionicons from 'react-native-vector-icons/Ionicons';
 import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
 import HomeScreen from "../Screens/HomeScreen";
 import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
-import UpdateDetailScreen from "../Screens/UpdateDetailScreen";
+import ProfileScreen from "../Screens/ProfileScreen";
 import ChatDetailScreen from "../Screens/ChatDetailScreen";
 import HostGameScreen from "../Screens/HostGameScreen";
 import GameDetailsModal from "../Components/GameDetailsModal";
@@ -24,6 +24,7 @@ const ProfileStack = (props) => {
                 <Stack.Screen name = "ProfileScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
                 <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
                 <Stack.Screen name ="GameDetailsModal" component = {GameDetailsModal}/>
+
             </Stack.Navigator>
 }
 
@@ -51,6 +52,11 @@ const ChatStack = (props) => {
 
 
 const BottomTabs = (props) => {
+    // if (Platform.OS === "android") {
+    //     StatusBar.setBackgroundColor("rgba(0,0,0,0)");
+    //     StatusBar.setBarStyle("dark-content");
+    //     StatusBar.setTranslucent(true);
+    // }
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         activeColor="#fff"
