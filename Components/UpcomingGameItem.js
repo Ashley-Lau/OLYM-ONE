@@ -91,7 +91,6 @@ const UpcomingGameItem = props => {
                     {
                         text:'Cancel',
                         onPress:() => {},
-                        style:'cancel'
                     },
                     {
                         text:'Confirm',

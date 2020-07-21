@@ -81,10 +81,12 @@ const SignupScreen = props => {
                 .doc(uid)
                 .set(data)
                 .then(() => {
-                    Alert.alert(
-                        "Account Registered!",
-                        "Use the app now!"
-                    )
+                    response.user
+                        .sendEmailVerification()
+                        .then((doc) => {})
+                        .catch((error) => alert(error));
+                    emailNotVerified(response.user.email)
+                    firebaseDb.auth().signOut().then(() => {})
                 })
                 .catch((error) => {
                     alert(error)
@@ -95,6 +97,18 @@ const SignupScreen = props => {
             });
     }
 
+    const emailNotVerified = (user) => {
+        Alert.alert(
+            "Account has registered successfully!",
+            "Please follow the instruction sent to " + user.email + " to verify your account",
+            [
+                {
+                    text: "Confirm",
+                    onPress: () => {}
+                }
+            ]
+        )
+    }
 
     const cancelledPress = () => {
         navigation.goBack();
@@ -109,7 +123,7 @@ const SignupScreen = props => {
                             validationSchema = {reviewSchema}
                             onSubmit={(values, actions) => {
                                 handleCreateUser(values)
-                                actions.resetForm()
+                                navigation.navigate('LoginScreen')
                             }}
                         >
                             {(props) => (
@@ -230,7 +244,7 @@ const SignupScreen = props => {
                                                  props.setFieldValue('birthDate', currentDate);
                                                  props.setFieldTouched('birthDate');}}/>)
                                     }
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
+                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 50}}>
                                         <GradientButton onPress={() => {
                                                             cancelledPress()
                                                             props.handleReset()}}

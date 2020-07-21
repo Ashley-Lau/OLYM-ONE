@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, YellowBox, } from 'react-native';
+import {View, YellowBox, StatusBar, Alert} from 'react-native';
 import * as eva from '@eva-design/eva';
 import { ApplicationProvider, IconRegistry} from '@ui-kitten/components';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -32,10 +32,11 @@ export default function App() {
   })
 
   useEffect(() => {
-
     const usersRef = firebaseDb.firestore().collection('users');
     firebaseDb.auth().onAuthStateChanged(user => {
-      if (user) {
+      if (user && !user.emailVerified) {
+        setData({loading: true})
+      } else if (user) {
         usersRef
             .doc(user.uid)
             .get()
@@ -49,6 +50,7 @@ export default function App() {
       }
     });
   }, [])
+
 
   return (
       <AnimatedSplash
