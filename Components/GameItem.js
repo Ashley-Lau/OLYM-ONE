@@ -74,10 +74,10 @@ const GameItem = props => {
 
 
     //SPORT BG and colour================================================================================================================================
-    let playerBG = require("../assets/BballApp.png");
-    let refereeBG = require("../assets/BballRefereeApp.png");
-    let sportColor = "rgba(0,0,0,1)"
-    let lightColor = "rgb(255,255,255)"
+    let playerBG = require("../assets/OthersApp.png");
+    let refereeBG = require("../assets/OthersApp.png");
+    let sportColor = "rgba(47,49,53,1)"
+    let lightColor = "rgb(107,107,107)"
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         refereeBG = require("../assets/BballRefereeApp.png");
         playerBG = require("../assets/BballApp.png");
@@ -225,7 +225,7 @@ const GameItem = props => {
 
                 <View style={{flexDirection:"column", justifyContent:"flex-start", alignItems:"flex-start"}}>
                     <View style={{flexDirection:"row", alignItems:"center"}}>
-                        <Text style={{fontWeight:"bold", fontSize:18, color: "black"}}>{props.gameDetails.sport}</Text>
+                        <Text style={{fontWeight:"bold", fontSize:18, color: "black"}}>{props.gameDetails.sport.toUpperCase()}</Text>
                     </View>
 
                     <View style={{flexDirection:"row", alignItems:"center"}}>

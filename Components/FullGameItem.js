@@ -79,11 +79,11 @@ const FullGameItem = props => {
 
 
     //SPORT BG and colour================================================================================================================================
-    let sportBG = require("../assets/BballBG.png");
-    let playerBG = require("../assets/BballApp.png");
-    let refereeBG = require("../assets/BballRefereeApp.png");
-    let sportColor = "rgba(0,0,0,1)"
-    let lightColor = "rgb(255,255,255)"
+    let sportBG = require("../assets/OthersBG.png");
+    let playerBG = require("../assets/OthersApp.png");
+    let refereeBG = require("../assets/OthersApp.png");
+    let sportColor = "rgba(47,49,53,1)"
+    let lightColor = "rgb(107,107,107)"
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
@@ -295,7 +295,7 @@ const FullGameItem = props => {
                                      imageStyle={{borderRadius:40}}
                     >
                         <View style={{flexDirection:"column"}}>
-                            <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport}</Text>
+                            <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport.toUpperCase()}</Text>
                             <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="account" size={20}/>
                                 <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.host}</Text>

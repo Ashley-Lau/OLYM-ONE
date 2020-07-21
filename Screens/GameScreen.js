@@ -10,9 +10,13 @@ import {
     Text,
     TouchableOpacity,
     Dimensions,
-    Alert
+    Alert,
+    TextInput,
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
+import Entypo from 'react-native-vector-icons/Entypo';
+import SearchButtons from '../Components/SearchButtons';
+
 
 import Background from "../views/Background";
 import LocationSearchBar from "../Components/LocationSeachBar";
@@ -96,8 +100,11 @@ const GameScreen = (props) => {
         });
 
     // ARRAY FOR SPORT SELECTION BELOW SEARCH BAR ==============================================================================
-    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis"];
+    const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportValue, setSportValue] = useState('');
+
+    const [specificSport, setSpecificSport] = useState('');
+
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -111,6 +118,8 @@ const GameScreen = (props) => {
             return require("../assets/badminton_icon.png");
         } else if(sport === "Tennis"){
             return require("../assets/tennis_coloured.png");
+        } else if(sport === "Others"){
+            return require("../assets/other_games.png")
         }
     }
 
@@ -130,6 +139,7 @@ const GameScreen = (props) => {
     // searching function on pressing search or any of the sport ==============================================
     // will only go through when a valid zone is selected =============================
     const search = (sportValue) => {
+
         if (sportValue === '' && zone === '') {
             noFieldsSelected()
             return
@@ -141,7 +151,7 @@ const GameScreen = (props) => {
         if (sportValue !== '' && zone !== '') {
             listener = gamesRef
                             .orderBy("date", "asc")
-                            .where('sport', '==', sportValue)
+                            .where('sport', '==', sportValue.toLowerCase())
                             .where('location', '==', zone)
                             .onSnapshot(documents => {
                                 const now = new Date().getTime()
@@ -171,7 +181,7 @@ const GameScreen = (props) => {
         if (sportValue !== '') {
             listener = gamesRef
                             .orderBy("date", "asc")
-                            .where('sport', '==', sportValue)
+                            .where('sport', '==', sportValue.toLowerCase())
                             .onSnapshot(documents => {
                                 const now = new Date().getTime()
                                 const filteredGames = []
@@ -279,92 +289,111 @@ const GameScreen = (props) => {
                         </View>
                     </View>
 
-                    {/*==================================SEARCH BAR ==============================================*/}
-                    <View style={styles.searchSpace}>
-                        <LocationSearchBar select = {val => setZone(val)}
-                                           onPress = {() => search(sportValue)}/>
+
+                {/*==================================SEARCH BAR ==============================================*/}
+                <View style={styles.searchSpace}>
+                    <LocationSearchBar select = {val => setZone(val)}
+                                       onPress = {() => search(sportValue)}/>
+                </View>
+                {/*===============================Sport Selection ===========================================*/}
+
+                <View style={{height: sHeight * 0.14}}>
+                    <FlatList showsHorizontalScrollIndicator={false}
+                              horizontal={true}
+                              contentContainerStyle= {{justifyContent:"space-between"}}
+                              keyExtractor={(item) => item.toString()}
+                              data = {sports}
+                              renderItem= {({item}) =>
+                                  item === sportValue
+                                      ?
+                                      <View style={styles.sportItem}>
+                                          <TouchableOpacity activeOpacity={0.6}
+                                                            style={{...styles.sportSelected}}
+                                                            onPress ={ () => {
+                                                                console.log(item)
+                                                                setSportValue("");
+                                                                // search(item);
+                                                            }}
+                                          >
+                                              <View style={styles.sportImageSelected}>
+                                                  <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
+                                              </View>
+
+                                          </TouchableOpacity>
+                                          <Text>{item}</Text>
+                                      </View>
+                                      : <View style={styles.sportItem}>
+                                          <TouchableOpacity activeOpacity={0.6}
+                                                            style={{...styles.sportSelection}}
+                                                            onPress ={() => {
+                                                                console.log(item)
+                                                                setSportValue(item);
+                                                                search(item);
+                                                            }}
+                                          >
+                                              <View style={styles.sportImageShadow}>
+                                                  <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
+                                              </View>
+
+                                          </TouchableOpacity>
+                                          <Text style={{opacity:0.3}}>{item}</Text>
+                                      </View>
+
+                              }
+
+                    >
+                    </FlatList>
+                </View>
+
+                {sportValue === "Others"
+                    ?
+                    <View style={{...styles.dropDown, paddingHorizontal:15}}>
+                        <TextInput
+                            placeholder={"Enter the sport you are searching for!"}
+                            style={{...styles.dropDownText, fontSize:16}}
+                            onChangeText={text => setSpecificSport(text)}
+                            value={specificSport}
+                        />
+                        <SearchButtons searchMe={() => search(specificSport)}/>
+
+
                     </View>
-                    {/*===============================Sport Selection ===========================================*/}
+                    :
+                    <View/>
+                }
 
-                    <View style={{height: sHeight * 0.14}}>
-                        <FlatList showsHorizontalScrollIndicator={false}
-                                  horizontal={true}
-                                  contentContainerStyle= {{justifyContent:"space-between"}}
-                                  keyExtractor={(item) => item.toString()}
-                                  data = {sports}
-                                  renderItem= {({item}) =>
-                                      item === sportValue
-                                          ?
-                                          <View style={styles.sportItem}>
-                                              <TouchableOpacity activeOpacity={0.6}
-                                                                style={{...styles.sportSelected}}
-                                                                onPress ={ () => {
-                                                                    console.log(item)
-                                                                    search(item);
-                                                                }}
-                                              >
-                                                  <View style={styles.sportImageSelected}>
-                                                      <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
-                                                  </View>
+                <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
 
-                                              </TouchableOpacity>
-                                              <Text>{item}</Text>
-                                          </View>
-                                          : <View style={styles.sportItem}>
-                                              <TouchableOpacity activeOpacity={0.6}
-                                                                style={{...styles.sportSelection}}
-                                                                onPress ={() => {
-                                                                    console.log(item)
-                                                                    setSportValue(item);
-                                                                    search(item);
-                                                                }}
-                                              >
-                                                  <View style={styles.sportImageShadow}>
-                                                      <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
-                                                  </View>
-
-                                              </TouchableOpacity>
-                                              <Text style={{opacity:0.3}}>{item}</Text>
-                                          </View>
-
-                                  }
-
-                        >
-                        </FlatList>
-                    </View>
-
-                    <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-
-                        {!searchedBefore
+                    {!searchedBefore
+                        ? noInput
+                        : game.length === 0 && sportValue === "Others"
                             ? noInput
-                            : game.length === 0
+                            : game.length === 0 && sportValue !== "Others"
                                 ? noSport
                                 : <AnimatedFlatList
-                                        scrollEventThrottle={16}
-                                        {...{onScroll}}
-                                        showsHorizontalScrollIndicator={false}
-                                        //KIV need to do some Apploading for it to work
-                                        // initialScrollIndex={Math.floor(game.length/2)}
-                                        horizontal={true}
-                                        contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
-                                        keyExtractor={(item) => item.key.toString()}
-                                        data = {game}
-                                        renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
-                                                                               gameId={item.key}
-                                                                               user={user}
-                                                                               itemType={"Join"}
-                                                                               translateX = {x}
-                                                                               index = {index}
+                                    scrollEventThrottle={16}
+                                    {...{onScroll}}
+                                    showsHorizontalScrollIndicator={false}
+                                    horizontal={true}
+                                    contentContainerStyle= {{ paddingHorizontal:"8.5%", alignItems:"center"}}
+                                    keyExtractor={(item) => item.key.toString()}
+                                    data = {game}
+                                    renderItem= {({item, index}) => <FullGameItem gameDetails={item.value}
+                                                                                  gameId={item.key}
+                                                                                  user={user}
+                                                                                  itemType={"Join"}
+                                                                                  translateX = {x}
+                                                                                  index = {index}
 
 
-                                        />}
-                                    >
+                                    />}
+                                >
 
-                                    </AnimatedFlatList>
-                        }
+                                </AnimatedFlatList>
+                    }
 
-                    </View>
-                </View>
+
+
             </Background>
         </TouchableWithoutFeedback>
     )
@@ -438,6 +467,35 @@ const styles = StyleSheet.create({
         fontSize: 27,
         fontWeight: "bold",
     },
+
+    noApplication: {
+        fontSize: 33,
+        alignSelf: 'center',
+        color: '#5a5959',
+        top: 20,
+        textAlign:'center',
+        width: Dimensions.get('window').width * 0.8
+    },
+    dropDown: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        backgroundColor: 'ghostwhite',
+        height: 40,
+        borderWidth: 1,
+        borderRadius:4,
+        borderColor:"rgba(131,137,147,0.53)",
+        width: "97%",
+        marginLeft:"1.5%"
+    },
+    dropDownText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        height: 40,
+        width: "97%",
+    },
+
 })
 
 export default GameScreen;
