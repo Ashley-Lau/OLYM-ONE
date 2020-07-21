@@ -363,6 +363,7 @@ const RefereeScreen = (props) => {
                             </AnimatedFlatList>}
 
 
+                </View>
             </View>
         </Background>
         </TouchableWithoutFeedback>
