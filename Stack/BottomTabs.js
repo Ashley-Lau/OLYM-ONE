@@ -13,6 +13,7 @@ import RefereeScreen from "../../OLYM-ONE/Screens/RefereeScreen";
 import ProfileScreen from "../Screens/ProfileScreen";
 import ChatDetailScreen from "../Screens/ChatDetailScreen";
 import HostGameScreen from "../Screens/HostGameScreen";
+import GameDetailsModal from "../Components/GameDetailsModal";
 
 
 const Tab = createBottomTabNavigator();
@@ -21,7 +22,9 @@ const Stack = createStackNavigator();
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
                 <Stack.Screen name = "ProfileScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
-                <Stack.Screen name = "UpdateDetailScreen" component = {ProfileScreen}/>
+                <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
+                <Stack.Screen name ="GameDetailsModal" component = {GameDetailsModal}/>
+
             </Stack.Navigator>
 }
 
@@ -29,14 +32,24 @@ const GameStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
         <Stack.Screen name = "GameScreen" component = {GameScreen} initialParams={{user: props.extraData}}/>
         <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
+        <Stack.Screen name = "GameDetailsModal" component = {GameDetailsModal}/>
+    </Stack.Navigator>
+}
+
+const RefereeStack = (props) => {
+    return  <Stack.Navigator initialRouteName={RefereeScreen} headerMode={false}>
+        <Stack.Screen name = "RefereeScreen" component = {RefereeScreen} initialParams={{user: props.extraData}}/>
+        <Stack.Screen name = "GameDetailsModal" component ={GameDetailsModal}/>
     </Stack.Navigator>
 }
 
 const ChatStack = (props) => {
     return  <Stack.Navigator initialRouteName={ChatDetailScreen} headerMode={false}>
-                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams = {{user: props.extraData}}/>
+                <Stack.Screen name = "ChatDetailScreen" component = {ChatDetailScreen} initialParams={{user: props.extraData}}/>
             </Stack.Navigator>
 }
+
+
 
 const BottomTabs = (props) => {
     // if (Platform.OS === "android") {
@@ -94,7 +107,7 @@ const BottomTabs = (props) => {
         </Tab.Screen>
         <Tab.Screen
             name="RefereeScreen"
-            component={RefereeScreen}
+            children={RefereeStack}
             initialParams={{user: props.extraData}}
             options={{
                 tabBarLabel: 'REFEREE',
@@ -103,6 +116,7 @@ const BottomTabs = (props) => {
                 ),
             }}
         />
+            {prop => <RefereeStack {...prop}  extraData = {props.extraData}/>}
         <Tab.Screen
             name="ChatStack"
             children={ChatStack}

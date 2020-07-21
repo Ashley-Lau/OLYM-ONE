@@ -106,6 +106,8 @@ const GameScreen = (props) => {
     const [specificSport, setSpecificSport] = useState('');
 
 
+
+
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
         if(sport === "Soccer"){
@@ -384,6 +386,15 @@ const GameScreen = (props) => {
                                                                                   itemType={"Join"}
                                                                                   translateX = {x}
                                                                                   index = {index}
+                                                                                  onPress ={() => {navigation.navigate('GameDetailsModal',
+                                                                                      {
+                                                                                          uid: currentUser,
+                                                                                          gameDetails: item.value,
+                                                                                          itemType: "Join",
+                                                                                          user: user,
+                                                                                          gameId: item.key,
+                                                                                      })
+                                                                                  }}
 
 
                                     />}

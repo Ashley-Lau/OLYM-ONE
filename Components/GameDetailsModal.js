@@ -1,97 +1,267 @@
-import React from 'react';
-import {Text, StyleSheet, Modal, View, ScrollView, Image, ImageBackground, TouchableOpacity, Dimensions} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {
+    Text,
+    StyleSheet,
+    Modal,
+    View,
+    ScrollView,
+    Image,
+    ImageBackground,
+    TouchableOpacity,
+    Dimensions,
+    Alert
+} from 'react-native';
 import * as firebase from 'firebase';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import {useNavigation} from "@react-navigation/native";
 
 
-import GradientButton from "./GradientButton";
-import Styles from "../../OLYM-ONE/styling/Styles";
-import Background from "../views/Background";
 import JoinItem from "./JoinItem";
 import UpcomingRefereeItem from "./UpcomingRefereeItem";
 import RefereeItem from "./RefereeItem";
 import UpcomingGameItem from "./UpcomingGameItem";
+import firebaseDb from "../firebaseDb";
+import {keywordsMaker} from "./SearchBarFunctions";
+import ViewPlayerItem from "./ViewPlayerItem";
 
 
 const GameDetailsModal = props => {
+
+    const navigation = useNavigation();
 
     // DEVICE WIDTH AND HEIGHT===========================================================================================
     const width = Dimensions.get("window").width;
     const height = Dimensions.get("window").height;
 
-    //SPORT BG and colour================================================================================================================================
-    let sportBG = require("../assets/BballBG.png");
-    let sportColor = "rgba(0,0,0,1)"
-    let lightColor = "rgb(255,255,255)"
-    if(props.gameDetails.sport.toLowerCase() === "basketball"){
-        if(props.itemType === "Referee" || props.itemType === "Resign"){
-            sportBG = require("../assets/BballRefereeApp.png");
-        } else {
-            sportBG = require("../assets/BballApp.png");
+    //CHAT FUNCTION====================================================================================================
+
+    const chatWithHost = () => {
+        const hostId = props.route.params.gameDetails.hostId
+        const currentUserId = props.route.params.user.id
+        const smallerId = hostId < currentUserId ? hostId : currentUserId
+        const largerId = hostId < currentUserId ? currentUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === currentUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+            return
         }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                        keywords: keywords,
+                                        smallId: smallerId,
+                                        largeId: largerId,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+                                            navigation.navigate('ChatStack', {
+                                                screen: 'ChatScreen',
+                                                params : {
+                                                    chat: data,
+                                                    userId: currentUserId
+                                                }
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
+                        })
+                        .catch(error => console.log(error))
+                } else {
+                    navigation.navigate('ChatStack', {
+                        screen: 'ChatScreen',
+                        params : {
+                            chat: doc.data(),
+                            userId: currentUserId
+                        }
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
+
+    //SPORT BG and colour================================================================================================================================
+    let sportBG = require("../assets/OthersBG.png");
+    let playerBG = require("../assets/OthersApp.png");
+    let refereeBG = require("../assets/OthersApp.png");
+    let sportColor = "rgba(47,49,53,1)"
+    let lightColor = "rgb(107,107,107)"
+    if(props.route.params.gameDetails.sport.toLowerCase() === "basketball" ){
+        if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
+            sportBG = require("../assets/BballRefereeBG.png");
+        } else {
+            sportBG = require("../assets/BballBG.png");
+        }
+        refereeBG = require("../assets/BballRefereeApp.png");
+        playerBG = require("../assets/BballApp.png");
         sportColor = "rgba(200,98,57,1)";
         lightColor = "rgb(252,238,184)"
 
-    } else if(props.gameDetails.sport.toLowerCase() === "soccer"){
-        if(props.itemType === "Referee" || props.itemType === "Resign"){
-            sportBG = require("../assets/SoccerRefereeApp.png");
+    } else if(props.route.params.gameDetails.sport.toLowerCase() === "soccer" ){
+        if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
+            sportBG = require("../assets/SoccerRefereeBG.png");
         } else {
-            sportBG = require("../assets/SoccerApp.png");
+            sportBG = require("../assets/SoccerBG.png");
         }
+        refereeBG = require("../assets/SoccerRefereeApp.png");
+        playerBG = require("../assets/SoccerApp.png");
         sportColor = "rgba(134,119,198,1)";
         lightColor = "rgb(195,185,206)"
 
-    } else if(props.gameDetails.sport.toLowerCase() === "floorball"){
-        if(props.itemType === "Referee" || props.itemType === "Resign"){
-            sportBG = require("../assets/floorballRefereeApp.png");
+    } else if(props.route.params.gameDetails.sport.toLowerCase() === "floorball" ){
+        if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
+            sportBG = require("../assets/floorballRefereeBG.png");
         } else {
-            sportBG = require("../assets/floorballApp.png");
+            sportBG = require("../assets/floorballBG.png");
         }
+        refereeBG = require("../assets/floorballRefereeApp.png");
+        playerBG = require("../assets/floorballApp.png");
         sportColor = "rgba(58,204,255,1)";
         lightColor = "rgb(228,235,255)"
 
-    } else if(props.gameDetails.sport.toLowerCase() === "tennis" ){
-        if(props.itemType === "Referee" || props.itemType === "Resign"){
-            sportBG = require("../assets/TennisRefereeApp.png");
+    } else if(props.route.params.gameDetails.sport.toLowerCase() === "tennis" ){
+        if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
+            sportBG = require("../assets/TennisRefereeBG.png");
         } else {
-            sportBG = require("../assets/TennisApp.png");
+            sportBG = require("../assets/TennisBG.png");
         }
+        refereeBG = require("../assets/TennisRefereeApp.png");
+        playerBG = require("../assets/TennisApp.png");
         sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)"
-    } else if(props.gameDetails.sport.toLowerCase() === "badminton" ) {
-        if(props.itemType === "Referee" || props.itemType === "Resign"){
-            sportBG = require("../assets/BadmintonRefereeApp.png");
+        lightColor = "rgb(196,172,19)";
+
+    } else if(props.route.params.gameDetails.sport.toLowerCase() === "badminton" ){
+        if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
+            sportBG = require("../assets/BadmintonRefereeBG.png");
         } else {
-            sportBG = require("../assets/BadmintonApp.png");
+            sportBG = require("../assets/BadmintonBG.png");
         }
+        playerBG = require("../assets/BadmintonApp.png");
+        refereeBG = require("../assets/BadmintonRefereeApp.png");
         sportColor = "rgba(211,55,64,1)";
         lightColor = "rgb(218,138,158)"
-
     }
 
     //DATE AND TIME STRING ================================================================================================
-    let gameDate = props.gameDetails.date
-    let gameTime = props.gameDetails.date
-    if(props.gameDetails.date){
+    let gameDate = props.route.params.gameDetails.date
+    let gameTime = props.route.params.gameDetails.date
+    if(props.route.params.gameDetails.date){
         gameDate = gameDate.toDate().toString().slice(4,15);
         gameTime = gameTime.toDate().toString().slice(16,21);
     }
 
+    // LIST OF PLAYERS AND REFEREE ================================================================================================
+    const [playerUser, setPlayerUser] = useState([]);
+    const [refereeUser, setRefereeUser] = useState([]);
+
+    const username = () => {
+        setPlayerUser([]);
+        let playerList = [];
+        props.route.params.gameDetails.players.map(uid => {
+            firebaseDb.firestore().collection('users')
+                .doc(uid)
+                .onSnapshot(doc => {
+                    console.log("players Loaded")
+                    playerList.push(doc.data());
+                }, error => {
+                    console.log(error.message);
+                })
+        })
+        setPlayerUser(playerList);
+    }
+
+    const getRef = () => {
+        setRefereeUser([]);
+        let refList = [];
+        props.route.params.gameDetails.refereeList.map(uid => {
+            firebaseDb.firestore().collection('users')
+                .doc(uid)
+                .onSnapshot(doc => {
+                    refList.push(doc.data());
+                }, error => {
+                    console.log(error.message);
+                })
+        })
+        setRefereeUser(refList);
+    }
+
+    useEffect(() => {
+        const unsubscribe = username();
+        const unsubscribe2 = getRef();
+
+        return () => {
+            unsubscribe;
+            unsubscribe2;
+        }
+
+    }, [])
+
+
+    //MODAL STATES ================================================================================================================
+    const [playerDetails, openPlayerDetails] = useState(false);
+    const [refereeDetails, openRefereeDetails] = useState([]);
+
 
     return (
-        <View>
+        <View style={{flex:1}}>
 
-            <Modal visible = {props.visible} animationType="slide">
+            <ViewPlayerItem visible={playerDetails}
+                            playerDetails={playerUser}
+                            closePlayer ={() => {openPlayerDetails(false)}}
+                            backGround = {playerBG}
+                            sportColor = {sportColor}
+                            lightColor = {lightColor}
+                            typeCheck = {"Player"}
+            />
+
+            <ViewPlayerItem visible={refereeDetails}
+                            playerDetails={refereeUser}
+                            closePlayer ={() => {openRefereeDetails(false)}}
+                            backGround = {refereeBG}
+                            sportColor = {sportColor}
+                            lightColor = {lightColor}
+                            typeCheck = {"Referee"}
+            />
+
+            {/*<Modal visible = {props.route.params.visible} animationType="slide">*/}
                 <View style={{...styles.header, backgroundColor:sportColor, width:width}}>
                     <TouchableOpacity activeOpacity={0.6} style={{flexDirection:"row",justifyContent:"center", alignItems:"center", marginLeft:5}}
-                                      onPress={props.closeGame}
+                                      onPress={() => navigation.goBack()}
                     >
                         <Ionicons name="ios-arrow-back" size={40} style={{color:lightColor}}/>
                         <Text style = {{fontSize: 30, marginLeft: 6, color: lightColor}}>Back</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={props.chatFunction}>
+                    <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={() => chatWithHost()}>
                         <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
                     </TouchableOpacity>
 
@@ -106,7 +276,7 @@ const GameDetailsModal = props => {
                             <ScrollView contentContainerStyle={{marginLeft:5, marginBottom:20}}>
 
                                     <View>
-                                        <Text style={{fontWeight:"bold", fontSize:35}}>{props.gameDetails.sport.toUpperCase()}</Text>
+                                        <Text style={{fontWeight:"bold", fontSize:35}}>{props.route.params.gameDetails.sport.toUpperCase()}</Text>
 
                                         {/*Game Details*/}
 
@@ -120,7 +290,7 @@ const GameDetailsModal = props => {
                                                         <MaterialCommunityIcons name="account" size={25} color={"black"}/>
                                                         <Text style={{fontSize:20, color:"black"}}>  Hosted By:</Text>
                                                     </View>
-                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.gameDetails.host}</Text>
+                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.host}</Text>
                                                 </View>
 
                                                 <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
@@ -128,7 +298,7 @@ const GameDetailsModal = props => {
                                                         <MaterialCommunityIcons name="map-marker" size={25} color={"black"}/>
                                                         <Text style={{fontSize:20, color:"black"}}>  Location:</Text>
                                                     </View>
-                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.gameDetails.specificLocation} @ {props.gameDetails.location}</Text>
+                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.specificLocation} @ {props.route.params.gameDetails.location}</Text>
                                                 </View>
 
                                                 <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
@@ -151,9 +321,9 @@ const GameDetailsModal = props => {
                                             <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:10}}>
                                                 <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.5}}
                                                                   onPress={() => {
-                                                                      props.openPlayer();}}
+                                                                      openPlayerDetails(true);}}
                                                 >
-                                                    <Text style={{fontSize:20}}>{props.gameDetails.players.length} Players</Text>
+                                                    <Text style={{fontSize:20}}>{props.route.params.gameDetails.players.length} Players</Text>
 
                                                     <Ionicons name="ios-arrow-forward" size={20}/>
 
@@ -162,9 +332,9 @@ const GameDetailsModal = props => {
 
                                                 <TouchableOpacity style={styles.viewPlayer}
                                                                   onPress={() => {
-                                                                      props.openReferee();}}
+                                                                      openRefereeDetails(true)}}
                                                 >
-                                                    <Text style={{fontSize:20}}>{props.gameDetails.refereeList.length} Referees</Text>
+                                                    <Text style={{fontSize:20}}>{props.route.params.gameDetails.refereeList.length} Referees</Text>
 
                                                     <Ionicons name="ios-arrow-forward" size={20}/>
 
@@ -176,7 +346,7 @@ const GameDetailsModal = props => {
                                         {/*NOTES*/}
 
 
-                                        {props.gameDetails.notes !== ''
+                                        {props.route.params.gameDetails.notes !== ''
                                         ?
                                             <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, marginBottom:10}}>
                                                 <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>TO TAKE NOTE:</Text>
@@ -184,7 +354,7 @@ const GameDetailsModal = props => {
                                                 <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:15}}
                                                             nestedScrollEnabled={true}
                                                 >
-                                                    <Text style={{fontSize:20, color:"grey"}}>{props.gameDetails.notes}</Text>
+                                                    <Text style={{fontSize:20, color:"grey"}}>{props.route.params.gameDetails.notes}</Text>
                                                 </View>
                                             </View>
                                         :
@@ -204,59 +374,59 @@ const GameDetailsModal = props => {
 
                 <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
 
-                    {props.itemType === "Join" || "Quit"
+                    {props.route.params.itemType === "Join" || "Quit"
                     ?
                         <View>
                             <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.gameDetails.price).toFixed(2)}</Text>
-                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.gameDetails.availability} Slots Left!</Text>
+                                <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.route.params.gameDetails.price).toFixed(2)}</Text>
+                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.availability} Slots Left!</Text>
                             </View>
 
                         </View>
 
                     :
                         <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                            <Text style={{fontSize:25, color:lightColor, marginLeft:15}}> {props.gameDetails.refereeSlots} Slots Left!</Text>
+                            <Text style={{fontSize:25, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.refereeSlots} Slots Left!</Text>
                         </View>
 
                     }
 
 
 
-                    {props.itemType === "Join"
+                    {props.route.params.itemType === "Join"
                         ?
-                        <JoinItem gameDetails ={props.gameDetails}
-                                  gameId ={props.gameId}
-                                  user = {props.user}
-                                  closeGame = {props.closeGame}
+                        <JoinItem gameDetails ={props.route.params.gameDetails}
+                                  gameId ={props.route.params.gameId}
+                                  user = {props.route.params.user}
+                                  closeGame = {props.route.params.closeGame}
                                   textColor = {sportColor}
                                   style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
                         />
-                        : props.itemType === "Referee"
+                        : props.route.params.itemType === "Referee"
                             ?
-                            <RefereeItem gameDetails ={props.gameDetails}
-                                         gameId ={props.gameId}
-                                         user = {props.user}
-                                         closeGame = {props.closeGame}
+                            <RefereeItem gameDetails ={props.route.params.gameDetails}
+                                         gameId ={props.route.params.gameId}
+                                         user = {props.route.params.user}
+                                         closeGame = {props.route.params.closeGame}
                                          textColor = {sportColor}
                                          style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
 
                             />
-                            :  props.itemType === "Quit"
+                            :  props.route.params.itemType === "Quit"
                                 ?
-                                <UpcomingGameItem gameDetails ={props.gameDetails}
-                                                  gameId ={props.gameId}
-                                                  user = {props.user}
-                                                  closeGame = {props.closeGame}
+                                <UpcomingGameItem gameDetails ={props.route.params.gameDetails}
+                                                  gameId ={props.route.params.gameId}
+                                                  user = {props.route.params.user}
+                                                  closeGame = {props.route.params.closeGame}
                                                   textColor = {sportColor}
                                                   style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
 
                                 />
                                 :
-                                <UpcomingRefereeItem gameDetails ={props.gameDetails}
-                                                     gameId ={props.gameId}
-                                                     user = {props.user}
-                                                     closeGame = {props.closeGame}
+                                <UpcomingRefereeItem gameDetails ={props.route.params.gameDetails}
+                                                     gameId ={props.route.params.gameId}
+                                                     user = {props.route.params.user}
+                                                     closeGame = {props.route.params.closeGame}
                                                      textColor = {sportColor}
                                                      style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
 
@@ -268,7 +438,7 @@ const GameDetailsModal = props => {
 
 
 
-            </Modal>
+            {/*</Modal>*/}
 
         </View>
 

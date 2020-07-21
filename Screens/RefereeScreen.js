@@ -9,24 +9,32 @@ import {
     Animated,
     Dimensions,
     Keyboard,
-    TouchableWithoutFeedback, Alert
+    TouchableWithoutFeedback, Alert, TextInput
 } from 'react-native';
 import {Select, SelectItem} from "@ui-kitten/components";
 
 import Background from "../views/Background";
+
+import SearchButtons from "../Components/SearchButtons";
 import firebaseDb from '../firebaseDb';
 import LocationSearchBar from "../Components/LocationSeachBar";
-import Styles from "../styling/Styles";
 import FullGameItem from "../Components/FullGameItem";
-import {noInput, noSport} from "../Components/NoDataMessages";
+
+import {useNavigation} from "@react-navigation/native";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 
 const sHeight = Dimensions.get('window').height
 
+
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+const sHeight = Dimensions.get('window').height;
 
 
 const RefereeScreen = (props) => {
+
+    const navigation = useNavigation()
 
     // CURRENT USER ===========================================================================================
     const user = props.route.params.user
@@ -35,7 +43,7 @@ const RefereeScreen = (props) => {
     // Referee array to show list of available referee games =============================================================================================
     const [refereeList, setRefereeList] = useState([])
 
-    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================    let listener = null
+    //UPDATING AND QUERYING OF OUTDATED GAME DETAILS ================================================================================================
     let listener = null
     const gamesRef = firebaseDb.firestore().collection("game_details");
     const refApplRef = firebaseDb.firestore().collection('application_details');
@@ -96,6 +104,8 @@ const RefereeScreen = (props) => {
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"];
     const [sportValue, setSportValue] = useState();
 
+    const [specificSport, setSpecificSport] = useState('');
+
 
     // IMAGE FOR RELATIVE SPORT =======================================================================================
     const sportImage = (sport) => {
@@ -141,7 +151,7 @@ const RefereeScreen = (props) => {
         if (sportValue !== '' && zone !== '') {
             listener = gamesRef
                 .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
+                .where('sport', '==', sportValue.toLowerCase())
                 .where('location', '==', zone)
                 .onSnapshot(documents => {
                     const now = new Date().getTime()
@@ -171,7 +181,7 @@ const RefereeScreen = (props) => {
         if (sportValue !== '') {
             listener = gamesRef
                 .orderBy("date", "asc")
-                .where('sport', '==', sportValue)
+                .where('sport', '==', sportValue.toLowerCase())
                 .onSnapshot(documents => {
                     const now = new Date().getTime()
                     const filteredGames = []
@@ -233,94 +243,126 @@ const RefereeScreen = (props) => {
         <Background style = {styles.container}>
             <View style = {{top: Styles.statusBarHeight.height}}>
             {/*==================================== Title and hosting a game ======================================*/}
-                <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                    <Text style = {styles.text}>Referable Games</Text>
+            <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
+                <Text style = {styles.text}>Referable Games</Text>
+
+            </View>
+
+            {/*================================== SEARCH BAR ==============================================*/}
+
+            <View style={styles.searchSpace}>
+                <LocationSearchBar select = {val => setZone(val)}
+                                   onPress = {() => search(sportValue)}/>
+            </View>
+
+
+
+            {/*===============================Sport Selection ===========================================*/}
+
+            <View style={{height: sHeight * 0.14}}>
+                <FlatList showsHorizontalScrollIndicator={false}
+                          horizontal={true}
+                          contentContainerStyle= {{justifyContent:"space-between"}}
+                          keyExtractor={(item) => item.toString()}
+                          data = {sports}
+                          renderItem= {({item}) =>
+                              item === sportValue
+                                  ?
+                                  <View style={styles.sportItem}>
+                                      <TouchableOpacity activeOpacity={0.6}
+                                                        style={{...styles.sportSelected}}
+                                                        onPress ={ () => {
+                                                            setSportValue(item);
+                                                            search(item);
+                                                        }}
+                                      >
+                                          <View style={styles.sportImageSelected}>
+                                              <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
+                                          </View>
+
+                                      </TouchableOpacity>
+                                      <Text>{item}</Text>
+                                  </View>
+                                  : <View style={styles.sportItem}>
+                                      <TouchableOpacity activeOpacity={0.6}
+                                                        style={{...styles.sportSelection}}
+                                                        onPress ={ () => {
+                                                            setSportValue(item);
+                                                            search(item);
+                                                        }}
+                                      >
+                                          <View style={styles.sportImageShadow}>
+                                              <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
+                                          </View>
+
+                                      </TouchableOpacity>
+                                      <Text style={{opacity:0.3}}>{item}</Text>
+                                  </View>
+
+                          }
+
+                >
+
+                </FlatList>
+            </View>
+
+
+            {sportValue === "Others"
+                ?
+                <View style={{...styles.dropDown, paddingHorizontal:15}}>
+                    <TextInput
+                        placeholder={"Enter the sport you are searching for!"}
+                        style={{...styles.dropDownText, fontSize:16}}
+                        onChangeText={text => setSpecificSport(text)}
+                        value={specificSport}
+                    />
+                    <SearchButtons searchMe={() => search(specificSport)}/>
+
 
                 </View>
+                :
+                <View/>
+            }
 
-                {/*================================== SEARCH BAR ==============================================*/}
+            <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
+                {!searchedBefore
+                    ? noInput
+                    : refereeList.length === 0
+                        ? noSport
+                        :   <AnimatedFlatList
+                                scrollEventThrottle={16}
+                                {...{onScroll}}
+                                showsHorizontalScrollIndicator={false}
+                                horizontal={true}
+                                contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
+                                keyExtractor={(item) => item.key.toString()}
+                                data = {refereeList}
+                                renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
+                                                                       gameId={item.key}
+                                                                       user={user}
+                                                                       itemType={"Referee"}
+                                                                       index = {index}
+                                                                       translateX = {x}
+                                                                       onPress ={() => {
+                                                                           navigation.navigate("GameDetailsModal",
+                                                                               {
+                                                                                   // uid: user.id,
+                                                                                   gameDetails: item.value,
+                                                                                   itemType: "Referee",
+                                                                                   user: user,
+                                                                                   gameId: item.key,
+                                                                               }
 
-                <View style={styles.searchSpace}>
-                    <LocationSearchBar select = {val => setZone(val)}
-                                       onPress = {() => search(sportValue)}/>
-                </View>
+                                                                           )}
+                                                                       }
 
 
+                            />}
+                            >
 
-                {/*===============================Sport Selection ===========================================*/}
+                            </AnimatedFlatList>}
 
-                <View style={{height: sHeight * 0.14}}>
-                    <FlatList showsHorizontalScrollIndicator={false}
-                              horizontal={true}
-                              contentContainerStyle= {{justifyContent:"space-between"}}
-                              keyExtractor={(item) => item.toString()}
-                              data = {sports}
-                              renderItem= {({item}) =>
-                                  item === sportValue
-                                      ?
-                                      <View style={styles.sportItem}>
-                                          <TouchableOpacity activeOpacity={0.6}
-                                                            style={{...styles.sportSelected}}
-                                                            onPress ={ () => {
-                                                                setSportValue(item);
-                                                                search(item);
-                                                            }}
-                                          >
-                                              <View style={styles.sportImageSelected}>
-                                                  <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
-                                              </View>
 
-                                          </TouchableOpacity>
-                                          <Text>{item}</Text>
-                                      </View>
-                                      : <View style={styles.sportItem}>
-                                          <TouchableOpacity activeOpacity={0.6}
-                                                            style={{...styles.sportSelection}}
-                                                            onPress ={ () => {
-                                                                setSportValue(item);
-                                                                search(item);
-                                                            }}
-                                          >
-                                              <View style={styles.sportImageShadow}>
-                                                  <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
-                                              </View>
-
-                                          </TouchableOpacity>
-                                          <Text style={{opacity:0.3}}>{item}</Text>
-                                      </View>
-
-                              }
-
-                    >
-
-                    </FlatList>
-                </View>
-
-                <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
-                    {!searchedBefore
-                        ? noInput
-                        : refereeList.length === 0
-                            ? noSport
-                            :   <AnimatedFlatList
-                                    scrollEventThrottle={16}
-                                    {...{onScroll}}
-                                    showsHorizontalScrollIndicator={false}
-                                    horizontal={true}
-                                    contentContainerStyle= {{paddingLeft:"8.5%", alignItems:"center"}}
-                                    keyExtractor={(item) => item.key.toString()}
-                                    data = {refereeList}
-                                    renderItem= {({item, index }) => <FullGameItem gameDetails={item.value}
-                                                                           gameId={item.key}
-                                                                           user={user}
-                                                                           itemType={"Referee"}
-                                                                           index = {index}
-                                                                           translateX = {x}
-                                />}
-                                >
-
-                                </AnimatedFlatList>}
-
-                </View>
             </View>
         </Background>
         </TouchableWithoutFeedback>
@@ -395,6 +437,34 @@ const styles = StyleSheet.create({
         fontSize: 27,
         fontWeight: "bold",
     },
+    noApplication: {
+        fontSize: 33,
+        alignSelf: 'center',
+        color: '#5a5959',
+        top: 20,
+        textAlign:'center',
+        width: Dimensions.get('window').width * 0.8
+    },
+    dropDown: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        backgroundColor: 'ghostwhite',
+        height: 40,
+        borderWidth: 1,
+        borderRadius:4,
+        borderColor:"rgba(131,137,147,0.53)",
+        width: "97%",
+        marginLeft:"1.5%"
+    },
+    dropDownText: {
+        flexDirection:"row",
+        justifyContent: 'center',
+        alignItems:"center",
+        height: 40,
+        width: "97%",
+    },
+
 })
 
 export default RefereeScreen;
