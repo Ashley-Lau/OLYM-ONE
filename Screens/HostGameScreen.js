@@ -114,11 +114,13 @@ const HostGameScreen = props => {
 
     // UPDATING THE GAME ITEM AND DETAIL ==============================================================================================================
     const handleCreateGame = values => {
-        console.log(data)
+        values.sport === "Others"
+        ?
+
         firebaseDb.firestore()
             .collection('game_details')
             .add({
-                sport: values.sport,
+                sport: values.specificSport,
                 location: values.location,
                 specificLocation: values.specificLocation,
                 notes: values.notes,
@@ -135,6 +137,27 @@ const HostGameScreen = props => {
             })
             .then(() => {registeredPress()})
             .catch(err => console.error(err))
+        :
+            firebaseDb.firestore()
+                .collection('game_details')
+                .add({
+                    sport: values.sport,
+                    location: values.location,
+                    specificLocation: values.specificLocation,
+                    notes: values.notes,
+                    availability : values.slots,
+                    date: sgTime(values.date),
+                    host: data.username,
+                    price: values.price,
+                    players: [data.id],
+                    hostId: data.id,
+                    referee: values.referee,
+                    refereeSlots:values.refereeSlots,
+                    refereeList: [],
+                    applicants:[]
+                })
+                .then(() => {registeredPress()})
+                .catch(err => console.error(err))
 
     }
 
@@ -145,6 +168,7 @@ const HostGameScreen = props => {
                     location: '',
                     specificLocation: '',
                     sport:'Select',
+                    specificSport:'',
                     price:'',
                     slots:'',
                     date:new Date(),
@@ -230,16 +254,45 @@ const HostGameScreen = props => {
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.sport && props.errors.sport}</Text>
                             </View>
 
+                            {/*// OTHER SPORTS ------------------------------------------------------------------------*/}
+
+                            {props.values.sport === "Others"
+                            ?
+
+                                <View style={{...styles.selectionItem, marginTop: 5}}>
+                                    <Text style={{fontSize:15, marginLeft:8}}>SPECIFIC SPORT :</Text>
+                                    <View style={{...styles.dropDown, padding:5}}>
+                                        <TextInput
+                                                   placeholder={"Please fill in if your chose 'Others' for sport"}
+                                                   style={{...styles.dropDownText, fontSize:16}}
+                                                   onChangeText={props.handleChange('specificSport')}
+                                                   value={props.values.specificSport}
+                                                   onBlur = {props.handleBlur('specificSport')}
+                                        />
+                                    </View>
+                                    {props.touched.specificSport && props.values.specificSport === ''
+                                    ?
+                                        <Text style={{color:"red", fontSize:15}}>Please enter a sport!</Text>
+                                    :
+                                        <View/>
+                                    }
+
+
+                                </View>
+                            :
+                               <View></View>
+
+                            }
 
                             {/*// DATE AND TIME ------------------------------------------------------------------------*/}
 
-                            <View style={styles.selectionItem}>
+                            <View style={{...styles.selectionItem, marginTop:15}}>
                                 <Text style={{fontSize:15, marginLeft:8}}>DATE :</Text>
                                 <CustButton onPress = {() => props.setFieldValue('showDate', true)}
                                             style = {styles.dropDown}>
                                     <Text style = {{color: 'black', }}>{props.values.date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
                                 </CustButton>
-                                <Text style={{fontSize: 15, color: 'red'}}>{ props.touched.date && props.errors.date}</Text>
+                                <Text style={{fontSize: 15, color: 'red'}}>{ props.touched.date && props.errors.date }</Text>
                             </View>
                             {props.values.showDate &&
                             (isIos
@@ -479,7 +532,6 @@ const styles = StyleSheet.create({
     },
     dropDownCopy:{
         flexDirection:"row",
-        marginTop: 5,
         alignItems:"center",
         width: "97%",
     },
