@@ -21,11 +21,10 @@ import LocationSearchBar from "../Components/LocationSeachBar";
 import FullGameItem from "../Components/FullGameItem";
 
 import {useNavigation} from "@react-navigation/native";
+import {noInput, noSport} from "../Components/NoDataMessages";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
-
-const sHeight = Dimensions.get('window').height
 
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);

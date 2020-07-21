@@ -14,7 +14,6 @@ import {
     TextInput,
 } from 'react-native';
 import {useNavigation} from "@react-navigation/native";
-import Entypo from 'react-native-vector-icons/Entypo';
 import SearchButtons from '../Components/SearchButtons';
 
 
@@ -25,7 +24,6 @@ import firebaseDb from "../firebaseDb";
 import Styles from "../styling/Styles";
 import GameDetailsModal from "../Components/GameDetailsModal";
 import {noInput, noSport} from "../Components/NoDataMessages";
-
 import {Entypo} from 'react-native-vector-icons';
 
 const sHeight = Dimensions.get('window').height
@@ -403,8 +401,8 @@ const GameScreen = (props) => {
                                 </AnimatedFlatList>
                     }
 
-
-
+                    </View>
+                </View>
             </Background>
         </TouchableWithoutFeedback>
     )

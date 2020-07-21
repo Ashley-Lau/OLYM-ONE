@@ -22,7 +22,6 @@ const Stack = createStackNavigator();
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
                 <Stack.Screen name = "ProfileScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
-                <Stack.Screen name = "UpdateDetailScreen" component = {UpdateDetailScreen}/>
                 <Stack.Screen name ="GameDetailsModal" component = {GameDetailsModal}/>
 
             </Stack.Navigator>
