@@ -29,17 +29,17 @@ const ProfileStack = (props) => {
 
 const GameStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
-        <Stack.Screen name = "GameScreen" component = {GameScreen} initialParams={{user: props.extraData}}/>
-        <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
-        <Stack.Screen name = "GameDetailsModal" component = {GameDetailsModal}/>
-    </Stack.Navigator>
+                <Stack.Screen name = "GameScreen" component = {GameScreen} initialParams={{user: props.extraData}}/>
+                <Stack.Screen name = "HostGameScreen" component = {HostGameScreen}/>
+                <Stack.Screen name = "GameDetailsModal" component = {GameDetailsModal}/>
+            </Stack.Navigator>
 }
 
 const RefereeStack = (props) => {
     return  <Stack.Navigator initialRouteName={RefereeScreen} headerMode={false}>
-        <Stack.Screen name = "RefereeScreen" component = {RefereeScreen} initialParams={{user: props.extraData}}/>
-        <Stack.Screen name = "GameDetailsModal" component ={GameDetailsModal}/>
-    </Stack.Navigator>
+                <Stack.Screen name = "RefereeScreen" component = {RefereeScreen} initialParams={{user: props.extraData}}/>
+                <Stack.Screen name = "GameDetailsModal" component ={GameDetailsModal}/>
+            </Stack.Navigator>
 }
 
 const ChatStack = (props) => {
@@ -91,7 +91,7 @@ const BottomTabs = (props) => {
             {prop => <ProfileStack {...prop}  extraData = {props.extraData}/>}
         </Tab.Screen>
         <Tab.Screen
-            name="GameScreen"
+            name="GameStack"
             children={GameStack}
             initialParams={{user: props.extraData}}
             options={{
@@ -104,7 +104,7 @@ const BottomTabs = (props) => {
             {prop => <GameStack {...prop}  extraData = {props.extraData}/>}
         </Tab.Screen>
         <Tab.Screen
-            name="RefereeScreen"
+            name="RefereeStack"
             children={RefereeStack}
             initialParams={{user: props.extraData}}
             options={{
@@ -113,8 +113,9 @@ const BottomTabs = (props) => {
                     <MaterialCommunityIcons name= "whistle" color={color} size={26} />
                 ),
             }}
-        />
+        >
             {prop => <RefereeStack {...prop}  extraData = {props.extraData}/>}
+        </Tab.Screen>
         <Tab.Screen
             name="ChatStack"
             children={ChatStack}

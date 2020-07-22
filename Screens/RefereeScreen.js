@@ -11,7 +11,6 @@ import {
     Keyboard,
     TouchableWithoutFeedback, Alert, TextInput
 } from 'react-native';
-import {Select, SelectItem} from "@ui-kitten/components";
 
 import Background from "../views/Background";
 
@@ -19,6 +18,7 @@ import SearchButtons from "../Components/SearchButtons";
 import firebaseDb from '../firebaseDb';
 import LocationSearchBar from "../Components/LocationSeachBar";
 import FullGameItem from "../Components/FullGameItem";
+import Styles from "../styling/Styles";
 
 import {useNavigation} from "@react-navigation/native";
 import {noInput, noSport} from "../Components/NoDataMessages";
