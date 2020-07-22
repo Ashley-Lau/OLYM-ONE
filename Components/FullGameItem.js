@@ -6,15 +6,8 @@ import { useNavigation } from '@react-navigation/native';
 import firebaseDb from "../firebaseDb"
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import ViewPlayerItem from "../Components/ViewPlayerItem"
-import GameItemBackGround from "../views/GameItemBackGround";
-import GameDetailsModal from "./GameDetailsModal";
-import {keywordsMaker} from '../Components/SearchBarFunctions'
-
 const FullGameItem = props => {
     const navigation = useNavigation()
-
-
 
     //DATE AND TIME STRING ================================================================================================
     let gameDate = props.gameDetails.date
@@ -23,67 +16,12 @@ const FullGameItem = props => {
     }
 
 
-    // LIST OF PLAYERS AND REFEREE ================================================================================================
-    const [playerUser, setPlayerUser] = useState([]);
-    const [refereeUser, setRefereeUser] = useState([]);
-
-    const username = () => {
-        setPlayerUser([]);
-        let playerList = [];
-        props.gameDetails.players.map(uid => {
-            firebaseDb.firestore().collection('users')
-                .doc(uid)
-                .onSnapshot(doc => {
-                    console.log("players Loaded")
-                    playerList.push(doc.data());
-                }, error => {
-                    console.log(error.message);
-                })
-        })
-        setPlayerUser(playerList);
-    }
-
-    const getRef = () => {
-        setRefereeUser([]);
-        let refList = [];
-        props.gameDetails.refereeList.map(uid => {
-            firebaseDb.firestore().collection('users')
-                .doc(uid)
-                .onSnapshot(doc => {
-                    refList.push(doc.data());
-                }, error => {
-                    console.log(error.message);
-                })
-        })
-        setRefereeUser(refList);
-    }
-
-    useEffect(() => {
-        const unsubscribe = username();
-        const unsubscribe2 = getRef();
-
-        return () => {
-            unsubscribe;
-            unsubscribe2;
-        }
-
-    }, [])
-
-
-
-
-    //MODAL STATES ================================================================================================================
-    const [playerDetails, openPlayerDetails] = useState(false);
-    const [refereeDetails, openRefereeDetails] = useState([]);
-    const [gameDetails, openGameDetails] = useState(false);
-
-
     //SPORT BG and colour================================================================================================================================
-    let sportBG = require("../assets/BballBG.png");
-    let playerBG = require("../assets/BballApp.png");
-    let refereeBG = require("../assets/BballRefereeApp.png");
-    let sportColor = "rgba(0,0,0,1)"
-    let lightColor = "rgb(255,255,255)"
+    let sportBG = require("../assets/OthersBG.png");
+    let playerBG = require("../assets/OthersApp.png");
+    let refereeBG = require("../assets/OthersApp.png");
+    let sportColor = "rgba(47,49,53,1)"
+    let lightColor = "rgb(107,107,107)"
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
@@ -211,7 +149,6 @@ const FullGameItem = props => {
             })
             .catch(error => console.log(error))
     }
-
     //ANIMATION PROPERTIES===========================================================================================
     const x = props.translateX;
     let index = props.index;
@@ -252,44 +189,18 @@ const FullGameItem = props => {
 
     return (
         <View>
-            <ViewPlayerItem visible={playerDetails}
-                            playerDetails={playerUser}
-                            closePlayer ={() => {openPlayerDetails(false)}}
-                            backGround = {playerBG}
-                            sportColor = {sportColor}
-                            lightColor = {lightColor}
-                            typeCheck = {"Player"}
-            />
-
-            <ViewPlayerItem visible={refereeDetails}
-                            playerDetails={refereeUser}
-                            closePlayer ={() => {openRefereeDetails(false)}}
-                            backGround = {refereeBG}
-                            sportColor = {sportColor}
-                            lightColor = {lightColor}
-                            typeCheck = {"Referee"}
-            />
-
-            <GameDetailsModal visible={gameDetails}
-                              gameDetails={props.gameDetails}
-                              closeGame={() => {openGameDetails(false)}}
-                              openPlayer ={() => {openPlayerDetails(true)}}
-                              openReferee = {() => {openRefereeDetails(true)}}
-                              itemType = {props.itemType}
-                              chatFunction ={chatWithHost}
-                              gameId ={props.gameId}
-                              user = {props.user}
-            />
 
             <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
                 <TouchableOpacity style={styles.games}
-                                  onPress={() => {openGameDetails(true);}}>
+                                  // onPress={() => {openGameDetails(true);}}
+                                  onPress = {() => props.onPress()}
+                >
                     <ImageBackground source={sportBG}
                                      style={styles.gameBG}
                                      imageStyle={{borderRadius:40}}
                     >
                         <View style={{flexDirection:"column"}}>
-                            <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport}</Text>
+                            <Text style={{fontWeight:"bold", fontSize:35, color:sportColor}}>{props.gameDetails.sport.toUpperCase()}</Text>
                             <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="account" size={20}/>
                                 <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.host}</Text>
@@ -347,11 +258,8 @@ const styles = StyleSheet.create({
         width:350,
         height:"100%",
         overflow:"hidden",
-        // flex:1,
         justifyContent:"center",
         alignItems:"center",
-        // marginHorizontal:10,
-        // elevation:2,
         shadowColor: "#000",
         shadowOffset: {
             width: 5,

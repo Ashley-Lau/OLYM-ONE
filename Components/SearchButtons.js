@@ -7,7 +7,7 @@ import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityI
 const SearchButtons = props => {
     return (
         <View style={{elevation:5}}>
-            <TouchableOpacity style={{elevation:5}} onPress={props.searchMe}>
+            <TouchableOpacity style={{elevation:5, ...props.style}} onPress={props.searchMe}>
                 <MaterialCommunityIcons name="magnify" size={25} style={{color:"#414141"}}/>
             </TouchableOpacity>
         </View>
