@@ -161,12 +161,9 @@ const GameItem = props => {
                                         .set(data)
                                         .then(() => {
                                             openGameDetails(false)
-                                            navigation.navigate('ChatStack', {
-                                                screen: 'ChatScreen',
-                                                params : {
+                                            navigation.navigate('ChatScreen', {
                                                     chat: data,
                                                     userId: currentUserId
-                                                }
                                             })
                                         })
                                         .catch(error => console.log(error))
@@ -176,12 +173,9 @@ const GameItem = props => {
                         .catch(error => console.log(error))
                 } else {
                     openGameDetails(false)
-                    navigation.navigate('ChatStack', {
-                        screen: 'ChatScreen',
-                        params : {
+                    navigation.navigate('ChatScreen', {
                             chat: doc.data(),
                             userId: currentUserId
-                        }
                     })
                 }
             })

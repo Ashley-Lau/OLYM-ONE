@@ -92,7 +92,7 @@ const HomeScreen = props => {
     const refereeRef = useRef(null)
 
     const renderRefereeButton = (
-        <TouchableOpacity style = {style.middleButton} activeOpacity={0.8}
+        <TouchableOpacity style = {{...style.middleButton}} activeOpacity={0.8}
                           onPress = {() => refereeRef.current.open()}>
             <View style = {{alignItems: 'flex-end', }}>
                 {appList.length === 0 ?
@@ -550,7 +550,7 @@ const HomeScreen = props => {
                                                           onPress = {() => {
                                                               setButtonVisible(false);
                                                               setColor('#5a5959');
-                                                              navigation.navigate('UpdateDetailScreen', {data: data, handler: handleData.bind(this)});
+                                                              navigation.navigate('ProfileScreen', {data: data, handler: handleData.bind(this)});
                                                           }}
                                         >
                                             <Text style = {{fontWeight: 'bold'}}> Profile </Text>

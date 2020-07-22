@@ -20,8 +20,8 @@ const Stack = createStackNavigator();
 
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
-                <Stack.Screen name = "ProfileScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
-                <Stack.Screen name = "UpdateDetailScreen" component = {ProfileScreen}/>
+                <Stack.Screen name = "HomeScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
+                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>
             </Stack.Navigator>
 }
 
@@ -46,10 +46,9 @@ const BottomTabs = (props) => {
     // }
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
-        activeColor="#fff"
-        inactiveColor="#888888"
         tabBarOptions={{
             activeTintColor: '#ff7134',
+            inactiveTintColor: '#8F9BB3',
             keyboardHidesTabBar: true,
             tabStyle: {
                 paddingTop: 7,

@@ -6,7 +6,7 @@ import { getStatusBarHeight } from 'react-native-status-bar-height';
 const statusBarHeight = getStatusBarHeight(true)
 
 const Background = props => {
-    return (<View style = {{flex: 1, minHeight: hp("100%"),}}>
+    return (<View style = {{flex: 1, minHeight: hp("100%")}}>
             <ImageBackground style={[styles.container, props.style]} source={require('../assets/whiteBackground.jpg')}>
                 <View style={styles.topView}>
                     <Image source={require('../assets/OrangeBackground.jpg')}
