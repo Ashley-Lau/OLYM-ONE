@@ -114,10 +114,10 @@ const ChatScreen = props => {
                                     <Ionicons name="ios-arrow-back" color={'white'} size={30} />
                                     <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
                                 </TouchableOpacity>
-
+                                {/*============================ username of the other person you are talking to==============================*/}
                                 <Text style = {{...style.text}}> {otherUserInformation[1]} </Text>
                                 {/*=============================================profile picture of other user====================================================*/}
-                                <TouchableOpacity style = {{marginRight: 8}} activeOpacity={0.9}>
+                                <TouchableOpacity style = {{marginRight: 8,}} activeOpacity={0.9}>
                                     <Image source = {{uri: chatInformation.smallerId[0] === userId ? chatInformation.largerId[2] : chatInformation.smallerId[2]}}
                                            style = {style.image}/>
                                 </TouchableOpacity>
@@ -149,8 +149,8 @@ const style = StyleSheet.create({
         marginRight: 2
     },
     image: {
-        width: 43,
-        height: 43,
+        width: 40,
+        height: 40,
         borderRadius: 120,
     }
 })

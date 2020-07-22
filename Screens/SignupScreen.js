@@ -6,7 +6,8 @@ import {
     View,
     TextInput,
     Alert,
-    Modal
+    Modal,
+    KeyboardAvoidingView
 } from 'react-native';
 
 import { useNavigation} from '@react-navigation/native';
@@ -14,7 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
 import * as yup from 'yup';
-import { Select, SelectItem } from '@ui-kitten/components';
+import { Select, SelectItem, Icon, Datepicker} from '@ui-kitten/components';
 
 import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton"
@@ -54,7 +55,6 @@ const reviewSchema = yup.object({
 const SignupScreen = props => {
 
     const navigation = useNavigation();
-    const isIos = Platform.OS === 'ios'
     const [selectedIndex, setSelectedIndex] = useState();
 
     const genderData = ['Male', 'Female']
@@ -100,7 +100,7 @@ const SignupScreen = props => {
     const emailNotVerified = (user) => {
         Alert.alert(
             "Account has registered successfully!",
-            "Please follow the instruction sent to " + user.email + " to verify your account",
+            "Please follow the instructions sent to " + user.email + " to verify your account",
             [
                 {
                     text: "Confirm",
@@ -114,12 +114,21 @@ const SignupScreen = props => {
         navigation.goBack();
     }
 
+    const CalendarIcon = (props) => (
+        <Icon {...props} name='calendar'/>
+    );
+
     return (<SkyscrapperBackground>
+            <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+                                  keyboardVerticalOffset={Platform.OS === "ios" ? 0 : 25}
+                                  enabled={true}
+            style = {{flex: 1}}>
                 <View style = {{flex: 1}}/>
                 <Animatable.View style = {style.popout} animation = "fadeInUpBig">
-                    <ScrollView showsVerticalScrollIndicator={false}>
+                    <ScrollView showsVerticalScrollIndicator={false}
+                                scrollEventThrottle={16}>
                         <Formik
-                            initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: new Date(), showTime: false}}
+                            initialValues = {{ firstName: '', lastName: '', email: '', username: '', password: '', confirmPassword: '', gender: '', birthDate: new Date()}}
                             validationSchema = {reviewSchema}
                             onSubmit={(values, actions) => {
                                 handleCreateUser(values)
@@ -172,79 +181,35 @@ const SignupScreen = props => {
                                                      value = {props.values.confirmPassword}
                                                      onBlur = {props.handleBlur('confirmPassword')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
-                                    <View style = {{flexDirection: 'row', marginRight: 105, alignItems: 'center', marginTop: 10}}>
-                                        <Text style = {{fontSize: 20, fontWeight: 'bold'}}>Gender: </Text>
-                                        {/*================================================New picker that caters to ios==============================*/}
-                                        <Select
-                                                style = {{width: 125}}
-                                                placeholder='Select'
-                                                value ={genderData[selectedIndex - 1]}
-                                                onSelect={index => {
-                                                            setSelectedIndex(index)
-                                                            props.setFieldValue('gender', genderData[index.row])
-                                                }}
-                                                selectedIndex={selectedIndex}>
-                                            <SelectItem title='Male'/>
-                                            <SelectItem title='Female'/>
-                                        </Select>
-                                    </View>
+
+                                    {/*================================================New picker that caters to ios==============================*/}
+                                    <Select
+                                            label ={() => <Text style = {{fontSize: 15, fontWeight: 'bold', marginTop: 10,}}>Gender: </Text>}
+                                            style = {{width: '100%'}}
+                                            placeholder='Select'
+                                            value ={genderData[selectedIndex - 1]}
+                                            onSelect={index => {
+                                                        setSelectedIndex(index)
+                                                        props.setFieldValue('gender', genderData[index.row])
+                                            }}
+                                            selectedIndex={selectedIndex}>
+                                        <SelectItem title='Male'/>
+                                        <SelectItem title='Female'/>
+                                    </Select>
+
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.gender && props.errors.gender}</Text>
-                                    <View style = {{flexDirection: 'row', marginRight: 30,}}>
-                                        <Text style = {{fontSize: 20, fontWeight: 'bold',marginTop: 20}}> Date of Birth: </Text>
-                                        <CustButton onPress = {() => {  props.setFieldValue('showTime', true)}}
-                                                    style = {{borderRadius: 0, width: 150, backgroundColor: 'ghostwhite', borderWidth: 1, marginTop:10}}>
-                                            <Text style = {{color: 'black'}}>{props.values.birthDate.toLocaleDateString()}</Text>
-                                        </CustButton>
-                                    </View>
+                                    <Datepicker
+                                        label= {() => <Text style = {{fontSize: 15, fontWeight: 'bold', marginTop: 10,}}>Birth Date: </Text>}
+                                        placeholder='Pick Date'
+                                        date={props.values.birthDate}
+                                        onSelect={nextDate => {
+                                            props.setFieldValue('birthDate', nextDate);
+                                            props.setFieldTouched('birthDate');
+                                        }}
+                                        accessoryRight={CalendarIcon}
+                                    />
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.birthDate && props.errors.birthDate}</Text>
-                                    {props.values.showTime &&
-                                        (isIos ?
-                                            <Modal visible={props.values.showTime} animationType="slide"
-                                                   transparent={true}>
-                                                <View style={{
-                                                    flex: 1,
-                                                    flexDirection: 'column',
-                                                    justifyContent: 'center',
-                                                    alignItems: 'center',
-                                                    }}>
-                                                    <View style={{
-                                                        borderRadius: 10,
-                                                        borderWidth: '1',
-                                                        width: 300,
-                                                        height: 300,
-                                                        backgroundColor: 'white'}}>
-                                                            <DateTimePicker value={props.values.birthDate}
-                                                                            mode={'date'}
-                                                                            display="spinner"
-                                                                            onChange={(event, selectedDate) => {
-                                                                                const currentDate = selectedDate || props.values.birthDate;
-                                                                                props.setFieldValue('birthDate', currentDate);
-                                                                                props.setFieldTouched('birthDate');}}/>
-                                                            <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
-                                                                <GradientButton onPress={() => props.setFieldValue('showTime',false)}
-                                                                                style={style.button}
-                                                                                colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
-                                                                    Cancel
-                                                                </GradientButton>
-                                                                <GradientButton onPress={() => props.setFieldValue('showTime',false)}
-                                                                                style={style.button}
-                                                                                colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
-                                                                    Confirm
-                                                                </GradientButton>
-                                                            </View>
-                                                        </View>
-                                                </View>
-                                            </Modal>
-                                        : <DateTimePicker value={props.values.birthDate}
-                                             mode={'date'}
-                                             display="spinner"
-                                             onChange={(event, selectedDate) => {
-                                                 const currentDate = selectedDate || props.values.birthDate;
-                                                 props.setFieldValue('showTime',Platform.OS !== 'android');
-                                                 props.setFieldValue('birthDate', currentDate);
-                                                 props.setFieldTouched('birthDate');}}/>)
-                                    }
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 50}}>
+                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: 60}}>
                                         <GradientButton onPress={() => {
                                                             cancelledPress()
                                                             props.handleReset()}}
@@ -263,6 +228,7 @@ const SignupScreen = props => {
                         </Formik>
                     </ScrollView>
                 </Animatable.View>
+            </KeyboardAvoidingView>
             </SkyscrapperBackground>
     )
 };

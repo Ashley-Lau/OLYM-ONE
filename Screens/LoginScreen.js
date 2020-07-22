@@ -37,7 +37,7 @@ const LoginScreen = (props) => {
         Alert.alert(
             "Account requires verification!",
             "Verification email has been send to " + user.email +
-            ". Please follow the instruction in the email to verify your account",
+            ". Please follow the instructions in the email to verify your account",
             [
                 {
                     text: "Confirm",
@@ -128,18 +128,18 @@ const LoginScreen = (props) => {
                                 <GradientButton onPress={signInUser}
                                                 style={style.button}
                                                 colors={['#ff8400','#e56d02']}>
-                                    LOGIN
+                                    Login
                                 </GradientButton>
                                 <GradientButton onPress={() => navigation.navigate('SignupScreen')}
                                                 style={style.button}
                                                 colors={['#e52d27', '#b31217']}>
-                                    SIGN UP
+                                    Sign Up
                                 </GradientButton>
 
                             </View>
 
                         </View>
-                        <View style={{position: "absolute", bottom: 3}}>
+                        <View style={{position: "absolute", bottom: 15}}>
                             <Text style = {{fontSize: 14, fontWeight: 'bold',}}> Forgot password?
                                 <Text style = {{color: 'maroon'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
                             </Text>

@@ -78,6 +78,77 @@ const FullGameItem = props => {
         lightColor = "rgb(218,138,158)"
     }
 
+
+    //CHAT FUNCTION====================================================================================================
+
+    const chatWithHost = () => {
+        const hostId = props.gameDetails.hostId
+        const currentUserId = props.user.id
+        const smallerId = hostId < currentUserId ? hostId : currentUserId
+        const largerId = hostId < currentUserId ? currentUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === currentUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+            return
+        }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                        keywords: keywords,
+                                        smallId: smallerId,
+                                        largeId: largerId,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+                                            openGameDetails(false)
+                                            navigation.navigate('ChatScreen', {
+                                                    chat: data,
+                                                    userId: currentUserId
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
+                        })
+                        .catch(error => console.log(error))
+                } else {
+                    openGameDetails(false)
+                    navigation.navigate('ChatScreen', {
+                            chat: doc.data(),
+                            userId: currentUserId
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
     //ANIMATION PROPERTIES===========================================================================================
     const x = props.translateX;
     let index = props.index;

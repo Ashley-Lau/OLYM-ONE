@@ -8,7 +8,8 @@ import {
     TouchableWithoutFeedback,
     Image,
     TouchableOpacity,
-    Animated
+    Animated,
+    StatusBar
 } from 'react-native'
 
 import {useNavigation} from "@react-navigation/native";
@@ -30,7 +31,7 @@ import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import SignUpComponent from "../Components/SignUpComponent";
 
-const statusBarHeight = getStatusBarHeight(true)
+const statusBarHeight = Platform.OS === 'ios' ? getStatusBarHeight(true) : StatusBar.currentHeight
 
 
 const reviewSchema = (password) => yup.object({
@@ -65,76 +66,80 @@ const ProfileScreen = (props) => {
 
 
     const registeredPress = () => {
-        navigation.navigate('ProfileScreen');
+        navigation.navigate('HomeScreen');
     }
 
     return (
+        <Formik
+            initialValues = {{
+                uri: props.route.params.data.uri,
+                firstName: props.route.params.data.firstName,
+                lastName: props.route.params.data.lastName,
+                username: props.route.params.data.username,
+                currentPassword: '',
+                newPassword: '',
+                confirmPassword: '',
+            }}
+            validationSchema = {reviewSchema(props.route.params.data.password)}
+            onSubmit={(values, actions) => {
+                props.route.params.handler({
+                    firstName: values.firstName,
+                    lastName: values.lastName,
+                    username: values.username,
+                    password: values.confirmPassword,
+                    uri: values.uri,
+                })
+                setIsProfile(!isProfile)
+            }}
+        >
+            {(props) => (
             <View >
                 {/*======================================== Header ===================================================*/}
-            <Animated.View style = {{
-                ...Styles.animatedHeaderStyle,
-                backgroundColor: headerHeight,
-            }}>
-                <View style = {{...Styles.innerHeaderStyle,}}>
-                    {/*==================================================back button==========================================*/}
-                    <TouchableOpacity style = {{alignItems: 'center', flexDirection: 'row',position: 'absolute', left: 10, bottom: Platform.OS === 'ios'? -2 : 0}}
-                                      onPress = {() => registeredPress()}
-                                      activeOpacity= {0.8}>
-                        <Ionicons name="ios-arrow-back" color={'white'} size={27} />
-                        <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
-                    </TouchableOpacity>
-                    <Text style = {{...style.titleStyle,}}> {isProfile ? 'Profile': 'Edit Profile'} </Text>
-                    <TouchableOpacity style = {{alignItems: 'center', position: 'absolute', right: 10}}
-                                      activeOpacity= {0.8}
-                                      onPress={() => setIsProfile(!isProfile)}>
-                        {isProfile
-                            ? <MaterialCommunityIcons name = "account-edit" color={'white'} size={28} />
-                            : <Text style = {{fontSize: 20, color: 'white'}}>Cancel</Text>
-                        }
-                    </TouchableOpacity>
-                </View>
-            </Animated.View>
+                <Animated.View style = {{
+                    ...Styles.animatedHeaderStyle,
+                    backgroundColor: headerHeight,
+                }}>
+                    <View style = {{...Styles.innerHeaderStyle,}}>
+                        {/*==================================================back button==========================================*/}
+                        <TouchableOpacity style = {{alignItems: 'center', flexDirection: 'row',position: 'absolute', left: 10, bottom: Platform.OS === 'ios'? -2 : 0}}
+                                          onPress = {() => registeredPress()}
+                                          activeOpacity= {0.8}>
+                            <Ionicons name="ios-arrow-back" color={'white'} size={27} />
+                            <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
+                        </TouchableOpacity>
+                        <Text style = {{...style.titleStyle,}}> {isProfile ? 'Profile': 'Edit Profile'} </Text>
+                        <TouchableOpacity style = {{alignItems: 'center', position: 'absolute', right: 10}}
+                                          activeOpacity= {0.8}
+                                          onPress={() => {
+                                              if (!isProfile) {
+                                                  props.handleReset()
+                                              }
+                                              setIsProfile(!isProfile)
+                                          }}>
+                            {isProfile
+                                ? <MaterialCommunityIcons name = "account-edit" color={'white'} size={28} />
+                                : <Text style = {{fontSize: 20, color: 'white'}}>Cancel</Text>
+                            }
+                        </TouchableOpacity>
+                    </View>
+                </Animated.View>
 
-            <ScrollView showsVerticalScrollIndicator={false}
-                        bounces = {false}
-                        style = {{height: '100%', }}
-                        onScroll={Animated.event(
-                            [{nativeEvent: {contentOffset: {y: scrollY}}}]
-                        )}
-                        scrollEventThrottle={16}
-            >
-
-                <Formik
-                        initialValues = {{
-                            uri: props.route.params.data.uri,
-                            firstName: props.route.params.data.firstName,
-                            lastName: props.route.params.data.lastName,
-                            username: props.route.params.data.username,
-                            currentPassword: '',
-                            newPassword: '',
-                            confirmPassword: '',
-                        }}
-                        validationSchema = {reviewSchema(props.route.params.data.password)}
-                        onSubmit={(values, actions) => {
-                            props.route.params.handler({
-                                firstName: values.firstName,
-                                lastName: values.lastName,
-                                username: values.username,
-                                password: values.confirmPassword,
-                                uri: values.uri,
-                            })
-                            setIsProfile(!isProfile)
-                        }}
-                    >
-                        {(props) => (
-                            <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
-                            <Background >
-                            <View style = {{alignItems: 'center', flex: 1, top: statusBarHeight + 45 + 20}}>
+                <ScrollView showsVerticalScrollIndicator={false}
+                            bounces = {false}
+                            style = {{height: '100%', }}
+                            onScroll={Animated.event(
+                                [{nativeEvent: {contentOffset: {y: scrollY}}}]
+                            )}
+                            scrollEventThrottle={16}
+                >
+                    <TouchableWithoutFeedback onPress = {Keyboard.dismiss} accessible = {false}>
+                        <Background >
+                            <View style = {{alignItems: 'center', flex: 1, top: statusBarHeight + 90}}>
                                 <View style = {{width: 300,}}>
                                     <View style = {{...style.photoFrame, marginBottom: 5}}>
-                                        <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
-                                            uri: props.values.uri
-                                        }}/>
+                                            <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                                                uri: props.values.uri
+                                            }}/>
                                     </View>
                                     {/*======================================change profile picture button=========================*/}
                                     {isProfile ? <Text style = {{height: 30}}> </Text> :
@@ -173,13 +178,11 @@ const ProfileScreen = (props) => {
                                                           }
                                                       }}
                                                       activeOpacity={.9}>
-                                        {/*<LinearGradient style = {{borderRadius: 15, flex: 1, justifyContent: 'center', alignSelf: 'center', paddingHorizontal: 10,}} colors ={['#ff8400','#e56d02']}>*/}
-                                            <Text style={{fontSize: 15, color: 'orange', fontWeight: 'bold', textAlign: 'center'}}>
-                                                {!changingPicture ? 'Edit': <Spinner status='warning' size = 'small'/>}
-                                            </Text>
-                                        {/*</LinearGradient>*/}
+                                        <Text style={{fontSize: 15, color: 'orange', fontWeight: 'bold', textAlign: 'center'}}>
+                                            {!changingPicture ? 'Edit': <Spinner status='warning' size = 'small'/>}
+                                        </Text>
                                     </TouchableOpacity>}
-                                    <Text style = {{fontSize: 25, fontWeight: 'bold',}}>Account Information </Text>
+                                    <Text style = {{fontSize: 27, fontWeight: 'bold', marginBottom: 20}}>Account Information </Text>
                                     <SignUpComponent title = 'First Name:'
                                                      placeholder = "First Name"
                                                      onChangeText = {props.handleChange('firstName')}
@@ -230,7 +233,7 @@ const ProfileScreen = (props) => {
                                                      onBlur = {props.handleBlur('confirmPassword')}/>
                                     <Text style={{fontSize: 15, color: 'red'}}>{props.touched.confirmPassword && props.errors.confirmPassword}</Text>
 
-                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: statusBarHeight + 90}}>
+                                    <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 15, paddingBottom: statusBarHeight + 130}}>
                                         <GradientButton onPress={() => {
                                             props.handleSubmit()
                                         }}
@@ -238,16 +241,16 @@ const ProfileScreen = (props) => {
                                                         colors ={['#ff8400','#e56d02']}>
                                             Update
                                         </GradientButton>
-                                    </View></>}
+                                    </View></>
+                                    }
                                 </View>
                             </View>
-                            </Background>
-                            </TouchableWithoutFeedback>
-                        )}
-                        </Formik>
-
-            </ScrollView>
-        </View>
+                        </Background>
+                    </TouchableWithoutFeedback>
+                </ScrollView>
+            </View>
+            )}
+        </Formik>
     )
 }
 

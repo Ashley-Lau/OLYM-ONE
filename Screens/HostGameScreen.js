@@ -1,7 +1,6 @@
 import React,{useState, useEffect} from 'react';
 import {
     Text,
-    TextInput,
     StyleSheet,
     Modal,
     View,
@@ -23,7 +22,7 @@ import {Formik} from 'formik';
 import * as yup from 'yup'
 import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
-import {Autocomplete, AutocompleteItem, Select, SelectItem, Input} from '@ui-kitten/components';
+import {Autocomplete, AutocompleteItem, Select, SelectItem, Input, Datepicker, Icon} from '@ui-kitten/components';
 import {mrtStations} from "../Components/SearchBarFunctions";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {MaterialCommunityIcons} from "react-native-vector-icons";
@@ -124,7 +123,7 @@ const HostGameScreen = props => {
     //ARRAY FOR PICKER ==============================================================================================================
 
     const sports = ["Soccer", "BasketBall", "Floorball", "Badminton", "Tennis", "Others"]
-    const referee =["NO", "YES"]
+    const referee =["No", "Yes"]
 
     const [sportsIndex, setSportsIndex] = useState();
     const [refIndex, setRefIndex] = useState();
@@ -173,9 +172,8 @@ const HostGameScreen = props => {
                     refereeList: [],
                     applicants:[]
                 })
-                .then(() => {registeredPress()})
+                .then(() => {successfullyHostedGame()})
                 .catch(err => console.error(err))
-
     }
 
     const successfullyHostedGame= () => {
@@ -192,7 +190,21 @@ const HostGameScreen = props => {
         )
     }
 
-    return( <View>
+    const header = (title) => (
+        <Text style = {{fontSize: 15, fontWeight: 'bold', marginTop: 10,}}>{title} </Text>
+    )
+
+    const timeConverter = (date) => {
+        const fullHours = date.getHours()
+        const hours = fullHours > 12 ? fullHours % 12 : fullHours
+        const nicerHours = hours === 0 ? '0' + hours : hours
+        const suffix = (fullHours >= 12)? ' PM' : ' AM';
+        const minutes = date.getMinutes()
+        return nicerHours + ':' + (minutes > 10 ? minutes : '0' + minutes) + suffix
+    }
+
+    return(
+    <View>
             {/*=================================header ===============================================*/}
         <Animated.View style = {{
             ...Styles.animatedHeaderStyle,
@@ -238,57 +250,53 @@ const HostGameScreen = props => {
                         }
                 >
                     {(props) => (
-                        <View style = {{top: Styles.statusBarHeight.height + 60, paddingBottom: Styles.statusBarHeight.height + 60}}>
+                        <View style = {{top: Styles.statusBarHeight.height + 60, paddingBottom: Styles.statusBarHeight.height + 60, alignItems: 'center'}}>
                             {/*// LOCATION ------------------------------------------------------------------------*/}
-                            <View style={{...styles.selectionItem, marginTop: 0}}>
-                                <Text style={{fontSize:15, marginLeft:8}}>ZONE :</Text>
-                                <View style={{width: '97%',marginTop: 5}}>
-                                    <LocationSearch
-                                        placeholder='Select a zone'
-                                        select = {(val) => props.setFieldValue('location', val)}
-                                        onBlur = {props.handleBlur('location')}
-                                    />
-                                </View>
-                                <Text style={{fontSize: 15, color: '#630000'}}>{props.touched.location && props.errors.location}</Text>
+                            <View style={styles.inputContainer}>
+                                <LocationSearch
+                                    label = {() => header('Zone: ')}
+                                    placeholder='Select a zone'
+                                    select = {(val) => props.setFieldValue('location', val)}
+                                    onBlur = {props.handleBlur('location')}
+                                    accessoryRight={(props) => (
+                                        <Icon {...props} name='map-outline'/>
+                                    )}
+                                />
+                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.location && props.errors.location}</Text>
                             </View>
 
                             {/*// SPECIFIC LOCATION ------------------------------------------------------------------------*/}
 
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>SPECIFIC LOCATION  :</Text>
-                                <View style={{...styles.dropDown, padding:5}}>
-                                    <TextInput placeholder={"Input the specific location"}
-                                               style={{...styles.dropDownText, fontSize:16}}
-                                               onChangeText={props.handleChange('specificLocation')}
-                                               value={props.values.specificLocation}
-                                               onBlur = {props.handleBlur('specificLocation')}
-                                    />
-                                </View>
+                            <View style={styles.inputContainer}>
+                                <Input placeholder={"Eg. Hougang Stadium,"}
+                                       onChangeText={props.handleChange('specificLocation')}
+                                       value={props.values.specificLocation}
+                                       onBlur = {props.handleBlur('specificLocation')}
+                                       label = {() => header('Specific Location: ')}
+                                       accessoryRight={(props) => (
+                                           <Icon {...props} name='pin-outline'/>
+                                       )}
+                                />
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.specificLocation && props.errors.specificLocation}</Text>
                             </View>
 
-
                             {/*// SPORT ------------------------------------------------------------------------*/}
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>SPORT :</Text>
-                                <View style={styles.dropDownCopy}>
+                            <View style={styles.inputContainer}>
+                                <Select
+                                    label = {() => header('Sport: ')}
+                                    style = {{width: "100%", justifyContent:"space-between"}}
+                                    placeholder='Sports'
+                                    value ={sports[sportsIndex - 1]}
+                                    onSelect={index => {
+                                        setSportsIndex(index)
+                                        props.setFieldValue('sport', sports[index.row])
+                                    }}
+                                    selectedIndex={sportsIndex}>
+                                    {sports.map(sport => (
+                                        <SelectItem key={sport} title={sport}/>
+                                    ))}
 
-                                    <Select
-                                        style = {{width: "100%", justifyContent:"space-between"}}
-                                        placeholder='Sports'
-                                        value ={sports[sportsIndex - 1]}
-                                        onSelect={index => {
-                                            setSportsIndex(index)
-                                            props.setFieldValue('sport', sports[index.row])
-                                        }}
-                                        selectedIndex={sportsIndex}>
-                                        {sports.map(sport => (
-                                            <SelectItem key={sport} title={sport}/>
-                                        ))}
-
-                                    </Select>
-
-                                </View>
+                                </Select>
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.sport && props.errors.sport}</Text>
                             </View>
 
@@ -296,107 +304,57 @@ const HostGameScreen = props => {
 
                             {props.values.sport === "Others"
                             ?
-
-                                <View style={{...styles.selectionItem, marginTop: 5}}>
-                                    <Text style={{fontSize:15, marginLeft:8}}>SPECIFIC SPORT :</Text>
-                                    <View style={{...styles.dropDown, padding:5}}>
-                                        <TextInput
-                                                   placeholder={"Please fill in if your chose 'Others' for sport"}
-                                                   style={{...styles.dropDownText, fontSize:16}}
-                                                   onChangeText={props.handleChange('specificSport')}
-                                                   value={props.values.specificSport}
-                                                   onBlur = {props.handleBlur('specificSport')}
-                                        />
-                                    </View>
+                                <View style={styles.inputContainer}>
+                                    <Input
+                                        label = {() => header('Specific Sport: ')}
+                                           placeholder={"Please fill in if your chose 'Others' for sport"}
+                                           onChangeText={props.handleChange('specificSport')}
+                                           value={props.values.specificSport}
+                                           onBlur = {props.handleBlur('specificSport')}
+                                    />
                                     {props.touched.specificSport && props.values.specificSport === ''
-                                    ?
+                                        ?
                                         <Text style={{color:"red", fontSize:15}}>Please enter a sport!</Text>
-                                    :
+                                        :
                                         <View/>
                                     }
-
-
                                 </View>
                             :
-                               <View></View>
-
+                               null
                             }
+                            <View style = {{...styles.inputContainer,}}>
+                                <View style = {{flexDirection:'row', justifyContent: 'space-between' }}>
 
-                            {/*// DATE AND TIME ------------------------------------------------------------------------*/}
+                                    {/*// DATE ------------------------------------------------------------------------------*/}
+                                    <View style={{...styles.inputContainer, width: '45%'}}>
+                                        <Datepicker
+                                            label= {() => <Text style = {{fontSize: 15, fontWeight: 'bold', marginTop: 10,}}>Date: </Text>}
+                                            placeholder='Pick Date'
+                                            date={props.values.date}
+                                            onSelect={nextDate => {
+                                                props.setFieldValue('birthDate', nextDate);
+                                                props.setFieldTouched('birthDate');
+                                            }}
+                                            accessoryRight={(props) => (
+                                                <Icon {...props} name='calendar'/>
+                                            )}
+                                        />
+                                    </View>
 
-                            <View style={{...styles.selectionItem, marginTop:15}}>
-                                <Text style={{fontSize:15, marginLeft:8}}>DATE :</Text>
-                                <CustButton onPress = {() => props.setFieldValue('showDate', true)}
-                                            style = {styles.dropDown}>
-                                    <Text style = {{color: 'black', }}>{props.values.date.toLocaleDateString([], {hour: '2-digit', minute:'2-digit'})}</Text>
-                                </CustButton>
+                                    {/*//TIME ------------------------------------------------------------------------*/}
+
+                                    <View style={{...styles.inputContainer, width: '45%'}}>
+                                        {header('Time: ')}
+                                        <CustButton onPress = {() => props.setFieldValue('showTime', true)}
+                                                    style = {styles.dropDown}>
+                                            <Text style = {{color: '#8F9BB3', fontSize: 16, flexDirection: 'row'}}>
+                                                {timeConverter(props.values.date)}
+                                            </Text>
+                                        </CustButton>
+                                    </View>
+                                </View>
                                 <Text style={{fontSize: 15, color: 'red'}}>{ props.touched.date && props.errors.date }</Text>
                             </View>
-                            {props.values.showDate &&
-                            (isIos
-                                ?
-                                (
-                                    <Modal visible={props.values.showDate} animationType="slide"
-                                           transparent={true}>
-                                        <View style={{
-                                            flex: 1,
-                                            flexDirection: 'column',
-                                            justifyContent: 'center',
-                                            alignItems: 'center',
-                                        }}>
-                                            <View style={{
-                                                borderRadius: 10,
-                                                borderWidth: '1',
-                                                width: 300,
-                                                height: 300,
-                                                backgroundColor: 'white'}}>
-                                                <DateTimePicker value={props.values.date}
-                                                                mode={'date'}
-                                                                display="spinner"
-                                                                onChange={(event, selectedDate) => {
-                                                                    const currentDate = selectedDate || props.values.date;
-                                                                    props.setFieldValue('date', currentDate);
-                                                                    props.setFieldTouched('date');}}/>
-                                                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
-                                                    <GradientButton onPress={() => props.setFieldValue('showDate',false)}
-                                                                    style={styles.button}
-                                                                    colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
-                                                        Cancel
-                                                    </GradientButton>
-                                                    <GradientButton onPress={() => props.setFieldValue('showDate',false)}
-                                                                    style={styles.button}
-                                                                    colors={['#1bb479','#026c45']}>
-                                                        Confirm
-                                                    </GradientButton>
-                                                </View>
-                                            </View>
-                                        </View>
-                                    </Modal>
-                                )
-
-
-
-                                :
-                                <RNDateTimePicker  value={props.values.date}
-                                                   display="spinner"
-                                                   mode="date"
-                                                   onChange={(event, selectedDate) => {
-                                                       const currentDate = selectedDate || props.values.date;
-                                                       props.setFieldValue('showDate',Platform.OS !== 'android');
-                                                       props.setFieldValue('date', currentDate);
-                                                       props.setFieldTouched('date');}}
-                                />)
-                            }
-
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>TIME :</Text>
-                                <CustButton onPress = {() => props.setFieldValue('showTime', true)}
-                                            style = {styles.dropDown}>
-                                    <Text style = {{color: 'black', }}>{props.values.date.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}).slice(0,5)}</Text>
-                                </CustButton>
-
-                            </View>
-
                             {props.values.showTime &&
                             (isIos
                                 ?
@@ -421,15 +379,15 @@ const HostGameScreen = props => {
                                                                     const currentDate = selectedDate || props.values.date;
                                                                     props.setFieldValue('date', currentDate);
                                                                     props.setFieldTouched('date');}}/>
-                                                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20}}>
+                                                <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20, flex: 1}}>
                                                     <GradientButton onPress={() => props.setFieldValue('showTime',false)}
                                                                     style={styles.button}
-                                                                    colors={["rgba(179,43,2,0.84)", "#7b0303"]}>
+                                                                    colors={['#e52d27', '#b31217']}>
                                                         Cancel
                                                     </GradientButton>
                                                     <GradientButton onPress={() => props.setFieldValue('showTime',false)}
                                                                     style={styles.button}
-                                                                    colors={['rgb(3,169,177)', 'rgba(1,44,109,0.85)']}>
+                                                                    colors={['#ff8400','#e56d02']}>
                                                         Confirm
                                                     </GradientButton>
                                                 </View>
@@ -451,92 +409,86 @@ const HostGameScreen = props => {
 
                             {/*// PRICE ------------------------------------------------------------------------*/}
 
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>PRICE :</Text>
-                                <View style={{...styles.dropDown, padding:5}}>
-                                    <TextInput keyboardType={"number-pad"}
-                                               placeholder={"0.00"}
-                                               style={{...styles.dropDownText, fontSize:16}}
-                                               onChangeText={props.handleChange('price')}
-                                               value={props.values.price}
-                                               onBlur = {props.handleBlur('price')}
-                                    />
-                                </View>
 
+                            <View style={styles.inputContainer}>
+                                <Input keyboardType={"number-pad"}
+                                       placeholder={"0.00"}
+                                       onChangeText={props.handleChange('price')}
+                                       value={props.values.price}
+                                       onBlur = {props.handleBlur('price')}
+                                       label = {() => header('Price: ')}
+                                       accessoryRight={(props) => (
+                                           <Icon {...props} name='pricetags-outline'/>
+                                       )}
+                                />
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.price && props.errors.price}</Text>
-
                             </View>
 
-                            {/*// SLOTS LEFT ------------------------------------------------------------------------*/}
+                            {/*// NUMBER OF PLAYERS REQUIRED ------------------------------------------------------------------------*/}
 
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>NO. OF PLAYERS  :</Text>
-                                <View style={{...styles.dropDown, padding:5}}>
-                                    <TextInput keyboardType={"number-pad"}
-                                               placeholder={"0"}
-                                               style={{...styles.dropDownText, fontSize:16}}
-                                               onChangeText={props.handleChange('slots')}
-                                               value={props.values.slots}
-                                               onBlur = {props.handleBlur('slots')}
-                                    />
-                                </View>
+                            <View style = {styles.inputContainer}>
+                                <Input keyboardType={"number-pad"}
+                                       placeholder={"0"}
+                                       onChangeText={props.handleChange('slots')}
+                                       value={props.values.slots}
+                                       onBlur = {props.handleBlur('slots')}
+                                       label = {() => header('Number of players required: ')}
+                                       accessoryRight={(props) => (
+                                           <Icon {...props} name='people-outline'/>
+                                       )}
+                                />
                                 <Text style={{fontSize: 15, color: 'red'}}>{props.touched.slots && props.errors.slots}</Text>
                             </View>
 
                             {/*//NOTES----------------------------------------------------------------------------*/}
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>NOTES      :</Text>
-                                <View style ={{...styles.dropDownNotes}}>
-                                    <TextInput
-                                        multiline={true}
-                                        placeholder={"Additional information for players"}
-                                        style={{...styles.dropDownNotesText}}
-                                        onChangeText = {props.handleChange('notes')}
-                                        value = {props.values.notes}
-                                    />
-                                </View>
-
+                            <View style = {styles.inputContainer}>
+                                <Input
+                                    multiline={true}
+                                    placeholder={"Additional information for players"}
+                                    // textStyle={{height: 60, alignItems: 'flex-start'}}
+                                    onChangeText = {props.handleChange('notes')}
+                                    value = {props.values.notes}
+                                    label = {() => header('Notes: ')}
+                                    accessoryRight={(props) => (
+                                        <Icon {...props} name='edit-outline'/>
+                                    )}
+                                />
                             </View>
 
                             {/*REFEREE OPTION =========================================================================*/}
 
-                            <View style={styles.selectionItem}>
-                                <Text style={{fontSize:15, marginLeft:8}}>DO YOU NEED A REFEREE:</Text>
-                                <View style={styles.dropDownCopy}>
-
-                                    <Select
-                                        style = {{width: "100%", justifyContent:"space-between"}}
-                                        placeholder='No'
-                                        value ={referee[refIndex - 1]}
-                                        onSelect={index => {
-                                            setRefIndex(index)
-                                            props.setFieldValue('referee', [referee[index.row]])
-                                        }}
-                                        selectedIndex={refIndex}>
-                                        {referee.map(opt => (
-                                            <SelectItem key={opt} title={opt}/>
-                                        ))}
-
-                                    </Select>
-
-                                </View>
+                            <View style={{...styles.inputContainer, marginTop: 15}}>
+                                <Select
+                                    style = {{width: "100%", justifyContent:"space-between"}}
+                                    placeholder='No'
+                                    value ={referee[refIndex - 1]}
+                                    onSelect={index => {
+                                        setRefIndex(index)
+                                        props.setFieldValue('referee', referee[index.row])
+                                    }}
+                                    selectedIndex={refIndex}
+                                    label = {() => header('Do you need a referee? ')}
+                                >
+                                    {referee.map(opt => (
+                                        <SelectItem key={opt} title={opt}/>
+                                    ))}
+                                </Select>
                             </View>
 
-                            {props.values.referee == "YES"
+                            {props.values.referee === "Yes"
                             ?
-                                <View style={styles.selectionItem}>
-                                    <Text style={{fontSize:15, marginLeft:8}}>NO. OF REFEREES :</Text>
-                                    <View style ={{...styles.dropDown}}>
-                                        <TextInput
-                                                   keyboardType={"number-pad"}
-                                                   placeholder={"1"}
-                                                   style={{...styles.dropDownText, fontSize:16}}
-                                                   onChangeText={props.handleChange('refereeSlots')}
-                                                   value={props.values.refereeSlots}
-                                                   onBlur = {props.handleBlur('refereeSlots')}
-                                        />
-                                    </View>
-
+                                <View style ={{...styles.inputContainer, marginTop: 15}}>
+                                    <Input
+                                               keyboardType={"number-pad"}
+                                               placeholder={"1"}
+                                               onChangeText={props.handleChange('refereeSlots')}
+                                               value={props.values.refereeSlots}
+                                               onBlur = {props.handleBlur('refereeSlots')}
+                                               label = {() => header('Number of referees required: ')}
+                                               accessoryRight={(props) => (
+                                                   <Icon {...props} name='people-outline'/>
+                                               )}
+                                    />
                                 </View>
                             :
                                 <View/>
@@ -548,7 +500,7 @@ const HostGameScreen = props => {
                             {/*//BUTTONS at the Bottom------------------------------------------------------------------------*/}
                             <GradientButton onPress={props.handleSubmit}
                                             colors ={['#ff8400','#e56d02']}
-                                            style={{...styles.button,}}>
+                                            style={{...styles.button, width: '80%'}}>
                                 <Text>Host</Text>
                             </GradientButton>
                         </View>
@@ -567,53 +519,19 @@ const styles = StyleSheet.create({
         fontSize: 21,
         fontWeight: "bold",
     },
-    dropDownCopy:{
-        flexDirection:"row",
-        alignItems:"center",
-        width: "97%",
+    inputContainer:{
+        width: "92%",
     },
     dropDown: {
         flexDirection:"row",
-        marginTop: 5,
-        justifyContent: 'center',
-        alignItems:"center",
+        alignItems: 'center',
+        justifyContent: 'space-between',
         backgroundColor: 'ghostwhite',
-        height: 40,
+        width: '100%',
+        height: 39,
         borderWidth: 1,
         borderRadius:4,
-        borderColor:"rgba(106,120,146,0.98)",
-        width: "97%",
-    },
-    dropDownText: {
-        flexDirection:"row",
-        justifyContent: 'center',
-        alignItems:"center",
-        height: 40,
-        width: "97%",
-    },
-    dropDownNotesText: {
-        flexDirection:"row",
-        justifyContent: 'center',
-        alignItems:"center",
-        width: "97%",
-        textAlignVertical: 'top',
-        fontSize:16,
-        height:200,
-        marginTop:5,
-        borderColor:"rgba(106,120,146,0.98)",
-    },
-    dropDownNotes: {
-        flexDirection:"row",
-        marginTop: 5,
-        justifyContent: 'center',
-        alignItems:'flex-start',
-        backgroundColor: 'ghostwhite',
-        height: 200,
-        borderWidth: 1,
-        borderRadius:4,
-        width: '97%',
-        borderColor:"rgba(106,120,146,0.98)",
-
+        borderColor:"#e3e3e3",
     },
     selectionItem:{
         flexDirection:"column",
@@ -623,10 +541,10 @@ const styles = StyleSheet.create({
         marginTop:10
     },
     button: {
-        width: '80%',
+        width: '40%',
         height: 50,
         borderRadius: 25,
-        marginTop: 20,
+        marginTop: 30,
         marginBottom: 50,
     }
 })
