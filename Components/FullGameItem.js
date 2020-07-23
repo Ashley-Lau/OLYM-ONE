@@ -209,18 +209,18 @@ const FullGameItem = props => {
                                 <MaterialCommunityIcons name="map-marker" size={20}/>
                                 <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.location}</Text>
                             </View>
-                            <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                            <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="calendar-range" size={20}/>
                                 <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
                             </View>
                             {props.itemType === "Join"
                                 ?
-                                <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                <View style={{flexDirection:"row", alignItems:"center"}}>
                                     <MaterialCommunityIcons name="account-group" size={20}/>
                                     <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.players.length} </Text>
                                 </View>
                                 :
-                                <View style={{flexDirection:"row", alignItems:"center",marginTop:5}}>
+                                <View style={{flexDirection:"row", alignItems:"center"}}>
                                     <MaterialCommunityIcons name="whistle" size={20}/>
                                     <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.refereeList.length} </Text>
                                 </View>

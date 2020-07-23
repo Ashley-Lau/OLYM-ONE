@@ -252,193 +252,189 @@ const GameDetailsModal = props => {
                             typeCheck = {"Referee"}
             />
 
-            {/*<Modal visible = {props.route.params.visible} animationType="slide">*/}
-                <View style={{...styles.header, backgroundColor:sportColor, width:width}}>
-                    <TouchableOpacity activeOpacity={0.6} style={{flexDirection:"row",justifyContent:"center", alignItems:"center", marginLeft:5}}
-                                      onPress={() => navigation.goBack()}
-                    >
-                        <Ionicons name="ios-arrow-back" size={40} style={{color:lightColor}}/>
-                        <Text style = {{fontSize: 30, marginLeft: 6, color: lightColor}}>Back</Text>
-                    </TouchableOpacity>
+            <View style={{...styles.header, backgroundColor:sportColor, width:width}}>
+                <TouchableOpacity activeOpacity={0.6} style={{flexDirection:"row",justifyContent:"center", alignItems:"center", marginLeft:5}}
+                                  onPress={() => navigation.goBack()}
+                >
+                    <Ionicons name="ios-arrow-back" size={40} style={{color:lightColor}}/>
+                    <Text style = {{fontSize: 30, marginLeft: 6, color: lightColor}}>Back</Text>
+                </TouchableOpacity>
 
-                    <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={() => chatWithHost()}>
-                        <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
-                    </TouchableOpacity>
+                <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={() => chatWithHost()}>
+                    <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
+                </TouchableOpacity>
 
-                </View>
+            </View>
 
-                <View style={{flexDirection:"column", flex:1, backgroundColor:lightColor}}>
+            <View style={{flexDirection:"column", flex:1, backgroundColor:lightColor}}>
 
-                    <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
+                <View style={{flex:1, justifyContent:"center", alignItems:"center"}}>
 
-                        <View style={styles.scrollBox}>
+                    <View style={styles.scrollBox}>
 
-                            <ScrollView contentContainerStyle={{marginLeft:5, marginBottom:20}}>
+                        <ScrollView contentContainerStyle={{marginBottom:20}}>
 
-                                    <View>
-                                        <Text style={{fontWeight:"bold", fontSize:35}}>{props.route.params.gameDetails.sport.toUpperCase()}</Text>
+                                <View>
+                                    <Text style={{fontWeight:"bold", fontSize:35, marginLeft:0.025 * width}}>{props.route.params.gameDetails.sport.toUpperCase()}</Text>
 
-                                        {/*Game Details*/}
+                                    {/*Game Details*/}
 
-                                        <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
+                                    <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
 
-                                            <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>GAME DETAILS</Text>
+                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>GAME DETAILS:</Text>
 
-                                            <View style = {{ width:0.95 * width, ...styles.gameDetails}}>
-                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                        <MaterialCommunityIcons name="account" size={25} color={"black"}/>
-                                                        <Text style={{fontSize:20, color:"black"}}>  Hosted By:</Text>
-                                                    </View>
-                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.host}</Text>
+                                        <View style = {{ width:0.95 * width, ...styles.gameDetails}}>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                    <MaterialCommunityIcons name="account" size={25} color={"black"}/>
+                                                    <Text style={{fontSize:20, color:"black"}}>  Hosted By:</Text>
                                                 </View>
+                                                <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.host}</Text>
+                                            </View>
 
-                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                        <MaterialCommunityIcons name="map-marker" size={25} color={"black"}/>
-                                                        <Text style={{fontSize:20, color:"black"}}>  Location:</Text>
-                                                    </View>
-                                                    <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.specificLocation} @ {props.route.params.gameDetails.location}</Text>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                    <MaterialCommunityIcons name="map-marker" size={25} color={"black"}/>
+                                                    <Text style={{fontSize:20, color:"black"}}>  Location:</Text>
                                                 </View>
+                                                <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.specificLocation} @ {props.route.params.gameDetails.location}</Text>
+                                            </View>
 
-                                                <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                                                        <MaterialCommunityIcons name="clock" size={25} color={"black"}/>
-                                                        <Text style={{fontSize:20, color:"black"}}>  Date:</Text>
-                                                    </View>
-                                                    <Text style={{fontSize:20, color:"grey",marginLeft:25}}>  {gameDate} @ {gameTime}</Text>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                                <View style={{flexDirection:"row", alignItems:"center"}}>
+                                                    <MaterialCommunityIcons name="clock" size={25} color={"black"}/>
+                                                    <Text style={{fontSize:20, color:"black"}}>  Date:</Text>
                                                 </View>
-
+                                                <Text style={{fontSize:20, color:"grey",marginLeft:25}}>  {gameDate} @ {gameTime}</Text>
                                             </View>
 
                                         </View>
-
-                                        {/*Attendees*/}
-
-                                        <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
-                                            <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>ATTENDEES</Text>
-
-                                            <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:10}}>
-                                                <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.5}}
-                                                                  onPress={() => {
-                                                                      openPlayerDetails(true);}}
-                                                >
-                                                    <Text style={{fontSize:20}}>{props.route.params.gameDetails.players.length} Players</Text>
-
-                                                    <Ionicons name="ios-arrow-forward" size={20}/>
-
-                                                </TouchableOpacity>
-
-
-                                                <TouchableOpacity style={styles.viewPlayer}
-                                                                  onPress={() => {
-                                                                      openRefereeDetails(true)}}
-                                                >
-                                                    <Text style={{fontSize:20}}>{props.route.params.gameDetails.refereeList.length} Referees</Text>
-
-                                                    <Ionicons name="ios-arrow-forward" size={20}/>
-
-                                                </TouchableOpacity>
-                                            </View>
-
-                                        </View>
-
-                                        {/*NOTES*/}
-
-
-                                        {props.route.params.gameDetails.notes !== ''
-                                        ?
-                                            <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, marginBottom:10}}>
-                                                <Text style={{fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>TO TAKE NOTE:</Text>
-
-                                                <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:15}}
-                                                            nestedScrollEnabled={true}
-                                                >
-                                                    <Text style={{fontSize:20, color:"grey"}}>{props.route.params.gameDetails.notes}</Text>
-                                                </View>
-                                            </View>
-                                        :
-                                            <View/>
-                                        }
 
                                     </View>
 
+                                    {/*Attendees*/}
 
-                            </ScrollView>
+                                    <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
+                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>ATTENDEES:</Text>
+
+                                        <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:10}}>
+                                            <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.5}}
+                                                              onPress={() => {
+                                                                  openPlayerDetails(true);}}
+                                            >
+                                                <Text style={{fontSize:20}}>{props.route.params.gameDetails.players.length} Players</Text>
+
+                                                <Ionicons name="ios-arrow-forward" size={20}/>
+
+                                            </TouchableOpacity>
+
+
+                                            <TouchableOpacity style={styles.viewPlayer}
+                                                              onPress={() => {
+                                                                  openRefereeDetails(true)}}
+                                            >
+                                                <Text style={{fontSize:20}}>{props.route.params.gameDetails.refereeList.length} Referees</Text>
+
+                                                <Ionicons name="ios-arrow-forward" size={20}/>
+
+                                            </TouchableOpacity>
+                                        </View>
+
+                                    </View>
+
+                                    {/*NOTES*/}
+
+
+                                    {props.route.params.gameDetails.notes !== ''
+                                    ?
+                                        <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, marginBottom:10}}>
+                                            <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>TO TAKE NOTE:</Text>
+
+                                            <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:15}}
+                                                        nestedScrollEnabled={true}
+                                            >
+                                                <Text style={{fontSize:20, color:"grey"}}>{props.route.params.gameDetails.notes}</Text>
+                                            </View>
+                                        </View>
+                                    :
+                                        <View/>
+                                    }
+
+                                </View>
+
+
+                        </ScrollView>
+                    </View>
+
+
+                </View>
+            </View>
+
+
+            <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
+
+                {props.route.params.itemType === "Join" || "Quit"
+                ?
+                    <View>
+                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                            <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.route.params.gameDetails.price).toFixed(2)}</Text>
+                            <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.availability} Slots Left!</Text>
                         </View>
-
 
                     </View>
-                </View>
+
+                :
+                    <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                        <Text style={{fontSize:25, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.refereeSlots} Slots Left!</Text>
+                    </View>
+
+                }
 
 
-                <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
 
-                    {props.route.params.itemType === "Join" || "Quit"
+                {props.route.params.itemType === "Join"
                     ?
-                        <View>
-                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                                <Text style={{fontSize:25, marginLeft:15, color:lightColor}}>${parseFloat(props.route.params.gameDetails.price).toFixed(2)}</Text>
-                                <Text style={{fontSize:15, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.availability} Slots Left!</Text>
-                            </View>
-
-                        </View>
-
-                    :
-                        <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
-                            <Text style={{fontSize:25, color:lightColor, marginLeft:15}}> {props.route.params.gameDetails.refereeSlots} Slots Left!</Text>
-                        </View>
-
-                    }
-
-
-
-                    {props.route.params.itemType === "Join"
+                    <JoinItem gameDetails ={props.route.params.gameDetails}
+                              gameId ={props.route.params.gameId}
+                              user = {props.route.params.user}
+                              closeGame = {() => {navigation.goBack()}}
+                              textColor = {sportColor}
+                              style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+                    />
+                    : props.route.params.itemType === "Referee"
                         ?
-                        <JoinItem gameDetails ={props.route.params.gameDetails}
-                                  gameId ={props.route.params.gameId}
-                                  user = {props.route.params.user}
-                                  closeGame = {props.route.params.closeGame}
-                                  textColor = {sportColor}
-                                  style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+                        <RefereeItem gameDetails ={props.route.params.gameDetails}
+                                     gameId ={props.route.params.gameId}
+                                     user = {props.route.params.user}
+                                     closeGame = {() => {navigation.goBack()}}
+                                     textColor = {sportColor}
+                                     style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+
                         />
-                        : props.route.params.itemType === "Referee"
+                        :  props.route.params.itemType === "Quit"
                             ?
-                            <RefereeItem gameDetails ={props.route.params.gameDetails}
-                                         gameId ={props.route.params.gameId}
-                                         user = {props.route.params.user}
-                                         closeGame = {props.route.params.closeGame}
-                                         textColor = {sportColor}
-                                         style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+                            <UpcomingGameItem gameDetails ={props.route.params.gameDetails}
+                                              gameId ={props.route.params.gameId}
+                                              user = {props.route.params.user}
+                                              closeGame = {() => {navigation.goBack()}}
+                                              textColor = {sportColor}
+                                              style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
 
                             />
-                            :  props.route.params.itemType === "Quit"
-                                ?
-                                <UpcomingGameItem gameDetails ={props.route.params.gameDetails}
-                                                  gameId ={props.route.params.gameId}
-                                                  user = {props.route.params.user}
-                                                  closeGame = {props.route.params.closeGame}
-                                                  textColor = {sportColor}
-                                                  style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
+                            :
+                            <UpcomingRefereeItem gameDetails ={props.route.params.gameDetails}
+                                                 gameId ={props.route.params.gameId}
+                                                 user = {props.route.params.user}
+                                                 closeGame = {() => {navigation.goBack()}}
+                                                 textColor = {sportColor}
+                                                 style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
 
-                                />
-                                :
-                                <UpcomingRefereeItem gameDetails ={props.route.params.gameDetails}
-                                                     gameId ={props.route.params.gameId}
-                                                     user = {props.route.params.user}
-                                                     closeGame = {props.route.params.closeGame}
-                                                     textColor = {sportColor}
-                                                     style = {{...styles.bottomButtons, borderColor:lightColor, backgroundColor:lightColor}}
-
-                                />
-                    }
+                            />
+                }
 
 
-                </View>
+            </View>
 
-
-
-            {/*</Modal>*/}
 
         </View>
 
