@@ -332,8 +332,8 @@ const HostGameScreen = props => {
                                             placeholder='Pick Date'
                                             date={props.values.date}
                                             onSelect={nextDate => {
-                                                props.setFieldValue('birthDate', nextDate);
-                                                props.setFieldTouched('birthDate');
+                                                props.setFieldValue('date', nextDate);
+                                                props.setFieldTouched('date');
                                             }}
                                             accessoryRight={(props) => (
                                                 <Icon {...props} name='calendar'/>
