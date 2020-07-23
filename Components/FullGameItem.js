@@ -22,16 +22,15 @@ const FullGameItem = props => {
     let refereeBG = require("../assets/OthersApp.png");
     let sportColor = "rgba(47,49,53,1)"
     let lightColor = "rgb(107,107,107)"
+    let cardHeight = "100%"
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
         } else {
             sportBG = require("../assets/BballBG.png");
         }
-        refereeBG = require("../assets/BballRefereeApp.png");
-        playerBG = require("../assets/BballApp.png");
         sportColor = "rgba(200,98,57,1)";
-        lightColor = "rgb(252,238,184)"
+
 
     } else if(props.gameDetails.sport.toLowerCase() === "soccer" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -39,10 +38,7 @@ const FullGameItem = props => {
         } else {
             sportBG = require("../assets/SoccerBG.png");
         }
-        refereeBG = require("../assets/SoccerRefereeApp.png");
-        playerBG = require("../assets/SoccerApp.png");
         sportColor = "rgba(134,119,198,1)";
-        lightColor = "rgb(195,185,206)"
 
     } else if(props.gameDetails.sport.toLowerCase() === "floorball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -50,10 +46,7 @@ const FullGameItem = props => {
         } else {
             sportBG = require("../assets/floorballBG.png");
         }
-        refereeBG = require("../assets/floorballRefereeApp.png");
-        playerBG = require("../assets/floorballApp.png");
         sportColor = "rgba(58,204,255,1)";
-        lightColor = "rgb(228,235,255)"
 
     } else if(props.gameDetails.sport.toLowerCase() === "tennis" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -61,10 +54,7 @@ const FullGameItem = props => {
         } else {
             sportBG = require("../assets/TennisBG.png");
         }
-        refereeBG = require("../assets/TennisRefereeApp.png");
-        playerBG = require("../assets/TennisApp.png");
         sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)";
 
     } else if(props.gameDetails.sport.toLowerCase() === "badminton" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -72,10 +62,10 @@ const FullGameItem = props => {
         } else {
             sportBG = require("../assets/BadmintonBG.png");
         }
-        playerBG = require("../assets/BadmintonApp.png");
-        refereeBG = require("../assets/BadmintonRefereeApp.png");
         sportColor = "rgba(211,55,64,1)";
-        lightColor = "rgb(218,138,158)"
+
+    } else {
+        cardHeight = "93%"
     }
 
 
@@ -128,7 +118,6 @@ const FullGameItem = props => {
                                         .doc(chatId)
                                         .set(data)
                                         .then(() => {
-                                            openGameDetails(false)
                                             navigation.navigate('ChatScreen', {
                                                     chat: data,
                                                     userId: currentUserId
@@ -140,7 +129,6 @@ const FullGameItem = props => {
                         })
                         .catch(error => console.log(error))
                 } else {
-                    openGameDetails(false)
                     navigation.navigate('ChatScreen', {
                             chat: doc.data(),
                             userId: currentUserId
@@ -191,7 +179,7 @@ const FullGameItem = props => {
         <View>
 
             <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
-                <TouchableOpacity style={styles.games}
+                <TouchableOpacity style={{...styles.games, height:cardHeight}}
                                   // onPress={() => {openGameDetails(true);}}
                                   onPress = {() => props.onPress()}
                 >
@@ -259,7 +247,7 @@ const styles = StyleSheet.create({
         height:"100%",
         overflow:"hidden",
         justifyContent:"center",
-        alignItems:"center",
+        alignItems:"flex-start",
         shadowColor: "#000",
         shadowOffset: {
             width: 5,
