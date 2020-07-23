@@ -23,7 +23,7 @@ const RefereeItem = props => {
             refereeUri:props.user.uri
         })
             .then(() => {
-                gameRef.update({applicants:firebase.FieldValue.arrayUnion(props.user.id)})
+                gameRef.update({applicants:firebase.firestore.FieldValue.arrayUnion(props.user.id)})
                     .then(() => {});
             })
             .catch(err => console.error(err))
