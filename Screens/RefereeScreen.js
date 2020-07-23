@@ -166,7 +166,7 @@ const RefereeScreen = (props) => {
                         else if(data.refereeList.includes(userId)){}
                         else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
-                        else if(data.referee[0] === "YES"){
+                        else if(data.referee.toLowerCase() === "yes"){
                             filteredGames.push({key:doc.id, value:doc.data()});
                         }
                     })
@@ -195,7 +195,7 @@ const RefereeScreen = (props) => {
                         else if(data.refereeList.includes(userId)){}
                         else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
-                        else if(data.referee[0] === "YES"){
+                        else if(data.referee.toLowerCase() === "yes"){
                             filteredGames.push({key:doc.id, value:doc.data()});
                         }
                     })
@@ -225,7 +225,7 @@ const RefereeScreen = (props) => {
                         else if(data.refereeList.includes(userId)){}
                         else if(data.applicants.includes(userId)){}
                         else if(parseInt(data.refereeSlots) <= 0){}
-                        else if(data.referee[0] === "YES"){
+                        else if(data.referee.toLowerCase() === "yes"){
                             filteredGames.push({key:doc.id, value:doc.data()});
                         }
                     })
@@ -326,9 +326,11 @@ const RefereeScreen = (props) => {
             <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
                 {!searchedBefore
                     ? noInput
-                    : refereeList.length === 0
-                        ? noSport
-                        :   <AnimatedFlatList
+                    : refereeList.length === 0 && sportValue === "Others"
+                        ? noInput
+                        : refereeList.length === 0 && sportValue !== "Others"
+                            ? noSport
+                            :   <AnimatedFlatList
                                 scrollEventThrottle={16}
                                 {...{onScroll}}
                                 showsHorizontalScrollIndicator={false}

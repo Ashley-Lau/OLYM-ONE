@@ -18,10 +18,7 @@ const FullGameItem = props => {
 
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/OthersBG.png");
-    let playerBG = require("../assets/OthersApp.png");
-    let refereeBG = require("../assets/OthersApp.png");
     let sportColor = "rgba(47,49,53,1)"
-    let lightColor = "rgb(107,107,107)"
     let cardHeight = "100%"
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -69,74 +66,7 @@ const FullGameItem = props => {
     }
 
 
-    //CHAT FUNCTION====================================================================================================
 
-    const chatWithHost = () => {
-        const hostId = props.gameDetails.hostId
-        const currentUserId = props.user.id
-        const smallerId = hostId < currentUserId ? hostId : currentUserId
-        const largerId = hostId < currentUserId ? currentUserId : hostId
-        const chatId = smallerId + '_' + largerId
-        const chatRef = firebaseDb
-            .firestore()
-            .collection('messages')
-        if (hostId === currentUserId) {
-            Alert.alert('You are The host!', 'Cannot talk to yourself')
-            return
-        }
-        chatRef
-            .doc(chatId)
-            .get()
-            .then(doc => {
-                if(!doc.exists) {
-                    let smallerIdData = null
-                    let largerIdData = null
-
-                    firebaseDb.firestore().collection('users').doc(smallerId).get()
-                        .then(doc => {
-                            smallerIdData = doc.data()
-                            firebaseDb.firestore().collection('users').doc(largerId).get()
-                                .then(doc2 => {
-                                    largerIdData = doc2.data()
-                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
-                                    const data = {
-                                        id: chatId,
-                                        idArray: [smallerId, largerId],
-                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
-                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
-                                        lastMessage: '',
-                                        lastMessageFrom: null,
-                                        lastMessageTime: '',
-                                        message: [],
-                                        notificationStack: 0,
-                                        messageCount: 0,
-                                        keywords: keywords,
-                                        smallId: smallerId,
-                                        largeId: largerId,
-                                    }
-                                    chatRef
-                                        .doc(chatId)
-                                        .set(data)
-                                        .then(() => {
-                                            navigation.navigate('ChatScreen', {
-                                                    chat: data,
-                                                    userId: currentUserId
-                                            })
-                                        })
-                                        .catch(error => console.log(error))
-                                })
-                                .catch(error => console.log(error))
-                        })
-                        .catch(error => console.log(error))
-                } else {
-                    navigation.navigate('ChatScreen', {
-                            chat: doc.data(),
-                            userId: currentUserId
-                    })
-                }
-            })
-            .catch(error => console.log(error))
-    }
     //ANIMATION PROPERTIES===========================================================================================
     const x = props.translateX;
     let index = props.index;
