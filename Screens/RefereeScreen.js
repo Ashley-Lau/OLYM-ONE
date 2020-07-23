@@ -251,7 +251,9 @@ const RefereeScreen = (props) => {
 
             <View style={styles.searchSpace}>
                 <LocationSearchBar select = {val => setZone(val)}
-                                   onPress = {() => search(sportValue)}/>
+                                   onPress = {() => search(sportValue)}
+                                   onChange = {() => setZone('')}
+                />
             </View>
 
 

@@ -350,13 +350,23 @@ const HomeScreen = props => {
         return timestampToDate.toLocaleDateString()
     }
 
+    const cannotFindGame = () => {
+        Alert.alert("Cannot find the game you are looking for.",
+            "The game may have quitted the game or the game may be over.",
+            [
+                {text:"Confirm", onPress: () => {}},
+            ],
+            {cancelable: false}
+        )
+    }
+
     const NotificationComponent = props => (
         <TouchableOpacity style = {{width: '100%', height: 100,
             backgroundColor: props.value.unread ? 'white' : '#e0e0e0',
             flexDirection: 'row', borderBottomWidth: 0.7, borderColor: '#868686'
         }}
                           activeOpacity= {1}
-                          onPress = {() => {readNotification(props.id, props.value.unread, props.value.gameId)}}
+                          onPress = {() => {readNotification(props.id, props.value.unread, props.value.isPlayer, props.value.gameId)}}
         >
             <View style = {{width: '20%', height: '100%', justifyContent: 'center', alignItems: 'center'}}>
                 {props.value.isPlayer
@@ -370,7 +380,7 @@ const HomeScreen = props => {
         </TouchableOpacity>
     )
 
-    const readNotification = (notificationId, unread, gameId) => {
+    const readNotification = (notificationId, unread, isPlayer, gameId) => {
         if (unread) {
             firebaseDb.firestore().collection('notifications')
                 .doc(notificationId)
@@ -380,9 +390,44 @@ const HomeScreen = props => {
                 .catch(error => console.log(error))
         }
 
-        // wanted to navigate user to the game details page but cannot be done coze too many nested modals
-        // do for extension
-        // const upcomingGameItem.filter(doc => doc.id === gameId) ?
+        if (isPlayer ) {
+            const game = upcomingGameList.filter(doc => doc.key === gameId)
+            if (game.length === 1) {
+                navigation.navigate( "GameDetailsModal",
+                    {
+                        uid: user.id,
+                        gameDetails: game[0].value,
+                        itemType: "Quit",
+                        user: user,
+                        gameId: gameId,
+                    }
+
+                )
+                setNotificationButtonVisible(false)
+                setNotificationColor('#5a5959');
+                return;
+            }
+        }
+
+        if (!isPlayer) {
+            const game = upcomingRefList.filter(doc => doc.key === gameId)
+            if (game.length === 1) {
+                navigation.navigate("GameDetailsModal",
+                    {
+                        uid: user.id,
+                        gameDetails: game[0].value,
+                        itemType: "Resign",
+                        user: user,
+                        gameId: gameId,
+                    }
+                )
+                setNotificationButtonVisible(false)
+                setNotificationColor('#5a5959');
+                return;
+            }
+        }
+
+        cannotFindGame()
     }
 
     const calcUnreadMessages = () => {

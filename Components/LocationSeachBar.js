@@ -18,6 +18,9 @@ const LocationSearchBar = (props) => {
     };
 
     const onChangeText = (query) => {
+        if (query === '') {
+            props.onChange()
+        }
         setValue(query);
         setData(mrtStations.filter(item => filter(item, query)));
     };

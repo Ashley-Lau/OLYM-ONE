@@ -128,9 +128,8 @@ const ChatDetailScreen = (props) => {
                                        onChangeText={(value) => {setKeywords(value.toLowerCase())}}
                                        value={keywords}
                             />
-                            <View style = {{ width: '10%', alignItems: 'center', justifyContent: 'center'}}>
-                                <SearchButtons style={{flex: 1, }}
-                                               searchMe={() => {
+                            <View style = {{ height: '100%', width: '10%', alignItems: 'center', justifyContent: 'center'}}>
+                                <SearchButtons searchMe={() => {
                                                    Keyboard.dismiss()
                                                    getKeywordsChatList()
                                                }}/>
