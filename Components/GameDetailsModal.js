@@ -83,12 +83,10 @@ const GameDetailsModal = props => {
                                         .doc(chatId)
                                         .set(data)
                                         .then(() => {
-                                            navigation.navigate('ChatStack', {
-                                                screen: 'ChatScreen',
-                                                params : {
-                                                    chat: data,
-                                                    userId: currentUserId
-                                                }
+
+                                            navigation.navigate('ChatScreen', {
+                                                chat: data,
+                                                userId: currentUserId
                                             })
                                         })
                                         .catch(error => console.log(error))
@@ -97,12 +95,10 @@ const GameDetailsModal = props => {
                         })
                         .catch(error => console.log(error))
                 } else {
-                    navigation.navigate('ChatStack', {
-                        screen: 'ChatScreen',
-                        params : {
-                            chat: doc.data(),
-                            userId: currentUserId
-                        }
+
+                    navigation.navigate('ChatScreen', {
+                        chat: doc.data(),
+                        userId: currentUserId
                     })
                 }
             })
