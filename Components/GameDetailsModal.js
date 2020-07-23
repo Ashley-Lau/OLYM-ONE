@@ -111,6 +111,7 @@ const GameDetailsModal = props => {
     let refereeBG = require("../assets/OthersApp.png");
     let sportColor = "rgba(47,49,53,1)"
     let lightColor = "rgb(107,107,107)"
+    let theme = Math.floor((Math.random() * 10) + 1);
     if(props.route.params.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
@@ -165,6 +166,21 @@ const GameDetailsModal = props => {
         refereeBG = require("../assets/BadmintonRefereeApp.png");
         sportColor = "rgba(211,55,64,1)";
         lightColor = "rgb(218,138,158)"
+    } else {
+        if(theme === 1){
+            playerBG = require("../assets/OthersBG.png");
+            refereeBG = require("../assets/OthersBG.png");
+        } else if (theme === 2){
+            playerBG = require("../assets/OthersBG2.png");
+            refereeBG = require("../assets/OthersBG2.png");
+            sportColor = "rgba(200,98,57,1)";
+            lightColor = "rgb(252,238,184)"
+        } else{
+            playerBG = require("../assets/OthersBG3.png");
+            refereeBG = require("../assets/OthersBG3.png");
+            sportColor = "rgba(211,55,64,1)";
+            lightColor = "rgb(218,138,158)"
+        }
     }
 
     //DATE AND TIME STRING ================================================================================================

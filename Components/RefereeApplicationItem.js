@@ -111,7 +111,7 @@ const RefereeApplicationItem = props => {
 
     // PROFILE CARD BACKGROUND ===========================================================================================
     let profileBack = require("../assets/tennis_coloured.png");
-    let refBack = require("../assets/BballRefereeApp.png");
+    let refBack = require("../assets/OthersApp.png");
     if(props.refDetails.sport.toLowerCase() === "tennis"){
         profileBack = require("../assets/tennis_coloured.png");
         refBack = require("../assets/TennisRefereeApp.png");
@@ -166,7 +166,7 @@ const RefereeApplicationItem = props => {
                     {/*</ImageBackground>*/}
                 </View>
 
-                <View style = {{...styles.elevatedComponent, height: 135}}>
+                <View style = {{...styles.elevatedComponent, height: 145}}>
                     <View style={styles.requestTitle}>
                         <Text style={{fontSize:25}}>REQUESTS TO REFEREE</Text>
                     </View>
@@ -177,7 +177,7 @@ const RefereeApplicationItem = props => {
                           }}>
 
                         <View style={{flexDirection:"column"}}>
-                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                            <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport.toUpperCase()} </Text>
                             <View style={{flexDirection:"row", alignItems:"center"}}>
                                 <MaterialCommunityIcons name="calendar-range" size={20}/>
                                 <Text style={{fontSize:20, color:"black"}}>  {gameDate} </Text>
@@ -189,7 +189,7 @@ const RefereeApplicationItem = props => {
 
                         </View>
 
-                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:93}}/>
+                        <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:108}}/>
 
                     </View>
 
@@ -233,14 +233,18 @@ const RefereeApplicationItem = props => {
     return (
         <View>
             {refItem}
-            <TouchableOpacity style={{...styles.games}}
+            <TouchableOpacity style={{...styles.games,borderBottomWidth:0.7,}}
                               onPress={() => {
                                   setOpen(true);
                               }}>
 
 
                 <View style={{flexDirection:"column", justifyContent:"flex-start"}}>
-                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport} </Text>
+                    <Text style={{fontWeight:"bold", fontSize:25, color: "black"}}>{props.refDetails.sport.toUpperCase()} </Text>
+                    <View style={{flexDirection:"row", alignItems:"center"}}>
+                        <MaterialCommunityIcons name="account-outline" size={18}/>
+                        <Text style={{fontSize:15, color:"black"}}>  {props.refDetails.refereeName} </Text>
+                    </View>
                     <View style={{flexDirection:"row", alignItems:"center"}}>
                         <MaterialCommunityIcons name="calendar-range" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
@@ -252,7 +256,7 @@ const RefereeApplicationItem = props => {
 
                 </View>
 
-                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:90}}/>
+                <GameItemBackGround iconName={props.refDetails.sport.toLowerCase()} style={{height:108}}/>
 
 
             </TouchableOpacity>
@@ -276,10 +280,10 @@ const styles = StyleSheet.create({
     },
     games:{
         flexDirection:"row",
-        borderBottomWidth:0.7,
+
         borderColor:"grey",
         width:"100%",
-        height:100,
+        height:110,
         padding:5,
         justifyContent:"space-around",
         alignItems:"center",

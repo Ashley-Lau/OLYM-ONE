@@ -20,6 +20,7 @@ const FullGameItem = props => {
     let sportBG = require("../assets/OthersBG.png");
     let sportColor = "rgba(47,49,53,1)"
     let cardHeight = "100%"
+    let theme = Math.floor((Math.random()*3) + 1 );
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
@@ -27,7 +28,6 @@ const FullGameItem = props => {
             sportBG = require("../assets/BballBG.png");
         }
         sportColor = "rgba(200,98,57,1)";
-
 
     } else if(props.gameDetails.sport.toLowerCase() === "soccer" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -63,6 +63,13 @@ const FullGameItem = props => {
 
     } else {
         cardHeight = "93%"
+        if(theme === 1){
+            sportBG = require("../assets/OthersBG.png");
+        } else if (theme === 2){
+            sportBG = require("../assets/OthersBG2.png");
+        } else{
+            sportBG = require("../assets/OthersBG3.png");
+        }
     }
 
 
