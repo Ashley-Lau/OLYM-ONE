@@ -20,8 +20,10 @@ import ChatScreen from "./Screens/ChatScreen";
 
 YellowBox.ignoreWarnings([
   'Non-serializable values were found in the navigation state',
+    'Cannot update during a existing state transition'
 ]);
 
+// console.disableYellowBox = true;
 
 const Stack = createStackNavigator();
 

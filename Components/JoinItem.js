@@ -44,8 +44,19 @@ const JoinItem = props => {
             Alert.alert("Game is Full!", "There are no more slots available!")
         } else {
             gameApp();
-        }
+            requestSentSuccessfully();
 
+        }
+    }
+
+    const requestSentSuccessfully = () => {
+        Alert.alert("Request has been sent successfully to the host",
+            "You will be notified through notifications in home tab if you are accepted.",
+            [
+                {text:"Confirm", onPress: () => {}},
+            ],
+            {cancelable: false}
+        )
     }
 
 
@@ -54,9 +65,10 @@ const JoinItem = props => {
         <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
                           onPress={() => {
                               alreadyJoined();
-                              props.closeGame();}}
+                              props.closeGame();
+                          }}
         >
-            <Text style ={{fontSize:20, color:props.textColor}}>Enter Game</Text>
+            <Text style ={{fontSize:20, color:props.textColor}}>Request to Join</Text>
         </TouchableOpacity>
 
     )

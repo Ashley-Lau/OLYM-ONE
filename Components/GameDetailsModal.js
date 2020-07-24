@@ -24,6 +24,7 @@ import UpcomingGameItem from "./UpcomingGameItem";
 import firebaseDb from "../firebaseDb";
 import {keywordsMaker} from "./SearchBarFunctions";
 import ViewPlayerItem from "./ViewPlayerItem";
+import Styles from "../styling/Styles";
 
 
 const GameDetailsModal = props => {
@@ -264,16 +265,16 @@ const GameDetailsModal = props => {
                             typeCheck = {"Referee"}
             />
 
-            <View style={{...styles.header, backgroundColor:sportColor, width:width}}>
-                <TouchableOpacity activeOpacity={0.6} style={{flexDirection:"row",justifyContent:"center", alignItems:"center", marginLeft:5}}
+            <View style={{...styles.header, backgroundColor:sportColor,}}>
+                <TouchableOpacity activeOpacity={0.8} style={{flexDirection:"row",justifyContent:"center", alignItems:"center",position: 'absolute', left: 10,bottom: 5}}
                                   onPress={() => navigation.goBack()}
                 >
-                    <Ionicons name="ios-arrow-back" size={40} style={{color:lightColor}}/>
-                    <Text style = {{fontSize: 30, marginLeft: 6, color: lightColor}}>Back</Text>
+                    <Ionicons name="ios-arrow-back" size={27} style={{color:lightColor}}/>
+                    <Text style = {{fontSize: 20, marginLeft: 6, color: lightColor}}>Back</Text>
                 </TouchableOpacity>
-
-                <TouchableOpacity activeOpacity={0.6} style={{marginRight:5}} onPress={() => chatWithHost()}>
-                    <MaterialCommunityIcons name="chat" size={40} style={{color:lightColor}}/>
+                <Text style = {{...styles.titleStyle, color: lightColor}}>Details</Text>
+                <TouchableOpacity activeOpacity={0.8} style={{position: 'absolute', right: 10, bottom: 5}}onPress={() => chatWithHost()}>
+                    <MaterialCommunityIcons name="chat" size={27} style={{color:lightColor}}/>
                 </TouchableOpacity>
 
             </View>
@@ -287,16 +288,18 @@ const GameDetailsModal = props => {
                         <ScrollView contentContainerStyle={{marginBottom:20}}>
 
                                 <View>
-                                    <Text style={{fontWeight:"bold", fontSize:35, marginLeft:0.025 * width}}>{props.route.params.gameDetails.sport.toUpperCase()}</Text>
+                                    <Text style={{fontWeight:"bold", fontSize: 30, marginLeft:0.025 * width}}>
+                                        {props.route.params.gameDetails.sport.charAt(0).toUpperCase() + props.route.params.gameDetails.sport.slice(1)}
+                                    </Text>
 
                                     {/*Game Details*/}
 
-                                    <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
+                                    <View style = {{alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
 
-                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>GAME DETAILS:</Text>
+                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>Game details:</Text>
 
                                         <View style = {{ width:0.95 * width, ...styles.gameDetails}}>
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start", borderBottomWidth:0.3, paddingVertical: 4}}>
                                                 <View style={{flexDirection:"row", alignItems:"center"}}>
                                                     <MaterialCommunityIcons name="account" size={25} color={"black"}/>
                                                     <Text style={{fontSize:20, color:"black"}}>  Hosted By:</Text>
@@ -304,7 +307,7 @@ const GameDetailsModal = props => {
                                                 <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.host}</Text>
                                             </View>
 
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start", borderBottomWidth:0.3, paddingVertical: 4}}>
                                                 <View style={{flexDirection:"row", alignItems:"center"}}>
                                                     <MaterialCommunityIcons name="map-marker" size={25} color={"black"}/>
                                                     <Text style={{fontSize:20, color:"black"}}>  Location:</Text>
@@ -312,7 +315,7 @@ const GameDetailsModal = props => {
                                                 <Text style={{fontSize:20, color:"grey", marginLeft:25}}>  {props.route.params.gameDetails.specificLocation} @ {props.route.params.gameDetails.location}</Text>
                                             </View>
 
-                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
+                                            <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start", paddingVertical: 4}}>
                                                 <View style={{flexDirection:"row", alignItems:"center"}}>
                                                     <MaterialCommunityIcons name="clock" size={25} color={"black"}/>
                                                     <Text style={{fontSize:20, color:"black"}}>  Date:</Text>
@@ -327,10 +330,10 @@ const GameDetailsModal = props => {
                                     {/*Attendees*/}
 
                                     <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, paddingVertical:10}}>
-                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>ATTENDEES:</Text>
+                                        <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>Attendees:</Text>
 
-                                        <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:10}}>
-                                            <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.5}}
+                                        <View style = {{...styles.playerReferee, width:0.95 * width, }}>
+                                            <TouchableOpacity style={{...styles.viewPlayer, borderBottomWidth:0.3, }}
                                                               onPress={() => {
                                                                   openPlayerDetails(true);}}
                                             >
@@ -360,7 +363,7 @@ const GameDetailsModal = props => {
                                     {props.route.params.gameDetails.notes !== ''
                                     ?
                                         <View style = {{flexDirection:"column", alignItems:"center", paddingHorizontal:5, marginBottom:10}}>
-                                            <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>TO TAKE NOTE:</Text>
+                                            <Text style={{marginLeft:5, fontWeight:"bold", fontSize:20, marginBottom:5, alignSelf:"flex-start"}}>To take note:</Text>
 
                                             <View style = {{...styles.playerReferee, width:0.95 * width, paddingVertical:15}}
                                                         nestedScrollEnabled={true}
@@ -457,14 +460,27 @@ const GameDetailsModal = props => {
 const styles = StyleSheet.create({
     header:{
         flexDirection:"row",
-        height:50,
+        height: 45 + Styles.statusBarHeight.height,
+        paddingBottom: 5,
+        paddingHorizontal: 10,
         elevation:10,
-        justifyContent:"space-between",
-        alignItems:"center"
+        justifyContent:"center",
+        alignItems:"flex-end",
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.44,
+        shadowRadius: 4.27,
+    },
+    titleStyle: {
+        color: 'white',
+        justifyContent: 'center',
+        fontSize: 21,
+        fontWeight: "bold",
     },
     scrollBox:{
         flex:1,
-        // borderWidth: 1,
         borderBottomEndRadius:10,
         borderBottomStartRadius:10,
         backgroundColor: "rgba(200,200,200,0.2)",
@@ -472,12 +488,10 @@ const styles = StyleSheet.create({
     },
     bottomButtons:{
         height:50,
-        width:"40%",
+        width:"50%",
         marginRight:15,
         borderRadius:10,
         borderWidth:1,
-
-
     },
     bottomOptions:{
         width:"100%",
@@ -488,27 +502,38 @@ const styles = StyleSheet.create({
 
     },
     playerReferee: {
-        flexDirection: 'column',
         justifyContent: 'space-between',
         alignItems:"flex-start",
         backgroundColor:"rgb(226,226,226)",
         elevation:5,
         borderRadius:5,
-        paddingHorizontal:5
+        paddingHorizontal:9,
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 3.27,
     },
     viewPlayer: {
         flexDirection:"row",
         justifyContent:"space-between",
         alignItems:"center",
         width: '100%',
-        height:50
+        height:50,
     },
     gameDetails:{
         backgroundColor:"rgb(226,226,226)",
         elevation:5,
         borderRadius:5,
         paddingHorizontal:5,
-        paddingVertical:10
+        justifyContent: 'center',
+        shadowOffset: {
+            width: 0,
+            height: 2,
+        },
+        shadowOpacity: 0.34,
+        shadowRadius: 3.27,
     }
 })
 

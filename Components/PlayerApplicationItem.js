@@ -11,17 +11,23 @@ import {
 } from 'react-native';
 import * as firebase from 'firebase';
 
-import Background from "../views/Background";
 import GradientButton from "../Components/GradientButton";
 import firebaseDb from "../firebaseDb";
 import GameItemBackGround from "../views/GameItemBackGround";
 import Styles from "../styling/Styles";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import {keywordsMaker} from "./SearchBarFunctions";
+import {useNavigation} from "@react-navigation/native";
+
 
 
 
 
 const PlayerApplicationItem = props => {
+
+    const navigation = useNavigation()
+
     //GETTING CURRENT GAME INFO ========================================================================================
     const gameRef = firebaseDb.firestore().collection("game_details").doc(props.playerDetails.gameId);
     const [details, setDetails] = useState({});
@@ -88,7 +94,6 @@ const PlayerApplicationItem = props => {
                 {
                     text:'Cancel',
                     onPress:() => {},
-                    style:'cancel'
                 },
                 {
                     text:'Confirm',
@@ -107,7 +112,6 @@ const PlayerApplicationItem = props => {
                 {
                     text:'Cancel',
                     onPress:() => {},
-                    style:'cancel'
                 },
                 {
                     text:'Confirm',
@@ -127,7 +131,6 @@ const PlayerApplicationItem = props => {
                 {
                     text:'Cancel',
                     onPress:() => {},
-                    style:'cancel'
                 },
                 {
                     text:'Confirm',
@@ -141,20 +144,97 @@ const PlayerApplicationItem = props => {
 
     }
 
+    // CHAT WITH PLAYER =====================================================================================================
+    const chatWithPerson = () => {
+        const hostId = props.playerDetails.hostId
+        const otherUserId = props.playerDetails.playerId
+        const smallerId = hostId < otherUserId ? hostId : otherUserId
+        const largerId = hostId < otherUserId ? otherUserId : hostId
+        const chatId = smallerId + '_' + largerId
+        const chatRef = firebaseDb
+            .firestore()
+            .collection('messages')
+        if (hostId === otherUserId) {
+            Alert.alert('You are The host!', 'Cannot talk to yourself')
+            return
+        }
+        chatRef
+            .doc(chatId)
+            .get()
+            .then(doc => {
+                if(!doc.exists) {
+                    let smallerIdData = null
+                    let largerIdData = null
+
+                    firebaseDb.firestore().collection('users').doc(smallerId).get()
+                        .then(doc => {
+                            smallerIdData = doc.data()
+                            firebaseDb.firestore().collection('users').doc(largerId).get()
+                                .then(doc2 => {
+                                    largerIdData = doc2.data()
+                                    const keywords = keywordsMaker([smallerIdData.username, largerIdData.username])
+                                    const data = {
+                                        id: chatId,
+                                        idArray: [smallerId, largerId],
+                                        largerId: [largerId, largerIdData.username, largerIdData.uri],
+                                        smallerId: [smallerId, smallerIdData.username, smallerIdData.uri],
+                                        lastMessage: '',
+                                        lastMessageFrom: null,
+                                        lastMessageTime: '',
+                                        message: [],
+                                        notificationStack: 0,
+                                        messageCount: 0,
+                                        keywords: keywords,
+                                        smallId: smallerId,
+                                        largeId: largerId,
+                                    }
+                                    chatRef
+                                        .doc(chatId)
+                                        .set(data)
+                                        .then(() => {
+
+                                            navigation.navigate('ChatScreen', {
+                                                chat: data,
+                                                userId: hostId
+                                            })
+                                        })
+                                        .catch(error => console.log(error))
+                                })
+                                .catch(error => console.log(error))
+                        })
+                        .catch(error => console.log(error))
+                } else {
+
+                    navigation.navigate('ChatScreen', {
+                        chat: doc.data(),
+                        userId: hostId
+                    })
+                }
+            })
+            .catch(error => console.log(error))
+    }
+
 
 
     // PROFILE CARD BACKGROUND ===========================================================================================
     let refBack = require("../assets/OthersApp.png");
+    let sportColor = "rgba(47,49,53,1)";
     if(props.playerDetails.sport.toLowerCase() === "tennis"){
         refBack = require("../assets/TennisApp.png");
+        sportColor = "rgba(212,242,102,1)";
     } else if(props.playerDetails.sport.toLowerCase() === "floorball"){
         refBack = require("../assets/floorballApp.png");
+        sportColor = "rgba(58,204,255,1)";
     } else if(props.playerDetails.sport.toLowerCase() === "basketball"){
         refBack = require("../assets/BballApp.png");
+        sportColor = "rgba(200,98,57,1)";
     } else if(props.playerDetails.sport.toLowerCase() === "soccer"){
         refBack = require("../assets/SoccerApp.png");
+        sportColor = "rgba(134,119,198,1)";
     } else if(props.playerDetails.sport.toLowerCase() === "badminton"){
         refBack = require("../assets/BadmintonApp.png");
+        sportColor = "rgba(211,55,64,1)";
+
     }
 
 
@@ -171,32 +251,44 @@ const PlayerApplicationItem = props => {
 
     const refItem = <Modal visible={openDetails}>
         <ImageBackground source={refBack} opacity={0.8} style ={{height:"100%", width:"100%"}}>
-            {/*<Background>*/}
+            <View style = {{...Styles.innerHeaderStyle, backgroundColor: sportColor}}>
+                <TouchableOpacity activeOpacity={0.8} style={{flexDirection:"row",justifyContent:"center", alignItems:"center",position: 'absolute', left: 10,bottom: 5}}
+                                  onPress={() => setOpen(false)}
+                >
+                    <Ionicons name="ios-arrow-back" size={27} style={{color: 'white'}}/>
+                    <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
+                </TouchableOpacity>
+                <Text style = {{...styles.titleStyle, color: 'white', bottom: 5}}>Player Details</Text>
+                <TouchableOpacity activeOpacity={0.8} style={{position: 'absolute', right: 10, bottom: 5}}
+                                  onPress={() => {
+                                      props.closeRB()
+                                      chatWithPerson()
+                                      setOpen(false)
+                                  }}>
+                    <MaterialCommunityIcons name="chat" size={27} style={{color: 'white'}}/>
+                </TouchableOpacity>
+
+            </View>
             <View style = {{flexDirection: 'column', justifyContent: 'space-around',alignItems:"center", paddingTop: 5,}}>
-                <View style = {{...styles.elevatedComponent, height: 225}}>
-                    {/*<ImageBackground source={profileBack} style ={{width:"100%",height:"100%"}}>*/}
-                    <View style = {{marginTop:10}}>
-                        <View style={{flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
-                            <View style = {styles.photoFrame}>
-                                <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
-                                    uri: props.playerDetails.playerUri
-                                }}/>
-                            </View>
 
-                            <View style = {{paddingLeft: 30, marginTop: 10}}>
-                                <Text style = {{fontSize: 20}}> Name: {props.playerDetails.playerName}</Text>
-                                <Text style = {{fontSize: 20}}> Username: {props.playerDetails.playerUserName} </Text>
-                                <Text style = {{fontSize: 20}}> Email: {props.playerDetails.playerEmail}</Text>
-
-                            </View>
-                        </View>
+                <View style = {{...styles.elevatedComponent, height: 225, alignItems: 'center'}}>
+                    <View style = {styles.photoFrame}>
+                        <Image style = {{height: 85, width: 85, borderRadius: 170}} source = {{
+                            uri: props.playerDetails.playerUri
+                        }}/>
                     </View>
-                    {/*</ImageBackground>*/}
+
+                    <View style = {{ marginTop: 10}}>
+                        <Text style = {{fontSize: 20}}> Name: {props.playerDetails.playerName}</Text>
+                        <Text style = {{fontSize: 20}}> Username: {props.playerDetails.playerUserName} </Text>
+                        <Text style = {{fontSize: 20}}> Email: {props.playerDetails.playerEmail}</Text>
+
+                    </View>
                 </View>
 
                 <View style = {{...styles.elevatedComponent, height: 145}}>
                     <View style={styles.requestTitle}>
-                        <Text style={{fontSize:25}}>REQUESTS TO JOIN</Text>
+                        <Text style={{fontSize:25}}>Requests to join</Text>
                     </View>
 
                     <View style={{...styles.games}}
@@ -217,42 +309,28 @@ const PlayerApplicationItem = props => {
 
                         </View>
 
-                        <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:108}}/>
+                        <GameItemBackGround iconName={props.playerDetails.sport.toLowerCase()} style={{height:108, zIndex: -10}}/>
 
                     </View>
 
                 </View>
 
-                <View style ={{...Styles.horizontalbuttonContainer}}>
-                    <GradientButton style={{width: 120, height:37, marginRight: 75,}}
-                                    colors = {["red", "maroon"]}
+                <View style ={{flexDirection: 'row', width: '100%', top: 50, justifyContent: "space-evenly"}}>
+                    <GradientButton style={{width: 120, height:45, }}
+                                    colors = {['#e52d27', '#b31217']}
                                     onPress = {confirmDecline}
-                                    textStyle = {{fontSize: 15}}>
-                        DECLINE
+                                    textStyle = {{fontSize: 20}}>
+                        Decline
                     </GradientButton>
-
-
-
-                    <GradientButton style={{width: 120, height:37,}}
-                                    colors = {['#1bb479','#026c45']}
-                                    textStyle = {{fontSize: 15}}
-                                    onPress = {acceptFunction}
-                    >
-                        ACCEPT
-                    </GradientButton>
-                </View>
-
-                <View >
-                    <GradientButton style={{width: 200, height:45}}
+                    <GradientButton style={{width: 120, height:45,}}
                                     colors = {['#1bb479','#026c45']}
                                     textStyle = {{fontSize: 20}}
-                                    onPress = {() => {setOpen(false)}}
+                                    onPress = {acceptFunction}
                     >
-                        Back
+                        Accept
                     </GradientButton>
                 </View>
             </View>
-            {/*</Background>*/}
         </ImageBackground>
     </Modal>
 
@@ -321,6 +399,7 @@ const styles = StyleSheet.create({
         width: '90%',
         height: 200,
         elevation: 10,
+        justifyContent: 'center',
         backgroundColor: 'white',
         marginTop: 25,
         borderRadius:10,
@@ -339,7 +418,13 @@ const styles = StyleSheet.create({
         alignItems:"center",
         backgroundColor:"rgba(66,231,147,0.49)",
         height:35
-    }
+    },
+    titleStyle: {
+        color: 'white',
+        justifyContent: 'center',
+        fontSize: 21,
+        fontWeight: "bold",
+    },
 })
 
 export default PlayerApplicationItem;

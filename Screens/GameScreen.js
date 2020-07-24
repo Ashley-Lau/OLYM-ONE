@@ -25,6 +25,7 @@ import Styles from "../styling/Styles";
 import GameDetailsModal from "../Components/GameDetailsModal";
 import {noInput, noSport} from "../Components/NoDataMessages";
 import {Entypo} from 'react-native-vector-icons';
+import {Modal, Input} from "@ui-kitten/components";
 
 const sHeight = Dimensions.get('window').height
 
@@ -271,7 +272,7 @@ const GameScreen = (props) => {
                 <View style = {{top: Styles.statusBarHeight.height}}>
                     {/*==================================== Title and hosting a game ======================================*/}
                     <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                        <Text style = {styles.text}>Games</Text>
+                        <Text style = {styles.text}>Find Games</Text>
                         <View style = {{alignItems: 'center', justifyContent: 'center', flexDirection: 'row',}}>
                             <Text style = {{...styles.text, fontSize: 23, top: 2}}> Host </Text>
                             <TouchableOpacity style = {{backgroundColor: 'rgba(255,255,255,0.30)',alignItems: 'center', justifyContent: 'center', borderRadius: 5}}
@@ -290,87 +291,116 @@ const GameScreen = (props) => {
                     </View>
 
 
-                {/*==================================SEARCH BAR ==============================================*/}
-                <View style={styles.searchSpace}>
-                    <LocationSearchBar select = {val => setZone(val)}
-                                       onPress = {() => search(sportValue)}
-                                       onChange = {() => setZone('')}
-                    />
-                </View>
-                {/*===============================Sport Selection ===========================================*/}
-
-                <View style={{height: sHeight * 0.14}}>
-                    <FlatList showsHorizontalScrollIndicator={false}
-                              horizontal={true}
-                              contentContainerStyle= {{justifyContent:"space-between"}}
-                              keyExtractor={(item) => item.toString()}
-                              data = {sports}
-                              renderItem= {({item}) =>
-                                  item === sportValue
-                                      ?
-                                      <View style={styles.sportItem}>
-                                          <TouchableOpacity activeOpacity={0.6}
-                                                            style={{...styles.sportSelected}}
-                                                            onPress ={ () => {
-                                                                console.log(item)
-                                                                setSportValue("");
-                                                                // search(item);
-                                                            }}
-                                          >
-                                              <View style={styles.sportImageSelected}>
-                                                  <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
-                                              </View>
-
-                                          </TouchableOpacity>
-                                          <Text>{item}</Text>
-                                      </View>
-                                      : <View style={styles.sportItem}>
-                                          <TouchableOpacity activeOpacity={0.6}
-                                                            style={{...styles.sportSelection}}
-                                                            onPress ={() => {
-                                                                console.log(item)
-                                                                setSportValue(item);
-                                                                search(item);
-                                                            }}
-                                          >
-                                              <View style={styles.sportImageShadow}>
-                                                  <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
-                                              </View>
-
-                                          </TouchableOpacity>
-                                          <Text style={{opacity:0.3}}>{item}</Text>
-                                      </View>
-
-                              }
-
-                    >
-                    </FlatList>
-                </View>
-
-                {sportValue === "Others"
-                    ?
-                    <View style={{...styles.dropDown, paddingHorizontal:15}}>
-                        <TextInput
-                            placeholder={"Enter the sport you are searching for!"}
-                            style={{...styles.dropDownText, fontSize:16}}
-                            onChangeText={text => setSpecificSport(text)}
-                            value={specificSport}
+                    {/*==================================SEARCH BAR ==============================================*/}
+                    <View style={styles.searchSpace}>
+                        <LocationSearchBar select = {val => setZone(val)}
+                                           onPress = {() => search(sportValue)}
+                                           onChange = {() => setZone('')}
                         />
-                        <SearchButtons searchMe={() => search(specificSport)}/>
-
-
                     </View>
-                    :
-                    <View/>
-                }
+                    {/*===============================Sport Selection ===========================================*/}
 
-                <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
+                    <View style={{height: sHeight * 0.14}}>
+                        <FlatList showsHorizontalScrollIndicator={false}
+                                  horizontal={true}
+                                  contentContainerStyle= {{justifyContent:"space-between"}}
+                                  keyExtractor={(item) => item.toString()}
+                                  data = {sports}
+                                  renderItem= {({item}) =>
+                                      item === sportValue
+                                          ?
+                                          <View style={styles.sportItem}>
+                                              <TouchableOpacity activeOpacity={0.6}
+                                                                style={{...styles.sportSelected}}
+                                                                onPress ={ () => {
+                                                                    console.log(item)
+                                                                    setSportValue("");
+                                                                    // search(item);
+                                                                }}
+                                              >
+                                                  <View style={styles.sportImageSelected}>
+                                                      <Image source={sportImage(item)} style={{width:37.5, height:37.5, resizeMode:"contain", opacity:1.0}}/>
+                                                  </View>
+
+                                              </TouchableOpacity>
+                                              <Text>{item}</Text>
+                                          </View>
+                                          : <View style={styles.sportItem}>
+                                              <TouchableOpacity activeOpacity={0.6}
+                                                                style={{...styles.sportSelection}}
+                                                                onPress ={() => {
+                                                                    console.log(item)
+                                                                    setSportValue(item);
+                                                                    search(item);
+                                                                }}
+                                              >
+                                                  <View style={styles.sportImageShadow}>
+                                                      <Image source={sportImage(item)} style={{width:35, height:35, resizeMode:"contain", opacity:0.3}}/>
+                                                  </View>
+
+                                              </TouchableOpacity>
+                                              <Text style={{opacity:0.3}}>{item}</Text>
+                                          </View>
+
+                                  }
+
+                        >
+                        </FlatList>
+                    </View>
+                {/*{sportValue === "Others"*/}
+                {/*    ?<View style={{width:"96%", height: sHeight * 0.08, alignSelf: 'center' }}>*/}
+                {/*        <Input*/}
+                {/*            placeholder={"Enter the sport you are searching for!"}*/}
+                {/*            onChangeText={text => setSpecificSport(text)}*/}
+                {/*            value={specificSport}*/}
+                {/*           accessoryRight={(props) => (*/}
+                {/*               <SearchButtons searchMe={() => search(specificSport)}/>*/}
+                {/*           )}*/}
+                {/*        />*/}
+                {/*    </View>*/}
+                {/*    : null*/}
+                {/*}*/}
+                    <Modal
+                        visible={sportValue === "Others"}
+                        backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',}}
+                        onBackdropPress={() => setSportValue('')}>
+                        <View style = {{backgroundColor: 'white', height: 200, width: 250, borderRadius: 30, justifyContent: 'center', alignItems: 'center'}}>
+                            <Text style={{textAlign: 'center', fontSize: 18, bottom:35}}>Enter name of sport:</Text>
+                            <Input
+                                placeholder={"Eg. Cricket, Golf"}
+                                onChangeText={text => setSpecificSport(text)}
+                                value={specificSport}
+                                style  = {{width: '80%', bottom: 13}}
+                            />
+                            <View style = {{position: 'absolute', width: '100%', bottom: 0, height: 50,
+                                borderBottomLeftRadiusRadius: 30, borderBottomRightRadius: 30, borderTopWidth: 0.5, flexDirection:'row' }}>
+                                <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
+                                    borderBottomLeftRadiusRadius: 30, justifyContent: 'center', borderRightWidth: 0.5,}}
+                                                  onPress={() => {
+                                                      setSportValue('')
+                                                  }}
+                                >
+                                    <Text style={{textAlign: 'center', fontSize: 18, }}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
+                                    borderBottomRightRadius: 30, justifyContent: 'center', }}
+                                                  onPress={() => {
+                                                      search(specificSport)
+                                                      setSportValue('')
+                                                  }}
+                                >
+                                    <Text style={{textAlign: 'center', fontSize: 18, }}>Search</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                <View style={{height:sHeight * 0.64, paddingVertical: '4%' }}>
 
                     {!searchedBefore
                         ? noInput
                         : game.length === 0 && sportValue === "Others"
                             ? noInput
-                            : game.length === 0 && sportValue !== "Others"
+                            : game.length === 0
                                 ? noSport
                                 : <AnimatedFlatList
                                     scrollEventThrottle={16}
@@ -491,13 +521,13 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         justifyContent: 'center',
         alignItems:"center",
+        alignSelf: 'center',
         backgroundColor: 'ghostwhite',
         height: 40,
         borderWidth: 1,
         borderRadius:4,
         borderColor:"rgba(131,137,147,0.53)",
-        width: "97%",
-        marginLeft:"1.5%"
+        width: "96%",
     },
     dropDownText: {
         flexDirection:"row",

@@ -56,8 +56,7 @@ const GameItem = props => {
                             <Text>Hosting</Text>
                         </View>
 
-                        :
-                        <View></View>
+                        : null
                     }
 
                 </GameItemBackGround>
