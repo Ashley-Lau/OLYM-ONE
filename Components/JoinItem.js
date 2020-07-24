@@ -23,7 +23,8 @@ const JoinItem = props => {
             playerEmail:props.user.email,
             playerUserName:props.user.username,
             playerName: props.user.firstName + " " + props.user.lastName,
-            playerUri:props.user.uri
+            playerUri:props.user.uri,
+            applicationDate:new Date()
 
         })
             .then(() => {

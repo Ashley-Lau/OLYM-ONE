@@ -19,8 +19,7 @@ const FullGameItem = props => {
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/OthersBG.png");
     let sportColor = "rgba(47,49,53,1)"
-    let cardHeight = "100%"
-    let theme = Math.floor((Math.random()*3) + 1 );
+    let theme = props.index;
     if(props.gameDetails.sport.toLowerCase() === "basketball" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
             sportBG = require("../assets/BballRefereeBG.png");
@@ -51,7 +50,7 @@ const FullGameItem = props => {
         } else {
             sportBG = require("../assets/TennisBG.png");
         }
-        sportColor = "rgba(212,242,102,1)";
+        sportColor = "#a5bb3e";
 
     } else if(props.gameDetails.sport.toLowerCase() === "badminton" ){
         if(props.itemType === "Referee" || props.itemType === "Resign"){
@@ -62,7 +61,6 @@ const FullGameItem = props => {
         sportColor = "rgba(211,55,64,1)";
 
     } else {
-        cardHeight = "93%"
         if(theme === 1){
             sportBG = require("../assets/OthersBG.png");
         } else if (theme === 2){
@@ -116,7 +114,7 @@ const FullGameItem = props => {
         <View>
 
             <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
-                <TouchableOpacity style={{...styles.games, height:cardHeight}}
+                <TouchableOpacity style={{...styles.games}}
                                   onPress = {() => props.onPress()}
                 >
                     <ImageBackground source={sportBG}
@@ -180,7 +178,7 @@ const styles = StyleSheet.create({
         flexDirection:"row",
         borderRadius:40,
         width:350,
-        height:"100%",
+        height:"96%",
         overflow:"hidden",
         justifyContent:"center",
         alignItems:"flex-start",

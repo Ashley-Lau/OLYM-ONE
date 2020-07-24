@@ -187,7 +187,7 @@ const RefereeApplicationItem = props => {
     if(props.refDetails.sport.toLowerCase() === "tennis"){
         profileBack = require("../assets/tennis_coloured.png");
         refBack = require("../assets/TennisRefereeApp.png");
-        sportColor = "rgba(212,242,102,1)";
+        sportColor = "#a5bb3e";
     } else if(props.refDetails.sport.toLowerCase() === "floorball"){
         profileBack = require("../assets/floorball_coloured.png");
         refBack = require("../assets/floorballRefereeApp.png");
@@ -293,7 +293,7 @@ const RefereeApplicationItem = props => {
 
 
                     <GradientButton style={{width: 120, height:45,}}
-                                    colors = {['#1bb479','#026c45']}
+                                    colors = {['#ff8400','#e56d02']}
                                     textStyle = {{fontSize: 20}}
                                     onPress = {confirmAccept}
                     >
