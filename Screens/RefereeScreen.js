@@ -24,6 +24,7 @@ import {useNavigation} from "@react-navigation/native";
 import {noInput, noSport} from "../Components/NoDataMessages";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import {Input, Modal} from "@ui-kitten/components";
 
 
 
@@ -243,7 +244,7 @@ const RefereeScreen = (props) => {
             <View style = {{top: Styles.statusBarHeight.height}}>
             {/*==================================== Title and hosting a game ======================================*/}
             <View style = {{justifyContent: 'space-between',height: sHeight * 0.08, width: '100%', flexDirection: 'row', alignItems: 'flex-end', paddingHorizontal:10}}>
-                <Text style = {styles.text}>Referable Games</Text>
+                <Text style = {styles.text}>Find Games to Referee</Text>
 
             </View>
 
@@ -308,24 +309,59 @@ const RefereeScreen = (props) => {
             </View>
 
 
-            {sportValue === "Others"
-                ?
-                <View style={{...styles.dropDown, paddingHorizontal:15}}>
-                    <TextInput
-                        placeholder={"Enter the sport you are searching for!"}
-                        style={{...styles.dropDownText, fontSize:16}}
+            {/*{sportValue === "Others"*/}
+            {/*    ?*/}
+            {/*    <View style={{...styles.dropDown, paddingHorizontal:15}}>*/}
+            {/*        <TextInput*/}
+            {/*            placeholder={"Enter the sport you are searching for!"}*/}
+            {/*            style={{...styles.dropDownText, fontSize:16}}*/}
+            {/*            onChangeText={text => setSpecificSport(text)}*/}
+            {/*            value={specificSport}*/}
+            {/*        />*/}
+            {/*        <SearchButtons searchMe={() => search(specificSport)}/>*/}
+
+
+            {/*    </View>*/}
+            {/*    :*/}
+            {/*    <View/>*/}
+            {/*}*/}
+
+            <Modal
+                visible={sportValue === "Others"}
+                backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',}}
+                onBackdropPress={() => setSportValue('')}>
+                <View style = {{backgroundColor: 'white', height: 200, width: 250, borderRadius: 30, justifyContent: 'center', alignItems: 'center'}}>
+                    <Text style={{textAlign: 'center', fontSize: 18, bottom:35}}>Enter name of sport:</Text>
+                    <Input
+                        placeholder={"Eg. Cricket, Golf"}
                         onChangeText={text => setSpecificSport(text)}
                         value={specificSport}
+                        style  = {{width: '80%', bottom: 13}}
                     />
-                    <SearchButtons searchMe={() => search(specificSport)}/>
-
-
+                    <View style = {{position: 'absolute', width: '100%', bottom: 0, height: 50,
+                        borderBottomLeftRadiusRadius: 30, borderBottomRightRadius: 30, borderTopWidth: 0.5, flexDirection:'row' }}>
+                        <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
+                            borderBottomLeftRadiusRadius: 30, justifyContent: 'center', borderRightWidth: 0.5,}}
+                                          onPress={() => {
+                                              setSportValue('')
+                                          }}
+                        >
+                            <Text style={{textAlign: 'center', fontSize: 18, }}>Cancel</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
+                           borderBottomRightRadius: 30, justifyContent: 'center', }}
+                                          onPress={() => {
+                                              search(specificSport)
+                                              setSportValue('')
+                                          }}
+                        >
+                            <Text style={{textAlign: 'center', fontSize: 18, }}>Search</Text>
+                        </TouchableOpacity>
+                    </View>
                 </View>
-                :
-                <View/>
-            }
+            </Modal>
 
-            <View style={{height:sHeight * 0.6, paddingVertical:"4%"}}>
+            <View style={{height:sHeight * 0.64, paddingVertical:"4%", }}>
                 {!searchedBefore
                     ? noInput
                     : refereeList.length === 0 && sportValue === "Others"

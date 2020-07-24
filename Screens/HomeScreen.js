@@ -352,7 +352,7 @@ const HomeScreen = props => {
 
     const cannotFindGame = () => {
         Alert.alert("Cannot find the game you are looking for.",
-            "The game may have quitted the game or the game may be over.",
+            "You may have quitted the game or the game may be over.",
             [
                 {text:"Confirm", onPress: () => {}},
             ],
@@ -670,6 +670,7 @@ const HomeScreen = props => {
                                                     playerDetails={appl.value}
                                                     appId={appl.key}
                                                     user={user.id}
+                                                    closeRB = {()=> playerRef.current.close()}
                                                 />
 
                                             )
@@ -707,6 +708,7 @@ const HomeScreen = props => {
                                                                               refDetails={appl.value}
                                                                               appId={appl.key}
                                                                               user={user.id}
+                                                                              closeRB = {()=> refereeRef.current.close()}
                                                             />
 
                                                         )
@@ -718,7 +720,7 @@ const HomeScreen = props => {
                         </View>
                     </View>
                         {/*========================================Bottom Section==================================================*/}
-                    <View style = {{width: '90%', alignSelf: 'center', marginTop: 30, marginBottom: 30, }}>
+                    <View style = {{width: '90%', alignSelf: 'center', marginTop: 20, marginBottom: 30, }}>
                         <Text style = {{color: '#3b3b3b', fontWeight: 'bold', fontSize: 30,}}>
                             Upcoming Events
                         </Text>

@@ -117,7 +117,6 @@ const FullGameItem = props => {
 
             <Animated.View style={[styles.games, {opacity, transform: [{ translateX }, { scale }] }]} key={props.index}>
                 <TouchableOpacity style={{...styles.games, height:cardHeight}}
-                                  // onPress={() => {openGameDetails(true);}}
                                   onPress = {() => props.onPress()}
                 >
                     <ImageBackground source={sportBG}
@@ -140,14 +139,14 @@ const FullGameItem = props => {
                             </View>
                             {props.itemType === "Join"
                                 ?
-                                <View style={{flexDirection:"row", alignItems:"center"}}>
+                                <View style={{flexDirection:"row", alignItems:"center",}}>
                                     <MaterialCommunityIcons name="account-group" size={20}/>
-                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.players.length} </Text>
+                                    <Text style={{fontSize:15, color:"black", top: 1}}>  {props.gameDetails.players.length} </Text>
                                 </View>
                                 :
                                 <View style={{flexDirection:"row", alignItems:"center"}}>
                                     <MaterialCommunityIcons name="whistle" size={20}/>
-                                    <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.refereeList.length} </Text>
+                                    <Text style={{fontSize:15, color:"black", top: 2}}>  {props.gameDetails.refereeList.length} </Text>
                                 </View>
                             }
                         </View>
