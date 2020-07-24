@@ -123,6 +123,7 @@ const HomeScreen = props => {
         // for player application
         const unsubscribe = appRef
             .where("hostId", "==", data.id)
+            .orderBy("applicationDate", "desc")
             .onSnapshot( snapshot => {
                     let apps = [];
                     snapshot.forEach(doc => {
@@ -136,6 +137,7 @@ const HomeScreen = props => {
         // referee applications
         const unsubscribe2 = gameAppRef
             .where("hostId", "==", data.id)
+            .orderBy("applicationDate", "desc")
             .onSnapshot(snapshot => {
                 let gameApps = [];
                 snapshot.forEach(doc => {
