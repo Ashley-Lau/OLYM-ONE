@@ -154,8 +154,8 @@ const GameDetailsModal = props => {
         }
         refereeBG = require("../assets/TennisRefereeApp.png");
         playerBG = require("../assets/TennisApp.png");
-        sportColor = "rgba(212,242,102,1)";
-        lightColor = "rgb(196,172,19)";
+        sportColor = "#a5bb3e";
+        lightColor = "#fff853";
 
     } else if(props.route.params.gameDetails.sport.toLowerCase() === "badminton" ){
         if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){
@@ -168,19 +168,20 @@ const GameDetailsModal = props => {
         sportColor = "rgba(211,55,64,1)";
         lightColor = "rgb(218,138,158)"
     } else {
+
+        sportColor = "#AF3354";
+        lightColor = "#FCF062"
+
         if(theme === 1){
-            playerBG = require("../assets/OthersBG.png");
-            refereeBG = require("../assets/OthersBG.png");
+            playerBG = require("../assets/OthersApp.png");
+            refereeBG = require("../assets/OthersApp.png");
         } else if (theme === 2){
-            playerBG = require("../assets/OthersBG2.png");
-            refereeBG = require("../assets/OthersBG2.png");
-            sportColor = "rgba(200,98,57,1)";
-            lightColor = "rgb(252,238,184)"
+            playerBG = require("../assets/OthersApp2.png");
+            refereeBG = require("../assets/OthersApp2.png");
+
         } else{
-            playerBG = require("../assets/OthersBG3.png");
-            refereeBG = require("../assets/OthersBG3.png");
-            sportColor = "rgba(211,55,64,1)";
-            lightColor = "rgb(218,138,158)"
+            playerBG = require("../assets/OthersApp3.png");
+            refereeBG = require("../assets/OthersApp3.png");
         }
     }
 

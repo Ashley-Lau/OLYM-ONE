@@ -221,7 +221,7 @@ const PlayerApplicationItem = props => {
     let sportColor = "rgba(47,49,53,1)";
     if(props.playerDetails.sport.toLowerCase() === "tennis"){
         refBack = require("../assets/TennisApp.png");
-        sportColor = "rgba(212,242,102,1)";
+        sportColor = "#a5bb3e";
     } else if(props.playerDetails.sport.toLowerCase() === "floorball"){
         refBack = require("../assets/floorballApp.png");
         sportColor = "rgba(58,204,255,1)";
@@ -323,7 +323,7 @@ const PlayerApplicationItem = props => {
                         Decline
                     </GradientButton>
                     <GradientButton style={{width: 120, height:45,}}
-                                    colors = {['#1bb479','#026c45']}
+                                    colors = {['#ff8400','#e56d02']}
                                     textStyle = {{fontSize: 20}}
                                     onPress = {acceptFunction}
                     >
