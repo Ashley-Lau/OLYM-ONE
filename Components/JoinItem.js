@@ -11,6 +11,7 @@ const JoinItem = props => {
 
     const playerAppRef = firebaseDb.firestore().collection("player_application_details");
     const gameRef = firebaseDb.firestore().collection("game_details").doc(props.gameId);
+    const applDate = new Date();
 
     const gameApp = () => {
         playerAppRef.add({
@@ -24,7 +25,7 @@ const JoinItem = props => {
             playerUserName:props.user.username,
             playerName: props.user.firstName + " " + props.user.lastName,
             playerUri:props.user.uri,
-            applicationDate:new Date()
+            applicationDate:applDate.getMilliseconds()
 
         })
             .then(() => {

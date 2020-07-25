@@ -10,6 +10,8 @@ const RefereeItem = props => {
     //REQUEST FUNCTION ===============================================================================================
     const appRef = firebaseDb.firestore().collection('application_details')
     const gameRef = firebaseDb.firestore().collection("game_details").doc(props.gameId);
+    const applDate = new Date();
+
     const requestApp = () => {
         appRef.add({
             date:props.gameDetails.date,
@@ -21,7 +23,7 @@ const RefereeItem = props => {
             refereeUserName:props.user.username,
             refereeName: props.user.firstName + " " + props.user.lastName,
             refereeUri:props.user.uri,
-            applicationDate: new Date()
+            applicationDate: applDate.getMilliseconds()
         })
             .then(() => {
                 gameRef.update({applicants:firebase.firestore.FieldValue.arrayUnion(props.user.id)})
