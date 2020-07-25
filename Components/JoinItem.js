@@ -45,6 +45,7 @@ const JoinItem = props => {
             Alert.alert("Game is Full!", "There are no more slots available!")
         } else {
             gameApp();
+            props.closeGame()
             requestSentSuccessfully();
 
         }
@@ -60,13 +61,25 @@ const JoinItem = props => {
         )
     }
 
+    const confirmJoin = () => {
+        Alert.alert("Are you sure you want to join this game?",
+            "An application will be sent to host.",
+            [
+                {text:"Cancel", onPress: () => {}},
+                {text:"Confirm", onPress: () => {
+                        alreadyJoined()
+                        }},
+            ],
+            {cancelable: false}
+        )
+    }
+
 
     return (
 
         <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
                           onPress={() => {
-                              alreadyJoined();
-                              props.closeGame();
+                              confirmJoin()
                           }}
         >
             <Text style ={{fontSize:20, color:props.textColor}}>Request to Join</Text>

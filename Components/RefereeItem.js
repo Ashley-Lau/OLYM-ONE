@@ -41,12 +41,22 @@ const RefereeItem = props => {
         )
     }
 
+    const confirmJoin = () => {
+        Alert.alert("Are you sure you want to referee this game?",
+            "An application will be sent to host.",
+            [
+                {text:"Cancel", onPress: () => {}},
+                {text:"Confirm", onPress: () => {
+                    requestApp();
+                    props.closeGame();}},
+            ],
+            {cancelable: false}
+        )
+    }
+
     return (
         <TouchableOpacity style={{...props.style, justifyContent:"center", alignItems:"center"}}
-                          onPress={() => {
-                              requestApp();
-                              props.closeGame();
-                          }}
+                          onPress={confirmJoin}
         >
             <Text style ={{fontSize:20, color:props.textColor}}>Request to referee</Text>
         </TouchableOpacity>
