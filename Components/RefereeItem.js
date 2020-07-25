@@ -23,7 +23,7 @@ const RefereeItem = props => {
             refereeUserName:props.user.username,
             refereeName: props.user.firstName + " " + props.user.lastName,
             refereeUri:props.user.uri,
-            applicationDate: applDate.getMilliseconds()
+            applicationDate: applDate.getTime()
         })
             .then(() => {
                 gameRef.update({applicants:firebase.firestore.FieldValue.arrayUnion(props.user.id)})

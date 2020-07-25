@@ -25,7 +25,7 @@ const JoinItem = props => {
             playerUserName:props.user.username,
             playerName: props.user.firstName + " " + props.user.lastName,
             playerUri:props.user.uri,
-            applicationDate:applDate.getMilliseconds()
+            applicationDate:applDate.getTime()
 
         })
             .then(() => {
