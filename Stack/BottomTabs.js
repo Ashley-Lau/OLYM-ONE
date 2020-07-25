@@ -52,15 +52,9 @@ const ChatStack = (props) => {
 
 
 const BottomTabs = (props) => {
-    let gameSize = 26
+    let gameSize = 22
     let refereeSize = 24
-    let multiplier = 0.09
-    if (Platform.OS === "android") {
-        gameSize = 26
-        refereeSize = 24
-    } else {
-        multiplier = 0.095
-    }
+
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         tabBarOptions={{
@@ -68,13 +62,15 @@ const BottomTabs = (props) => {
             inactiveTintColor: '#8F9BB3',
             keyboardHidesTabBar: true,
             tabStyle: {
-                // paddingTop: 7,
-                // paddingBottom: 5,
-                bottom:5
+
+            },
+            labelStyle:{
+                bottom:5,
+                labelPosition:"below-icon"
             },
             style : {
                 justifyContent:"center",
-                height: Dimensions.get('window').height * multiplier,
+                height:60 + useSafeArea().bottom,
                 borderTopColor: 'transparent',
                 shadowColor: 'rgba(58,55,55,0.1)',
                 shadowOffset: { width: 0, height: 0 },
@@ -91,7 +87,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'HOME',
                 tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="home" color={color} size={gameSize} />
+                    <MaterialCommunityIcons name="home" color={color} size={refereeSize + 2} />
                 ),
             }}
         >
@@ -104,7 +100,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'GAMES',
                 tabBarIcon: ({ color }) => (
-                    <Ionicons name="ios-football" color={color} size={gameSize} />
+                    <Ionicons name="ios-american-football" color={color} size={gameSize} />
                 ),
             }}
         >
@@ -117,7 +113,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'REFEREE',
                 tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name= "whistle" color={color} size={refereeSize} />
+                    <MaterialCommunityIcons name= "whistle" color={color} size={refereeSize} style={{bottom:2}}/>
                 ),
             }}
         >
