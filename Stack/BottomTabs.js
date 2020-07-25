@@ -5,6 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import {createStackNavigator} from "@react-navigation/stack";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Ionicons from 'react-native-vector-icons/Ionicons';
+import { useSafeArea } from "react-native-safe-area-context";
 
 
 import GameScreen from "../../OLYM-ONE/Screens/GameScreen";
@@ -22,7 +23,7 @@ const Stack = createStackNavigator();
 const ProfileStack = (props) => {
     return  <Stack.Navigator headerMode={false}>
                 <Stack.Screen name = "HomeScreen" component = {HomeScreen} initialParams={{user: props.extraData}}/>
-                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>                
+                <Stack.Screen name = "ProfileScreen" component = {ProfileScreen}/>
                 <Stack.Screen name ="GameDetailsModal" component = {GameDetailsModal}/>
             </Stack.Navigator>
 }
@@ -51,11 +52,15 @@ const ChatStack = (props) => {
 
 
 const BottomTabs = (props) => {
-    // if (Platform.OS === "android") {
-    //     StatusBar.setBackgroundColor("rgba(0,0,0,0)");
-    //     StatusBar.setBarStyle("dark-content");
-    //     StatusBar.setTranslucent(true);
-    // }
+    let gameSize = 26
+    let refereeSize = 24
+    let multiplier = 0.09
+    if (Platform.OS === "android") {
+        gameSize = 26
+        refereeSize = 24
+    } else {
+        multiplier = 0.095
+    }
     return <Tab.Navigator
         initialRouteName= "ProfileStack"
         tabBarOptions={{
@@ -63,17 +68,19 @@ const BottomTabs = (props) => {
             inactiveTintColor: '#8F9BB3',
             keyboardHidesTabBar: true,
             tabStyle: {
-                paddingTop: 7,
-                paddingBottom: 5,
+                // paddingTop: 7,
+                // paddingBottom: 5,
+                bottom:5
             },
             style : {
-                height: Dimensions.get('window').height * 0.09,
+                justifyContent:"center",
+                height: Dimensions.get('window').height * multiplier,
                 borderTopColor: 'transparent',
                 shadowColor: 'rgba(58,55,55,0.1)',
                 shadowOffset: { width: 0, height: 0 },
                 shadowOpacity: 1,
                 shadowRadius: 15,
-                elevation: 10,
+                // elevation: 10,
             }
 
         }}
@@ -84,7 +91,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'HOME',
                 tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="home" color={color} size={26} />
+                    <MaterialCommunityIcons name="home" color={color} size={gameSize} />
                 ),
             }}
         >
@@ -97,7 +104,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'GAMES',
                 tabBarIcon: ({ color }) => (
-                    <Ionicons name="ios-football" color={color} size={26} />
+                    <Ionicons name="ios-football" color={color} size={gameSize} />
                 ),
             }}
         >
@@ -110,7 +117,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'REFEREE',
                 tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name= "whistle" color={color} size={26} />
+                    <MaterialCommunityIcons name= "whistle" color={color} size={refereeSize} />
                 ),
             }}
         >
@@ -122,7 +129,7 @@ const BottomTabs = (props) => {
             options={{
                 tabBarLabel: 'CHATS',
                 tabBarIcon: ({ color }) => (
-                    <MaterialCommunityIcons name="chat" color={color} size={26} />
+                    <MaterialCommunityIcons name="chat" color={color} size={refereeSize} />
                 ),
             }}
         >

@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-import {StyleSheet, View, Image, Text, Alert, } from 'react-native';
+import {StyleSheet, View, Image, Text, Alert, SafeAreaView} from 'react-native';
 
 import { useNavigation } from '@react-navigation/native';
 import {Sae} from 'react-native-textinput-effects';
@@ -7,6 +7,7 @@ import SimpleLineIcons from 'react-native-vector-icons/SimpleLineIcons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {AppLoading} from 'expo';
 import {Asset} from "expo-asset";
+import { useSafeArea } from "react-native-safe-area-context";
 
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
@@ -14,11 +15,13 @@ import firebaseDb from "../firebaseDb";
 import SkyscrapperBackground from "../views/SkyscrapperBackground";
 import {get} from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
+
 const LoginScreen = (props) => {
     const navigation = useNavigation()
     const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
 
 
     const backSunset = require("../assets/sunset_running_newstyle.png");
@@ -139,7 +142,7 @@ const LoginScreen = (props) => {
                             </View>
 
                         </View>
-                        <View style={{position: "absolute", bottom: 15}}>
+                        <View style={{position: "absolute", bottom: useSafeArea().bottom}}>
                             <Text style = {{fontSize: 14, fontWeight: 'bold',}}> Forgot password?
                                 <Text style = {{color: 'maroon'}} onPress = {()=> navigation.navigate('ResetPasswordScreen')}> Reset here.</Text>
                             </Text>

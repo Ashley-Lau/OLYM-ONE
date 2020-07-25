@@ -28,6 +28,7 @@ YellowBox.ignoreWarnings([
 const Stack = createStackNavigator();
 
 export default function App() {
+  console.disableYellowBox = true;
   const [data, setData] = useState({
     loading: false,
     user: null

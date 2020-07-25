@@ -109,7 +109,7 @@ const ChatScreen = props => {
                             <View style = {{width: '100%', height: Styles.statusBarHeight.height + 45, backgroundColor: 'rgb(226,147,73)', flexDirection: 'row', alignItems: 'center', justifyContent:'space-between', paddingTop: Platform.OS === 'ios' ? Styles.statusBarHeight.height : 0}}>
                                 {/*==================================================back button==========================================*/}
                                 <TouchableOpacity style = {{alignItems: 'center', height: '100%', flexDirection: 'row', marginLeft: 10}}
-                                                  onPress = {() => navigation.navigate('ChatStack')}
+                                                  onPress = {() => navigation.goBack()}
                                                   activeOpacity= {0.8}>
                                     <Ionicons name="ios-arrow-back" color={'white'} size={30} />
                                     <Text style = {{fontSize: 20, marginLeft: 6, color: 'white'}}>Back</Text>
