@@ -3,7 +3,7 @@ import {StyleSheet, ImageBackground} from 'react-native';
 
 
 const GameItemBackGround = props => {
-    let icon = require("../assets/other_games.png")
+    let icon = require("../assets/other_games_icon.png")
     let style = styles.imageBack
     if(props.iconName === "basketball"){
         icon = require("../assets/basketball_coloured.png")

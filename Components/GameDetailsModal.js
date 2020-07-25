@@ -155,7 +155,7 @@ const GameDetailsModal = props => {
         refereeBG = require("../assets/TennisRefereeApp.png");
         playerBG = require("../assets/TennisApp.png");
         sportColor = "#a5bb3e";
-        lightColor = "#fff853";
+        lightColor = "#ffffff";
 
     } else if(props.route.params.gameDetails.sport.toLowerCase() === "badminton" ){
         if(props.route.params.itemType === "Referee" || props.route.params.itemType === "Resign"){

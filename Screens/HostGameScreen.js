@@ -407,38 +407,47 @@ const HostGameScreen = props => {
                                                        props.setFieldTouched('date');}}
                                 />)}
 
-                            {/*// PRICE ------------------------------------------------------------------------*/}
-
-
-                            <View style={styles.inputContainer}>
-                                <Input keyboardType={"number-pad"}
-                                       placeholder={"0.00"}
-                                       onChangeText={props.handleChange('price')}
-                                       value={props.values.price}
-                                       onBlur = {props.handleBlur('price')}
-                                       label = {() => header('Price: ')}
-                                       accessoryRight={(props) => (
-                                           <Icon {...props} name='pricetags-outline'/>
-                                       )}
-                                />
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.price && props.errors.price}</Text>
-                            </View>
-
-                            {/*// NUMBER OF PLAYERS REQUIRED ------------------------------------------------------------------------*/}
-
                             <View style = {styles.inputContainer}>
-                                <Input keyboardType={"number-pad"}
-                                       placeholder={"0"}
-                                       onChangeText={props.handleChange('slots')}
-                                       value={props.values.slots}
-                                       onBlur = {props.handleBlur('slots')}
-                                       label = {() => header('Number of players required: ')}
-                                       accessoryRight={(props) => (
-                                           <Icon {...props} name='people-outline'/>
-                                       )}
-                                />
-                                <Text style={{fontSize: 15, color: 'red'}}>{props.touched.slots && props.errors.slots}</Text>
+                                <View style = {{flexDirection:'row', justifyContent: 'space-between' }}>
+
+                                {/*// PRICE ------------------------------------------------------------------------*/}
+
+
+                                    <View style={{...styles.inputContainer, width:"45%"}}>
+                                        <Input keyboardType={"number-pad"}
+                                               placeholder={"0.00"}
+                                               onChangeText={props.handleChange('price')}
+                                               value={props.values.price}
+                                               onBlur = {props.handleBlur('price')}
+                                               label = {() => header('Price: ')}
+                                               accessoryRight={(props) => (
+                                                   <Icon {...props} name='pricetags-outline'/>
+                                               )}
+                                        />
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.price && props.errors.price}</Text>
+                                    </View>
+
+                                    {/*// NUMBER OF PLAYERS REQUIRED ------------------------------------------------------------------------*/}
+
+                                    <View style = {{...styles.inputContainer, width:"45%"}}>
+
+                                        <Input keyboardType={"number-pad"}
+                                               placeholder={"0"}
+                                               onChangeText={props.handleChange('slots')}
+                                               value={props.values.slots}
+                                               onBlur = {props.handleBlur('slots')}
+                                               label = {() => header('No. of slots: ')}
+                                               accessoryRight={(props) => (
+                                                   <Icon {...props} name='people-outline'/>
+                                               )}
+                                        />
+                                        <Text style={{fontSize: 15, color: 'red'}}>{props.touched.slots && props.errors.slots}</Text>
+                                    </View>
+
+                                </View>
                             </View>
+
+
 
                             {/*//NOTES----------------------------------------------------------------------------*/}
                             <View style = {styles.inputContainer}>
