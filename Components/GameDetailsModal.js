@@ -245,6 +245,7 @@ const GameDetailsModal = props => {
     const [refereeDetails, openRefereeDetails] = useState([]);
 
 
+
     return (
         <View style={{flex:1}}>
 
@@ -389,7 +390,7 @@ const GameDetailsModal = props => {
 
             <View style={{...styles.bottomOptions, backgroundColor: sportColor}}>
 
-                {props.route.params.itemType === "Join" || "Quit"
+                {props.route.params.itemType === "Join" || props.route.params.itemType === "Quit"
                 ?
                     <View>
                         <View style={{flexDirection:"column", alignItems:"flex-start", justifyContent:"flex-start"}}>
