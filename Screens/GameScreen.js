@@ -339,7 +339,6 @@ const GameScreen = (props) => {
                                               <TouchableOpacity activeOpacity={0.6}
                                                                 style={{...styles.sportSelection}}
                                                                 onPress ={() => {
-                                                                    console.log(item)
                                                                     setSportValue(item);
                                                                     if (item !== 'Others') {
                                                                         search(item);
