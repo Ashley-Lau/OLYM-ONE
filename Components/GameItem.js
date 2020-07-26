@@ -15,8 +15,10 @@ const GameItem = props => {
         gameDate = gameDate.toDate().toString().slice(4,15);
     }
 
-
     let sportIcon = props.gameDetails.sport.toLowerCase();
+
+    const totalPlayers = props.gameDetails.players.length + parseInt(props.gameDetails.availability);
+    const totalReferee = props.gameDetails.refereeList.length + parseInt(props.gameDetails.refereeSlots);
 
 
 
@@ -41,10 +43,19 @@ const GameItem = props => {
                         <MaterialCommunityIcons name="calendar-range" size={18}/>
                         <Text style={{fontSize:15, color:"black"}}>  {gameDate} </Text>
                     </View>
-                    <View style={{flexDirection:"row", alignItems:"center"}}>
-                        <MaterialCommunityIcons name="account-group" size={18}/>
-                        <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.availability}</Text>
-                    </View>
+                    {props.itemType === "Quit"
+                    ?
+                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                            <MaterialCommunityIcons name="account-group" size={18}/>
+                            <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.players.length} / {totalPlayers}</Text>
+                        </View>
+                    :
+                        <View style={{flexDirection:"row", alignItems:"center"}}>
+                            <MaterialCommunityIcons name="account-group" size={18}/>
+                            <Text style={{fontSize:15, color:"black"}}>  {props.gameDetails.refereeList.length} / {totalReferee}</Text>
+                        </View>
+                    }
+
                 </View>
 
                 <GameItemBackGround iconName={sportIcon} style={{height:95, flexDirection:"row", justifyContent: "flex-end", alignItems:"flex-end"}}>
