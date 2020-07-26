@@ -281,7 +281,6 @@ const RefereeScreen = (props) => {
                                                         style={{...styles.sportSelected}}
                                                         onPress ={ () => {
                                                             setSportValue(item);
-                                                            search(item);
                                                         }}
                                       >
                                           <View style={styles.sportImageSelected}>
@@ -296,7 +295,9 @@ const RefereeScreen = (props) => {
                                                         style={{...styles.sportSelection}}
                                                         onPress ={ () => {
                                                             setSportValue(item);
-                                                            search(item);
+                                                            if (item !== 'Others') {
+                                                                search(item);
+                                                            }
                                                         }}
                                       >
                                           <View style={styles.sportImageShadow}>
