@@ -10,6 +10,7 @@ import {
     TouchableOpacity,
     Animated,
 } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import {useNavigation} from "@react-navigation/native";
 import GradientButton from "../Components/GradientButton";
@@ -22,7 +23,16 @@ import {Formik} from 'formik';
 import * as yup from 'yup'
 import CustButton from "../Components/CustButton";
 import firebaseDb from "../firebaseDb";
-import {Autocomplete, AutocompleteItem, Select, SelectItem, Input, Datepicker, Icon} from '@ui-kitten/components';
+import {
+    Autocomplete,
+    AutocompleteItem,
+    Select,
+    SelectItem,
+    Input,
+    Datepicker,
+    Icon,
+    Spinner
+} from '@ui-kitten/components';
 import {mrtStations} from "../Components/SearchBarFunctions";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import {MaterialCommunityIcons} from "react-native-vector-icons";
@@ -84,6 +94,7 @@ const reviewSchema = yup.object({
 const HostGameScreen = props => {
 
     const [data, setData] = useState({})
+    const [loading, setLoading] = useState(false)
 
 
     useEffect(() => {
@@ -129,8 +140,9 @@ const HostGameScreen = props => {
     const [refIndex, setRefIndex] = useState();
 
     // UPDATING THE GAME ITEM AND DETAIL ==============================================================================================================
-    const handleCreateGame = values => {
-        values.sport === "Others"
+    const handleCreateGame = async values => {
+        setLoading(true)
+        await values.sport === "Others"
         ?
 
         firebaseDb.firestore()
@@ -138,7 +150,7 @@ const HostGameScreen = props => {
             .add({
                 sport: values.specificSport.toLowerCase(),
                 location: values.location,
-                specificLocation: values.specificLocation,
+                specificLocation: values.specificLocation.toLowerCase().trim(),
                 notes: values.notes,
                 availability : values.slots,
                 date: sgTime(values.date),
@@ -174,6 +186,7 @@ const HostGameScreen = props => {
                 })
                 .then(() => {successfullyHostedGame()})
                 .catch(err => console.error(err))
+        setLoading(false)
     }
 
     const successfullyHostedGame= () => {
@@ -221,7 +234,7 @@ const HostGameScreen = props => {
                 <Text style = {{...styles.titleStyle, }}> Host Game </Text>
             </View>
         </Animated.View>
-        <ScrollView showsVerticalScrollIndicator={false}
+        <KeyboardAwareScrollView showsVerticalScrollIndicator={false}
                     bounces = {false}
                     style = {{height: '100%', }}
                     onScroll={Animated.event(
@@ -510,13 +523,16 @@ const HostGameScreen = props => {
                             <GradientButton onPress={props.handleSubmit}
                                             colors ={['#ff8400','#e56d02']}
                                             style={{...styles.button, width: '80%'}}>
-                                <Text>Host</Text>
+                                {!loading
+                                    ? 'Host'
+                                    : <Spinner status='basic'  size = 'small'/>
+                                }
                             </GradientButton>
                         </View>
                     )}
                 </Formik>
             </Background>
-            </ScrollView>
+            </KeyboardAwareScrollView>
         </View>
     )
 }

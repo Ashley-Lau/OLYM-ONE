@@ -8,6 +8,8 @@ import FontAwesome5 from 'react-native-vector-icons/FontAwesome5'
 import {AppLoading} from 'expo';
 import {Asset} from "expo-asset";
 import { useSafeArea } from "react-native-safe-area-context";
+import { Spinner} from '@ui-kitten/components';
+
 
 import Styles from "../styling/Styles";
 import GradientButton from "../Components/GradientButton";
@@ -21,7 +23,7 @@ const LoginScreen = (props) => {
     const [loaded, setLoaded] = useState(false);
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
-
+    const [loading, setLoading] = useState(false)
 
 
     const backSunset = require("../assets/sunset_running_newstyle.png");
@@ -55,8 +57,9 @@ const LoginScreen = (props) => {
         return Asset.loadAsync(backSunset);
     }
 
-    const signInUser = () => {
-        firebaseDb.auth()
+    const signInUser = async () => {
+        setLoading(true)
+        await firebaseDb.auth()
             .signInWithEmailAndPassword(email, password)
             .then((response) => {
                 const uid = response.user.uid
@@ -83,12 +86,14 @@ const LoginScreen = (props) => {
                         .then((doc) => {})
                         .catch((error) => alert(error));
                     emailNotVerified(response.user)
-                    firebaseDb.auth().signOut().then(() => {})
+                    firebaseDb.auth().signOut().then(() => { setLoading(false)})
                 }
+
             })
             .catch(error => {
                 alertMessage()
             })
+        setLoading(false)
     }
 
     if(loaded){
@@ -129,9 +134,12 @@ const LoginScreen = (props) => {
                             />
                             <View style={{width: '100%', marginTop: 20}}>
                                 <GradientButton onPress={signInUser}
-                                                style={style.button}
+                                                style={{...style.button, }}
                                                 colors={['#ff8400','#e56d02']}>
-                                    Login
+                                    {!loading
+                                        ? 'Login'
+                                        : <Spinner status='basic'  size = 'small'/>
+                                        }
                                 </GradientButton>
                                 <GradientButton onPress={() => navigation.navigate('SignupScreen')}
                                                 style={style.button}
