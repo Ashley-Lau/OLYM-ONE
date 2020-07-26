@@ -15,6 +15,9 @@ const FullGameItem = props => {
         gameDate = gameDate.toDate().toString().slice(4,15);
     }
 
+    const totalPlayers = props.gameDetails.players.length + parseInt(props.gameDetails.availability);
+    const totalReferee = props.gameDetails.refereeList.length + parseInt(props.gameDetails.refereeSlots);
+
 
     //SPORT BG and colour================================================================================================================================
     let sportBG = require("../assets/OthersBG.png");
@@ -139,12 +142,12 @@ const FullGameItem = props => {
                                 ?
                                 <View style={{flexDirection:"row", alignItems:"center",}}>
                                     <MaterialCommunityIcons name="account-group" size={20}/>
-                                    <Text style={{fontSize:15, color:"black", top: 1}}>  {props.gameDetails.players.length} </Text>
+                                    <Text style={{fontSize:15, color:"black", top: 1}}>  {props.gameDetails.players.length} / {totalPlayers} </Text>
                                 </View>
                                 :
                                 <View style={{flexDirection:"row", alignItems:"center"}}>
                                     <MaterialCommunityIcons name="whistle" size={20}/>
-                                    <Text style={{fontSize:15, color:"black", top: 2}}>  {props.gameDetails.refereeList.length} </Text>
+                                    <Text style={{fontSize:15, color:"black", top: 2}}>  {props.gameDetails.refereeList.length} / {totalReferee}</Text>
                                 </View>
                             }
                         </View>

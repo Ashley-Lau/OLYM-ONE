@@ -148,7 +148,7 @@ const HostGameScreen = props => {
         firebaseDb.firestore()
             .collection('game_details')
             .add({
-                sport: values.specificSport.toLowerCase(),
+                sport: values.specificSport.toLowerCase().trim(),
                 location: values.location,
                 specificLocation: values.specificLocation.toLowerCase().trim(),
                 notes: values.notes,
