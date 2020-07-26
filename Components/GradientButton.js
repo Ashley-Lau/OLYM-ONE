@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 
 const GradientButton = props => (
     <TouchableOpacity style={[styles.container, props.style]} onPress={props.onPress} activeOpacity={.9}>
-        <LinearGradient style = {{borderRadius: 22.5, flex: 1, justifyContent: 'center'}} colors ={props.colors}>
+        <LinearGradient style = {{borderRadius: 22.5, flex: 1, justifyContent: 'center', alignItems: 'center'}} colors ={props.colors}>
             <Text style={{...styles.text,...props.textStyle}}>{props.children}</Text>
         </LinearGradient>
     </TouchableOpacity>
@@ -25,10 +25,11 @@ const styles = StyleSheet.create({
     },
     text: {
         fontSize: 20,
-        paddingHorizontal: 10,
         color: 'white',
         textAlign: 'center',
-        alignSelf: 'center'
+        alignSelf: 'center',
+        justifyContent: 'center',
+        alignItems: 'center'
     }
 })
 

@@ -15,7 +15,7 @@ import * as Animatable from 'react-native-animatable';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import {Formik} from 'formik';
 import * as yup from 'yup';
-import { Select, SelectItem, Icon, Datepicker} from '@ui-kitten/components';
+import {Select, SelectItem, Icon, Datepicker, Spinner} from '@ui-kitten/components';
 
 import GradientButton from "../Components/GradientButton";
 import CustButton from "../Components/CustButton"
@@ -56,11 +56,13 @@ const SignupScreen = props => {
 
     const navigation = useNavigation();
     const [selectedIndex, setSelectedIndex] = useState();
+    const [loading, setLoading] = useState(false)
 
     const genderData = ['Male', 'Female']
 
-    const handleCreateUser = values => {
-        firebaseDb.auth().createUserWithEmailAndPassword(values.email, values.password)
+    const handleCreateUser = async values => {
+        setLoading(true)
+        await firebaseDb.auth().createUserWithEmailAndPassword(values.email, values.password)
             .then((response) => {
             const uid = response.user.uid
             const data = {
@@ -95,6 +97,7 @@ const SignupScreen = props => {
             .catch((error) => {
                 alert(error)
             });
+        setLoading(false)
     }
 
     const emailNotVerified = (user) => {
@@ -220,7 +223,10 @@ const SignupScreen = props => {
                                         <GradientButton onPress={props.handleSubmit}
                                                         style={style.button}
                                                         colors={['#ff8400','#e56d02']}>
-                                            Register
+                                            {!loading
+                                                ? 'Register'
+                                                : <Spinner status='basic'  size = 'small'/>
+                                            }
                                         </GradientButton>
                                     </View>
                             </View>

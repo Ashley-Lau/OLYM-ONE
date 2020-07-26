@@ -156,11 +156,13 @@ const ChatDetailScreen = (props) => {
                                                 {item.value.smallerId[0] === userId ? item.value.largerId[1] : item.value.smallerId[1]}
                                             </Text>
                                             <Text style = {{fontSize: 15,}}>
-                                                {item.value.lastMessage.toString().length > 20
-                                                    ? item.value.lastMessage.slice(0,19) + '...'
-                                                    : item.value.lastMessage.toString().length === 0
-                                                        ? ''
-                                                        : item.value.lastMessage.slice(0,19)
+                                                {item.value.lastMessage.toString().length === 0
+                                                    ? ''
+                                                    : item.value.lastMessage.toString().includes('\n')
+                                                        ? item.value.lastMessage.toString().split('\n')[0].slice(0,19) + '...'
+                                                        : item.value.lastMessage.toString().length > 20
+                                                            ? item.value.lastMessage.toString().slice(0,19) + '...'
+                                                            : item.value.lastMessage.toString().slice(0,19)
                                                 }
                                             </Text>
                                         </View>

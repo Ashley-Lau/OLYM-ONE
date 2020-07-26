@@ -12,6 +12,7 @@ import {
     StatusBar
 } from 'react-native'
 
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import {useNavigation} from "@react-navigation/native";
 import Styles from '../styling/Styles';
 import DateTimePicker from "@react-native-community/datetimepicker";
@@ -22,7 +23,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import * as ImagePicker from 'expo-image-picker';
 import { getStatusBarHeight } from 'react-native-status-bar-height';
 import {setFormikInitialValue} from "react-native-formik";
-import { Select, SelectItem, Spinner} from '@ui-kitten/components';
+import { Spinner} from '@ui-kitten/components';
 
 import {Ionicons, MaterialCommunityIcons} from "react-native-vector-icons";
 // import MaterialCommunityIcons
@@ -54,6 +55,7 @@ const ProfileScreen = (props) => {
     const [isProfile, setIsProfile] = useState(true)
     const [changingPicture, setChangingPicture] = useState(false)
     const email = props.route.params.data.email
+    const [loading, setLoading] = useState(false)
 
     // Animation for the header
     const HEADER_MAX_HEIGHT = 45
@@ -81,19 +83,20 @@ const ProfileScreen = (props) => {
                 confirmPassword: '',
             }}
             validationSchema = {reviewSchema(props.route.params.data.password)}
-            onSubmit={(values, actions) => {
-                props.route.params.handler({
+            onSubmit={async (values, actions) => {
+                await props.route.params.handler({
                     firstName: values.firstName,
                     lastName: values.lastName,
                     username: values.username,
                     password: values.confirmPassword,
                     uri: values.uri,
                 })
+                setLoading(false)
                 setIsProfile(!isProfile)
             }}
         >
             {(props) => (
-            <View >
+            <View>
                 {/*======================================== Header ===================================================*/}
                 <Animated.View style = {{
                     ...Styles.animatedHeaderStyle,
@@ -124,7 +127,7 @@ const ProfileScreen = (props) => {
                     </View>
                 </Animated.View>
 
-                <ScrollView showsVerticalScrollIndicator={false}
+                <KeyboardAwareScrollView showsVerticalScrollIndicator={false}
                             bounces = {false}
                             style = {{height: '100%', }}
                             onScroll={Animated.event(
@@ -239,7 +242,10 @@ const ProfileScreen = (props) => {
                                         }}
                                                         style={style.button}
                                                         colors ={['#ff8400','#e56d02']}>
-                                            Update
+                                            {!loading
+                                                ? 'Update'
+                                                : <Spinner status='basic'  size = 'small'/>
+                                            }
                                         </GradientButton>
                                     </View></>
                                     }
@@ -247,7 +253,7 @@ const ProfileScreen = (props) => {
                             </View>
                         </Background>
                     </TouchableWithoutFeedback>
-                </ScrollView>
+                </KeyboardAwareScrollView>
             </View>
             )}
         </Formik>

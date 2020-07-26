@@ -25,12 +25,18 @@ import {noInput, noSport} from "../Components/NoDataMessages";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import {Input, Modal} from "@ui-kitten/components";
+import {Formik} from "formik";
+import * as yup from "yup";
 
 
 
 const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
 const sHeight = Dimensions.get('window').height;
 
+const reviewSchema = yup.object({
+    sport: yup.string().label('Sport').required('Please input a sport!').test('not empty test', 'Please input a sport!',
+        (sport) => sport !== '')
+})
 
 const RefereeScreen = (props) => {
 
@@ -308,65 +314,84 @@ const RefereeScreen = (props) => {
                 </FlatList>
             </View>
 
-
-            {/*{sportValue === "Others"*/}
-            {/*    ?*/}
-            {/*    <View style={{...styles.dropDown, paddingHorizontal:15}}>*/}
-            {/*        <TextInput*/}
-            {/*            placeholder={"Enter the sport you are searching for!"}*/}
-            {/*            style={{...styles.dropDownText, fontSize:16}}*/}
-            {/*            onChangeText={text => setSpecificSport(text)}*/}
-            {/*            value={specificSport}*/}
-            {/*        />*/}
-            {/*        <SearchButtons searchMe={() => search(specificSport)}/>*/}
-
-
-            {/*    </View>*/}
-            {/*    :*/}
-            {/*    <View/>*/}
-            {/*}*/}
-
-            <Modal
-                visible={sportValue === "Others"}
-                backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',}}
-                onBackdropPress={() => setSportValue('')}>
-                <View style = {{backgroundColor: 'white', height: 200, width: 250, borderRadius: 30, justifyContent: 'center', alignItems: 'center'}}>
-                    <Text style={{textAlign: 'center', fontSize: 18, bottom:35}}>Enter name of sport:</Text>
-                    <Input
-                        placeholder={"Eg. Cricket, Golf"}
-                        onChangeText={text => setSpecificSport(text)}
-                        value={specificSport}
-                        style  = {{width: '80%', bottom: 13}}
-                    />
-                    <View style = {{position: 'absolute', width: '100%', bottom: 0, height: 50,
-                        borderBottomLeftRadiusRadius: 30, borderBottomRightRadius: 30, borderTopWidth: 0.5, flexDirection:'row' }}>
-                        <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
-                            borderBottomLeftRadiusRadius: 30, justifyContent: 'center', borderRightWidth: 0.5,}}
-                                          onPress={() => {
-                                              setSportValue('')
-                                          }}
-                        >
-                            <Text style={{textAlign: 'center', fontSize: 18, }}>Cancel</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity activeOpacity={0.8} style = {{width: '50%', height: 50,
-                           borderBottomRightRadius: 30, justifyContent: 'center', }}
-                                          onPress={() => {
-                                              search(specificSport)
-                                              setSportValue('')
-                                          }}
-                        >
-                            <Text style={{textAlign: 'center', fontSize: 18, }}>Search</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </Modal>
+            <Formik
+                initialValues = {{
+                    sport: ''
+                }}
+                validationSchema = {reviewSchema}
+                onSubmit={(values, actions) => {
+                    search(values.sport)
+                    setSportValue('')
+                }}
+            >
+                {props =>
+                    <Modal
+                        visible={sportValue === "Others"}
+                        backdropStyle={{backgroundColor: 'rgba(0, 0, 0, 0.5)',}}
+                        onBackdropPress={() => setSportValue('')}>
+                        <View style={{
+                            backgroundColor: 'white',
+                            height: 200,
+                            width: 250,
+                            borderRadius: 30,
+                            justifyContent: 'center',
+                            alignItems: 'center'
+                        }}>
+                            <Text style={{textAlign: 'center', fontSize: 18, bottom: 35}}>Enter name of
+                                sport:</Text>
+                            <Input
+                                placeholder={"Eg. Cricket, Golf"}
+                                onChangeText={
+                                    props.handleChange( 'sport')
+                                }
+                                onBlur = {props.handleBlur('sport')}
+                                value={props.values.sport}
+                                style={{width: '80%',}}
+                            />
+                            <Text style={{textAlign: 'center', fontSize: 15, color: 'red', bottom: 5}}>{props.touched.sport && props.errors.sport}</Text>
+                            <View style={{
+                                position: 'absolute',
+                                width: '100%',
+                                bottom: 0,
+                                height: 50,
+                                borderBottomLeftRadiusRadius: 30,
+                                borderBottomRightRadius: 30,
+                                borderTopWidth: 0.5,
+                                flexDirection: 'row'
+                            }}>
+                                <TouchableOpacity activeOpacity={0.8} style={{
+                                    width: '50%',
+                                    height: 50,
+                                    borderBottomLeftRadiusRadius: 30,
+                                    justifyContent: 'center',
+                                    borderRightWidth: 0.5,
+                                }}
+                                                  onPress={() => {
+                                                      setSportValue('')
+                                                  }}
+                                >
+                                    <Text style={{textAlign: 'center', fontSize: 18,}}>Cancel</Text>
+                                </TouchableOpacity>
+                                <TouchableOpacity activeOpacity={0.8} style={{
+                                    width: '50%', height: 50,
+                                    borderBottomRightRadius: 30, justifyContent: 'center',
+                                }}
+                                                  onPress={
+                                                      props.handleSubmit
+                                                  }
+                                >
+                                    <Text style={{textAlign: 'center', fontSize: 18,}}>Search</Text>
+                                </TouchableOpacity>
+                            </View>
+                        </View>
+                    </Modal>
+                }
+            </Formik>
 
             <View style={{height:sHeight * 0.64, paddingVertical:"4%", }}>
                 {!searchedBefore
                     ? noInput
-                    : refereeList.length === 0 && sportValue === "Others"
-                        ? noInput
-                        : refereeList.length === 0 && sportValue !== "Others"
+                    : refereeList.length === 0
                             ? noSport
                             :   <AnimatedFlatList
                                 scrollEventThrottle={16}
