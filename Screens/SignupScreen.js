@@ -204,10 +204,11 @@ const SignupScreen = props => {
                                     <Datepicker
                                         label= {() => <Text style = {{fontSize: 15, fontWeight: 'bold', marginTop: 10,}}>Birth Date: </Text>}
                                         placeholder='Pick Date'
+                                        min = {new Date("1900/11/30")}
                                         date={props.values.birthDate}
                                         onSelect={nextDate => {
                                             props.setFieldValue('birthDate', nextDate);
-                                            props.setFieldTouched('birthDate');
+                                            // props.setFieldTouched('birthDate');
                                         }}
                                         accessoryRight={CalendarIcon}
                                     />

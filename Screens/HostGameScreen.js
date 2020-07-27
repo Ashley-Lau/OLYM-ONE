@@ -80,7 +80,7 @@ const reviewSchema = yup.object({
     ,
     specificLocation: yup.string().label('Specific Location').required(),
     sport: yup.string().label('Sport').test('selectSport', 'Please select a sport!', (sport) => sport != ''),
-    date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val > Date.now()),
+    date: yup.date().label('Date').test('test date', 'The Game Cannot Be Earlier Than Now!', (val) => val.valueOf() > Date.now().valueOf()),
     time: yup.date().label('Time'),
     price: yup.string().label('Price')
         .test('Valid Price', 'Please enter a valid price!', (val) => parseInt(val) >= 0 && !(val).includes(",")),
@@ -108,6 +108,7 @@ const HostGameScreen = props => {
                 .catch(error => console.log(error))
         }
     , [])
+    console.log(new Date().valueOf())
 
     // Animation for the header
     const HEADER_MAX_HEIGHT = 45
@@ -346,8 +347,9 @@ const HostGameScreen = props => {
                                             date={props.values.date}
                                             onSelect={nextDate => {
                                                 props.setFieldValue('date', nextDate);
-                                                props.setFieldTouched('date');
+                                                // props.setFieldTouched('date');
                                             }}
+                                            max = {new Date("2100/12/31")}
                                             accessoryRight={(props) => (
                                                 <Icon {...props} name='calendar'/>
                                             )}
@@ -391,7 +393,8 @@ const HostGameScreen = props => {
                                                                 onChange={(event, selectedDate) => {
                                                                     const currentDate = selectedDate || props.values.date;
                                                                     props.setFieldValue('date', currentDate);
-                                                                    props.setFieldTouched('date');}}/>
+                                                                    // props.setFieldTouched('date');
+                                                                }}/>
                                                 <View style={{flexDirection: 'row', justifyContent: 'space-around', marginTop: 10, paddingBottom: 20, flex: 1}}>
                                                     <GradientButton onPress={() => props.setFieldValue('showTime',false)}
                                                                     style={styles.button}
@@ -417,7 +420,8 @@ const HostGameScreen = props => {
                                                        const currentDate = selectedDate || props.values.date;
                                                        props.setFieldValue('showTime',Platform.OS !== 'android');
                                                        props.setFieldValue('date', currentDate);
-                                                       props.setFieldTouched('date');}}
+                                                       // props.setFieldTouched('date');
+                                                   }}
                                 />)}
 
                             <View style = {styles.inputContainer}>
