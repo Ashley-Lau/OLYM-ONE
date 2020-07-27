@@ -218,7 +218,7 @@ const PlayerApplicationItem = props => {
 
     // PROFILE CARD BACKGROUND ===========================================================================================
     let refBack = require("../assets/OthersApp.png");
-    let sportColor = "rgba(47,49,53,1)";
+    let sportColor = "#AF3354";
     if(props.playerDetails.sport.toLowerCase() === "tennis"){
         refBack = require("../assets/TennisApp.png");
         sportColor = "#a5bb3e";
