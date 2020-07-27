@@ -182,7 +182,7 @@ const RefereeApplicationItem = props => {
     // PROFILE CARD BACKGROUND ===========================================================================================
     let profileBack = require("../assets/tennis_coloured.png");
     let refBack = require("../assets/OthersApp.png");
-    let sportColor = "rgba(47,49,53,1)";
+    let sportColor = "#AF3354";
 
     if(props.refDetails.sport.toLowerCase() === "tennis"){
         profileBack = require("../assets/tennis_coloured.png");
