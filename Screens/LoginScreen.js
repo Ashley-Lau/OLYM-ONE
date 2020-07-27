@@ -78,7 +78,7 @@ const LoginScreen = (props) => {
                             }
                         })
                         .catch(error => {
-                            alert(error)
+                            console.log(error)
                         });
                 } else {
                     response.user
