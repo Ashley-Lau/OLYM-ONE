@@ -102,13 +102,10 @@ const HostGameScreen = props => {
                 .then((doc) => {
                     const newData = doc.data()
                     setData(newData)
-                    // console.log(newData)
-                    // console.log(0)
                 })
                 .catch(error => console.log(error))
         }
     , [])
-    console.log(new Date().valueOf())
 
     // Animation for the header
     const HEADER_MAX_HEIGHT = 45
